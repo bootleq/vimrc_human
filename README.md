@@ -10,9 +10,9 @@ My edited _.vimrc_ for sharing with human.
 Notes
 --
 - Require Vim 7.3 or higher.
-- Not for gVim on Windows. Though I'm using it fine on gVim with [Cygwin](http://www.cygwin.com/).
+- Not for gVim on Windows. Though I'm using it fine with gVim and [Cygwin](http://www.cygwin.com/).
 - Please keep in mind that:  
-  let Vim sourcing others' scripts this way sure has **SECURITY CONCERN**.
+  let Vim source others' scripts this way sure has **SECURITY CONCERN**.
 
 Usage
 --
@@ -23,8 +23,8 @@ Usage
 2. Update submodule (will install Vundle):
 
     ```
-    cd /tmp/vimrc_human/bootleq  
-    git submodule init  
+    cd /tmp/vimrc_human/bootleq
+    git submodule init
     git submodule update
     ```
 
@@ -32,6 +32,9 @@ Usage
 
     `vim -u /tmp/vimrc_human/bootleq/.vimrc`
 
-4. There would be errors during first run. Install plugins can fix.  
+4. There would be errors during first run. Install plugins can fix them:  
    Launch `vim` and run `:BundleInstall`
 
+Blog post
+--
+[分享我的 Vim 設定 - vimrc_human](http://bootleq.blogspot.com/2011/06/vim-vimrchuman.html)

@@ -1,0 +1,37 @@
+vimrc_human
+===========
+
+My edited _.vimrc_ for sharing with human.
+
+- Use comments, make it easy to understand. (not implemented yet)
+- Use [Vundle](https://github.com/gmarik/vundle) to manage plugins, for quick and clean trying out.
+- May not update frequently, since it's not necessary my in-use config.
+
+Notes
+--
+- Require Vim 7.3 or higher.
+- Not for gVim on Windows. Though I'm using it fine on gVim with [Cygwin](http://www.cygwin.com/).
+- Please keep in mind that:  
+  let Vim sourcing others' scripts this way sure has **SECURITY CONCERN**.
+
+Usage
+--
+1. Clone this repository to your _/tmp_ path.
+
+    `git clone git://github.com/bootleq/vimrc_human.git /tmp/vimrc_human/bootleq`
+
+2. Update submodule (will install Vundle):
+
+    ```
+    cd /tmp/vimrc_human/bootleq  
+    git submodule init  
+    git submodule update
+    ```
+
+3. Start Vim with my vimrc.
+
+    `vim -u /tmp/vimrc_human/bootleq/.vimrc`
+
+4. There would be errors during first run. Install plugins can fix.  
+   Launch `vim` and run `:BundleInstall`
+

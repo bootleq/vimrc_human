@@ -3,7 +3,13 @@
 " Blog:   bootleq.blogspot.com
 " ============================================================================
 
-set nocompatible
+set all&
+mapclear
+mapclear!
+augroup my_vimrc
+  au!
+augroup END
+
 let &termencoding = &encoding
 set encoding=utf-8
 set fileencodings=usc-bom,utf-8,taiwan,chinese,default,latin1
@@ -35,7 +41,7 @@ filetype plugin indent on
       endtry
     endif
 
-    exec "set rtp+=" . fnamemodify(s:rtp, ':p') . "bundle/vundle/"
+    exec "set rtp+=" . fnamemodify(s:rtp, ':p') . "bundle/vundle"
     filetype off
 
     try
@@ -66,7 +72,10 @@ filetype plugin indent on
       Bundle 'surround.vim'
       Bundle 'tComment'
       Bundle 'taglist.vim'
+      Bundle 'tyru/open-browser.vim'
       Bundle 'wokmarks.vim'
+      Bundle 'Shougo/unite.vim'
+      Bundle 'tsukkee/unite-help'
   " ftplugin                                                         }}}2 {{{2
       Bundle 'bootleq/xml.vim'
   " syntax                                                           }}}2 {{{2
@@ -78,6 +87,7 @@ filetype plugin indent on
       Bundle 'nginx.vim'
       Bundle 'othree/html5.vim'
       Bundle 'plasticboy/vim-markdown'
+      Bundle 'timcharper/textile.vim'
       Bundle 'tpope/vim-haml'
   " indent                                                           }}}2 {{{2
       Bundle 'git://github.com/jiangmiao/simple-javascript-indenter.git'
@@ -133,6 +143,7 @@ filetype plugin indent on
     set viewoptions=folds,cursor
     set updatetime=10000
     set noswapfile
+    set updatecount=0
 
   " }}}2    term 相關調整     {{{2
 
@@ -331,8 +342,13 @@ filetype plugin indent on
     inoremap <S-Tab> <C-T>
     xnoremap <Tab>   >gv
     xnoremap <S-Tab> <gv
+    nnoremap <LocalLeader>< i0<C-D><C-\><C-N>
+    inoremap <LocalLeader>< 0<C-D>
+    xnoremap <LocalLeader>< 99<
 
     inoremap <C-Z> <C-O>u
+    inoremap <C-W> <C-G>u<C-W>
+    inoremap <C-U> <C-G>u<C-U>
     inoremap <LocalLeader>o <C-O>
 
     noremap <silent> <C-S> :update<CR>
@@ -362,6 +378,7 @@ filetype plugin indent on
   " }}}2   自動完成    {{{2
 
     cnoremap <LocalLeader>. <C-E>
+    cnoremap <LocalLeader><CR> <C-E>
 
     inoremap <LocalLeader>. <C-X><C-O>
     inoremap <expr> <C-J> pumvisible() ? "\<C-N>" : "\<C-J>"
@@ -377,14 +394,25 @@ filetype plugin indent on
     vmap <Leader>xy :w! $HOME/.vimxfer<CR>
     vmap <Leader>xa :w>> $HOME/.vimxfer<CR>
 
+
+  " }}}2   沒用的鍵    {{{2
+
+    nmap ZZ <Nop>
+    nmap ZQ <Nop>
+
   " }}}2
 
 " }}}1   MAPPINGS              ==============================================
+
+" COMMANDS             {{{1 ==================================================
+
+" }}}1    COMMANDS             ===============================================
 
 " ABBREVS             {{{1 ===================================================
 
   cnoreabbrev <expr> t ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'tabnew'  : 't')
   cnoreabbrev <expr> m ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'messages'  : 'm')
+  cnoreabbrev <expr> u ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'Unite'  : 'm')
   cnoreabbrev <expr> tm ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'TabMessage'  : 'tm')
   cnoreabbrev ll <lt>LocalLeader>
   inoreabbrev ll <lt>LocalLeader>
@@ -529,7 +557,7 @@ endif
           setlocal nomodified
         endif
       endf
-      function g:fuf_regListener.onAbort()
+      function! g:fuf_regListener.onAbort()
       endf
 
       function! g:fuf_regFinder(putBefore)
@@ -558,7 +586,7 @@ endif
           silent exec 'tabclose ' . l:tabnr
         endif
       endf
-      function g:fuf_tabListener.onAbort()
+      function! g:fuf_tabListener.onAbort()
       endf
       function! g:fuf_tabFinder()
         if exists("s:tabLineTabs")
@@ -576,6 +604,42 @@ endif
       nnoremap <LocalLeader>fg :call g:fuf_tabFinder()<CR>
 
     " }}}3    FuzzyFinder find tabs
+
+  " }}}2    Unite    {{{2
+
+    nnoremap [unite] <Nop>
+    nmap <Leader>f [unite]
+
+    nnoremap <silent> [unite]f :<C-U>UniteWithBufferDir -buffer-name=files -start-insert file<CR>
+    nnoremap <silent> [unite]r :<C-U>Unite -buffer-name=mru -start-insert file_mru<CR>
+    nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search line<CR>
+
+    nnoremap <silent> [unite]d :<C-U>Unite -buffer-name=mru_dir -start-insert directory_mru<CR>
+    " nnoremap <silent> [unite]t :<C-U>Unite -buffer-name=tabs -start-insert tab:no-current<CR>
+    nnoremap <silent> [unite]t :<C-U>Unite -buffer-name=tags -start-insert tag<CR>
+    nnoremap <silent> [unite]p :<C-U>Unite -buffer-name=registers -start-insert register<CR>
+    nnoremap <silent> [unite]b :<C-U>Unite -buffer-name=bookmarks bookmark<CR>
+    nnoremap <silent> [unite]h :<C-U>Unite -buffer-name=helps help<CR>
+    " TODO quickfix, my tabline
+
+    " call unite#custom_default_action('file', 'tabopen')
+
+    let g:unite_update_time = 70
+    " let g:unite_enable_start_insert = 1
+    let g:unite_enable_split_vertically = 1
+    " let g:unite_winwidth = 78
+    let g:unite_source_file_mru_time_format = "(%F %T) "
+
+    let g:unite_enable_ignore_case = 1
+    let g:unite_enable_smart_case = 1
+
+    function! s:unite_settings()
+      nmap <buffer> <C-J> <Plug>(unite_loop_cursor_down)
+      nmap <buffer> <C-K> <Plug>(unite_loop_cursor_up)
+      imap <buffer> <C-J> <Plug>(unite_select_next_line)
+      imap <buffer> <C-K> <Plug>(unite_select_previous_line)
+    endfunction
+    autocmd! my_vimrc FileType unite call s:unite_settings()
 
   " }}}2   Align    {{{2
 
@@ -601,7 +665,7 @@ endif
     fun!  Lilydjwg_Align_complete(ArgLead, CmdLine, CursorPos)
       return keys(g:Lilydjwg_align_def)
     endf
-    command -nargs=1 -range -complete=customlist,Lilydjwg_Align_complete
+    command! -nargs=1 -range -complete=customlist,Lilydjwg_Align_complete
           \ LA <line1>,<line2>call Lilydjwg_Align("<args>")
     let g:Lilydjwg_align_def = {
           \   'css': ['WP0p1l:', ':\@<=', 'v \v^\s*/\*|\{|\}'],
@@ -613,7 +677,7 @@ endif
     let g:rails_statusline = 1
     let g:rails_url = 'http://localhost/'
     " set title titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)%(\ %{rails#statusline(1)})%
-    autocmd User Rails command! Rnginx exec "!sudo\ /etc/init.d/nginx\ restart"
+    autocmd User Rails command! Rnginx exec "!sudo\ service nginx restart"
     autocmd User Rails command! Rclearlog exec "silent Rake log:clear"
 
   " }}}2   TagList   {{{2
@@ -678,8 +742,8 @@ endif
       call mkdir(g:session_back_dir, "p")
     endif
 
-    command! -nargs=? StashSessionBackup call StashSessionBackup()
-    command! -nargs=? StashSessionBackupPop call StashSessionBackup(1)
+    command! -nargs=0 StashSessionBackup call StashSessionBackup()
+    command! -nargs=0 StashSessionBackupPop call StashSessionBackup(1)
     function! StashSessionBackup(...)
       let l:stash = a:0 > 0 ? a:1 : 0
       if l:stash
@@ -722,6 +786,10 @@ endif
     nnoremap <silent> mo :ShowMarksOn<CR>
     nnoremap <silent> mt :ShowMarksToggle<CR>
 
+  " }}}2   Surround   {{{2
+
+    " let g:surround_{char2nr("d")} = "<div\1id: \r..*\r id=\"&\"\1>\r</div>"
+
   " }}}2   wokmarks   {{{2
 
     let g:wokmarks_do_maps = 0
@@ -760,6 +828,26 @@ endif
   " }}}2    CamelCaseMotion    {{{2
 
     let g:camelcasemotion_leader='g'
+
+  " }}}2    open-browser    {{{2
+
+    nmap <Leader><CR> <Plug>(openbrowser-smart-search)
+    vmap <Leader><CR> <Plug>(openbrowser-smart-search)
+    nmap <Leader>s<CR> <Plug>(openbrowser-search)
+    vmap <Leader>s<CR> <Plug>(openbrowser-search)
+    let g:openbrowser_search_engines = {
+    \   'dictionary': 'http://www.google.com/dictionary?q={query}',
+    \   'google': 'http://google.com/search?q={query}',
+    \}
+    let g:openbrowser_default_search = 'dictionary'
+
+    " remove ["'"]
+    let g:openbrowser_iskeyword = join(
+          \   range(char2nr('A'), char2nr('Z'))
+          \   + range(char2nr('a'), char2nr('z'))
+          \   + range(char2nr('0'), char2nr('9'))
+          \   + ['_', ':', '/', '.', '-', '+', '%', '#', '?', '&', '=', ';', '@', '$', ',', '[', ']', '!', "(", ")", "*", "~", ],
+          \ ',')
 
   " }}}2
 
@@ -949,10 +1037,10 @@ endif
 
   "     清除多餘 Tab, 空白    {{{2
 
-    command -nargs=0 TidySpaces call TidySpaces()
-    function TidySpaces()
+    command! -nargs=0 TidySpaces call TidySpaces()
+    function! TidySpaces()
       let oldCursor = getpos(".")
-      %s/\r//ge
+      %s/\r\+$//ge
       %s/\t/    /ge
       %s/\s\+$//ge
       call setpos('.', oldCursor)
@@ -983,7 +1071,7 @@ endif
   " }}}2   暫存／復原 position    {{{2
 
     " @params stash/pop
-    function PosStash(...)
+    function! PosStash(...)
       let l:stash = a:0 > 0 ? a:1 : 0
       if l:stash
         let s:stashCursor = getpos(".")
@@ -996,7 +1084,7 @@ endif
   " }}}2   暫存／復原 register 內容   {{{2
 
     " @params stash/pop, regname
-    function RegStash(...)
+    function! RegStash(...)
       let l:stash = a:0 > 0 ? a:1 : 0
       let l:regname = a:0 > 1 ? a:2 : v:register
       if l:stash
@@ -1010,7 +1098,7 @@ endif
   " }}}2   暫存／復原 mark 內容   {{{2
 
     " @params stash/pop, markname
-    function MarkStash(...)
+    function! MarkStash(...)
       let l:stash = a:0 > 0 ? a:1 : 0
       let l:markname = a:0 > 1 ? a:2 : 'm'
       if l:stash
@@ -1023,7 +1111,7 @@ endif
 
   " }}}2   字串長度（column 數）   {{{2
 
-    function StrWidth(str)
+    function! StrWidth(str)
       if exists('*strwidth')
         return strwidth(a:str)
       else
@@ -1197,7 +1285,7 @@ endif
       return ""
     endfunction
 
-    function SmartEnd(mode)
+    function! SmartEnd(mode)
       let curcol = col(".")
       let lastcol = a:mode == "i" ? col("$") : col("$") - 1
       " gravitate towards ending for wrapped lines
@@ -1290,30 +1378,6 @@ endif
       inoremap <silent> <LocalLeader>p <C-O>:call Getclip()<CR>
     endif
 
-  " }}}2   開啟 URL    {{{2
-
-    " 參考自依云的 vimrc: http://lilydjwg.is-programmer.com/
-    fun! OpenURL(...)
-      if a:0 > 0
-        let url = a:1
-      else
-        " from syntax/help.vim
-        let re = '\v(https?://|ftp://|file:/{3}|(www|web|w3)[a-z0-9_-]*\.[a-z0-9._-]+\.)[^.]+\..+'
-        let url = matchstr(expand('<cWORD>'), re)
-      endif
-      if strlen(url) > 0
-        if has('win32unix') || has('win32') || has('win64')
-          call system("cmd /q /c start \"" . url . "\"")
-        else
-          call system("gnome-open " . url)
-        endif
-        echomsg "Launched URL: " . url
-      else
-        echohl WarningMsg | echomsg "No URL under cursor." | echohl None
-      endif
-    endf
-    nnoremap <Leader><CR> :call OpenURL()<CR>
-
   " }}}2   Firefox reload    {{{2
 
     " http://vim.wikia.com/wiki/Refresh_Firefox_%28preserving_scroll%29_on_Vim_save,_using_MozRepl
@@ -1332,7 +1396,7 @@ endif
 
   " }}}2   LastTab    {{{2
 
-    function LastTab(act)
+    function! LastTab(act)
 
       let lt = g:lasttab
       let tabClosed = tabpagenr('$') < lt.knownLength ? 1 : 0
@@ -1427,12 +1491,58 @@ endif
       redir END
       tabnew
       silent put=redirMessage
+      0,2delete_
       set nomodified
       setlocal buftype=nofile
       setlocal bufhidden=hide
       setlocal noswapfile
+      setlocal nobuflisted
     endf
     command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+  " }}}2   Move window into tabpage   {{{2
+
+    " Modified from kana's useful tab function {{{
+    function! s:move_window_into_tab_page(...)
+      " Move the current window into target_tabpagenr.
+      " a:1 - target_tabpagenr : if not set, move into new tab page.
+      " a:2 - open_relative : open new tab aside current tab (default 1).
+      let target_tabpagenr = a:0 > 0 ? a:1 : 0
+      let open_relative = a:0 > 1 ? a:2 : 1
+
+      if target_tabpagenr > tabpagenr('$')
+        let target_tabpagenr = tabpagenr('$')
+      endif
+
+      let original_tabnr = tabpagenr()
+      let target_bufnr = bufnr('')
+      let window_view = winsaveview()
+
+      if target_tabpagenr == 0
+        tabnew
+        if ! open_relative
+          tabmove
+        endif
+        execute target_bufnr 'buffer'
+        let target_tabpagenr = tabpagenr()
+      else
+        execute target_tabpagenr 'tabnext'
+        topleft new  " FIXME: be customizable?
+        execute target_bufnr 'buffer'
+      endif
+      call winrestview(window_view)
+
+      execute original_tabnr 'tabnext'
+      if 1 < winnr('$')
+        close
+      else
+        enew
+      endif
+
+      execute target_tabpagenr 'tabnext'
+    endfunction " }}}
+
+    command! -nargs=* MoveIntoTabpage call <SID>move_window_into_tab_page(<f-args>)
 
   " }}}2   自動補全成對括號    {{{2
 
@@ -2014,6 +2124,7 @@ endif
 
     fun! s:vim_rc()
       let b:tc_option = ''
+      " let g:vim_indent_cont = 0
       set path+=~/.vim/bundle
     endf
 
@@ -2037,7 +2148,6 @@ endif
 " AUTOCMD             {{{1 ===================================================
 
   augroup my_vimrc
-    au!
 
     au FileType * :setlocal formatoptions=roql2
 
@@ -2087,6 +2197,15 @@ endif
       au GUIEnter * winpos 0 0 | redraw!
     endif
 
+    " Ref from https://github.com/tyru/dotfiles
+    au BufWriteCmd *[,*],*'* call s:write_check_typo(expand('<afile>'))
+    function! s:write_check_typo(file)
+      let prompt = "possible typo: really want to write to '" . a:file . "'? (y/n):"
+      if input(prompt) =~? '^\s*y'
+        execute 'write' a:file
+      endif
+    endfunction
+
     au FileWritePost,BufWritePost *-\(debug\|src\).js :JsCompress! 1
     if has("autocmd") && exists("+omnifunc")
       autocmd Filetype *
@@ -2094,6 +2213,7 @@ endif
       \ setlocal omnifunc=syntaxcomplete#Complete |
       \ endif
     endif
+
   augroup END
 
   " http://vim.wikia.com/wiki/VimTip343?cb=4828
@@ -2106,3 +2226,5 @@ endif
   endif
 
 " }}}1    AUTOCMD             ================================================
+
+set secure

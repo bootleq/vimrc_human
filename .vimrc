@@ -3,9 +3,13 @@
 " Blog:   bootleq.blogspot.com
 " ============================================================================
 
-set all&
-mapclear
-mapclear!
+if ! exists('s:vimrc_loaded')
+  set all&
+  set nocompatible
+  mapclear
+  mapclear!
+endif
+
 augroup my_vimrc
   au!
 augroup END
@@ -20,16 +24,22 @@ filetype plugin indent on
 
   " Setup {{{2
 
-    let s:rtp="/tmp/vimrc_human/bootleq/.vim"
+    let s:rtp="~/.vim"
 
-    " let s:rtp="~/.vim"
-    " if has("gui_win32") | let s:rtp='c:\cygwin\home\admin\.vim' | endif
-    " if expand("<sfile>") == '/etc/users/bootleq/.vimrc'
-    "       \  && substitute(system("whoami"), '\n$', '', '') != 'bootleq'
-    "       \  && ! exists("did_bootleq_runtime")
-    "   let s:rtp="/etc/users/bootleq/.vim"
-    "   let did_bootleq_runtime = 1
-    " endif
+    if has("gui_win32") | let s:rtp='c:\cygwin\home\admin\.vim' | endif
+
+    if expand("<sfile>") == '/etc/users/bootleq/.vimrc'
+          \  && substitute(system("whoami"), '\n$', '', '') != 'bootleq'
+          \  && ! exists("g:did_bootleq_runtime")
+      let s:rtp="/etc/users/bootleq/.vim"
+      let g:did_bootleq_runtime = 1
+    endif
+
+    if expand("<sfile>") == '/tmp/vimrc_human/bootleq/.vimrc'
+          \  && ! exists("g:did_vimrc_human_runtime")
+      let s:rtp="/tmp/vimrc_human/bootleq/.vim"
+      let g:did_vimrc_human_runtime = 1
+    endif
 
     if !isdirectory(fnamemodify(s:rtp, ':p'))
       try
@@ -61,28 +71,39 @@ filetype plugin indent on
       Bundle 'gmarik/vundle'
       Bundle 'L9'
       Bundle 'Align'
+      Bundle 'h1mesuke/vim-alignta'
       Bundle 'FuzzyFinder'
       Bundle 'VisIncr'
       Bundle 'bootleq/camelcasemotion'
       Bundle 'bootleq/ShowMarks'
       Bundle 'git://github.com/bootleq/snipmate.vim.git'
-      Bundle 'c9s/gsession.vim'
+      Bundle 'bootleq/gsession.vim'
       Bundle 'netrw.vim'
       Bundle 'rails.vim'
-      Bundle 'surround.vim'
-      Bundle 'tComment'
-      Bundle 'taglist.vim'
+      Bundle 'kana/vim-surround'
+      Bundle 'bootleq/tcomment_vim'
       Bundle 'tyru/open-browser.vim'
       Bundle 'wokmarks.vim'
       Bundle 'Shougo/unite.vim'
+
+      Bundle 'Indent-Guides'
+      Bundle 'h1mesuke/unite-outline'
       Bundle 'tsukkee/unite-help'
+      Bundle 'tpope/vim-fugitive'
+      Bundle 'taglist.vim'
+      " Bundle 'thinca/vim-prettyprint'
+      " Bundle 'Shougo/vimshell'
+      " Bundle 'kana/vim-ku'
+      " Bundle 'kana/vim-smartword'
+      " Bundle 'git://git.wincent.com/command-t.git'
   " ftplugin                                                         }}}2 {{{2
       Bundle 'bootleq/xml.vim'
+      Bundle 'tpope/vim-haml'
   " syntax                                                           }}}2 {{{2
       Bundle 'JSON.vim'
       Bundle 'JavaScript-syntax'
       Bundle 'hail2u/vim-css3-syntax'
-      Bundle 'hallison/vim-rdoc'
+      Bundle 'depuracao/vim-rdoc'
       Bundle 'httplog'
       Bundle 'nginx.vim'
       Bundle 'othree/html5.vim'
@@ -92,7 +113,7 @@ filetype plugin indent on
   " indent                                                           }}}2 {{{2
       Bundle 'git://github.com/jiangmiao/simple-javascript-indenter.git'
   " colors                                                           }}}2 {{{2
-    Bundle 'bootleq/vim-color-bootleg'
+      Bundle 'bootleq/vim-color-bootleg'
   "                                                                       }}}2
 
   filetype plugin indent on
@@ -196,6 +217,7 @@ filetype plugin indent on
     set cursorline
     set number
     set hlsearch
+    nohlsearch
     set ruler
     set showcmd
     set shortmess+=I
@@ -204,7 +226,11 @@ filetype plugin indent on
     set bg=dark
     set ambiwidth=double
     syntax on
-    colorscheme bootleg
+
+    if ! exists('g:colors_name')
+      set background=dark
+      colorscheme bootleg
+    endif
 
     set title titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)
     set statusline=%<%f\ %h%m%r%w%=%-14.(%l,%c%V%)\ %P
@@ -253,6 +279,7 @@ filetype plugin indent on
   " }}}2   拼字檢查    {{{2
 
     nnoremap <silent><F8> :setlocal spell! spelllang=en_us<CR>
+    inoremap <silent><F8> <C-O>:setlocal spell! spelllang=en_us<CR>
 
   " }}}2   Vim 7.3    {{{2
 
@@ -292,7 +319,7 @@ filetype plugin indent on
   "   各種移動    {{{2
 
     noremap <expr> <Space>  repeat('<ScrollWheelDown>', 2)
-    noremap <expr> z<Space> repeat('<ScrollWheelUp>', 2)
+    nnoremap <expr> <LocalLeader><Space> repeat('<ScrollWheelUp>', 2)
     noremap <expr> <C-Down> repeat('<ScrollWheelDown>', 3)
     noremap <expr> <C-Up>   repeat('<ScrollWheelUp>', 3)
 
@@ -313,17 +340,12 @@ filetype plugin indent on
     map  <kEnd>  <End>
     map! <kEnd>  <End>
 
-    vnoremap * "9y/<C-R>=escape(@9, '\\/.*$^~[]')<CR><CR>
-    vnoremap # "9y?<C-R>=escape(@9, '\\/.*$^~[]')<CR><CR>
-
     nnoremap ' `
 
     nmap <LocalLeader>w <C-W>
     nnoremap <C-W>gf :tab wincmd f<CR>
     nnoremap <expr> <CR> &modifiable ? "i<CR><C-\><C-N>" : "<C-]>"
     nnoremap <expr> <BS> &modifiable ? "i<C-W><C-\><C-N>" : "<C-O>"
-    nnoremap <LocalLeader>cn :cn<CR>
-    nnoremap <LocalLeader>cp :cp<CR>
 
     nnoremap <silent> 99gt :tablast<CR>
     nnoremap gr gT
@@ -348,7 +370,8 @@ filetype plugin indent on
 
     inoremap <C-Z> <C-O>u
     inoremap <C-W> <C-G>u<C-W>
-    inoremap <C-U> <C-G>u<C-U>
+    inoremap <expr> <C-U> (pumvisible() ? "\<C-E>" : '') . "\<C-G>u\<C-U>"
+
     inoremap <LocalLeader>o <C-O>
 
     noremap <silent> <C-S> :update<CR>
@@ -365,12 +388,19 @@ filetype plugin indent on
     map  <LocalLeader><F1> :tab help <C-R>=expand('<cword>')<CR><CR>
     xmap <F1> :<C-U>call RegStash(1)<CR>gvy:let b:tempReg=@"<CR>:call RegStash()<CR>:help <C-R>=b:tempReg<CR><CR>
     xmap <LocalLeader><F1> :<C-U>call RegStash(1)<CR>gvy:let b:tempReg=@"<CR>:call RegStash()<CR>:help <C-R>=b:tempReg<CR><CR>
+
     nmap <F2> :%s/<C-R><C-W>
     xmap <F2> :<C-U>call RegStash(1)<CR>gvy:let b:tempReg=@"<CR>:call RegStash()<CR>gv:<C-U>%s/ <C-R>=b:tempReg<CR>
-    nmap <F4><F4> :qa<CR>
+
+    noremap <silent> <F3> :nohlsearch<CR>
+    inoremap <silent> <F3> <C-O>:nohlsearch<CR>
+    noremap <silent> <F4> :set hlsearch<CR>
+    inoremap <silent> <F4> <C-O>:set hlsearch<CR>
+
     nnoremap <F5> :call SynStackInfo()<CR>
     nnoremap <Leader><F5> :tabdo e!<CR>
     nnoremap <F6> :GitDiffOff<CR>
+
     set pastetoggle=<F11>
     map  <silent> <F12> :set list!<CR>
     imap <silent> <F12> <C-O>:set list!<CR>
@@ -383,8 +413,6 @@ filetype plugin indent on
     inoremap <LocalLeader>. <C-X><C-O>
     inoremap <expr> <C-J> pumvisible() ? "\<C-N>" : "\<C-J>"
     inoremap <expr> <C-K> pumvisible() ? "\<C-P>" : "\<C-K>"
-    inoremap <expr> <Tab> pumvisible() ? "\<C-N>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-P>" : "\<S-Tab>"
 
   " }}}2   跨 Vim 剪貼    {{{2
 
@@ -394,6 +422,40 @@ filetype plugin indent on
     vmap <Leader>xy :w! $HOME/.vimxfer<CR>
     vmap <Leader>xa :w>> $HOME/.vimxfer<CR>
 
+  " }}}2   Quickfix    {{{2
+
+    " Ref: kana - https://github.com/kana/config
+    " Note: -- Ex-mode will be never used and recordings are rarely used.
+    nmap q [quickfix]
+    nmap [quickfix]w [localist]
+    nnoremap [quickfix] <Nop>
+    nnoremap [localist] <Nop>
+    nnoremap Q q
+
+    " Quickfix list  {{{3
+      nnoremap <silent> [quickfix]j :cnext<CR>
+      nnoremap <silent> [quickfix]k :cprevious<CR>
+      nnoremap <silent> [quickfix]r :crewind<CR>
+      nnoremap <silent> [quickfix]K :cfirst<CR>
+      nnoremap <silent> [quickfix]J :clast<CR>
+      nnoremap <silent> [quickfix]l :clist<CR>
+      nnoremap <silent> [quickfix]o :copen<CR>
+      nnoremap <silent> [quickfix]c :cclose<CR>
+      nnoremap <silent> [quickfix]p :colder<CR>
+      nnoremap <silent> [quickfix]n :cnewer<CR>
+    " }}}
+    " Location list  {{{3
+      nnoremap <silent> [localist]j :lnext<CR>
+      nnoremap <silent> [localist]k :lprevious<CR>
+      nnoremap <silent> [localist]r :lrewind<CR>
+      nnoremap <silent> [localist]K :lfirst<CR>
+      nnoremap <silent> [localist]J :llast<CR>
+      nnoremap <silent> [localist]l :llist<CR>
+      nnoremap <silent> [localist]o :lopen<CR>
+      nnoremap <silent> [localist]c :lclose<CR>
+      nnoremap <silent> [localist]p :lolder<CR>
+      nnoremap <silent> [localist]n :lnewer<CR>
+    " }}}
 
   " }}}2   沒用的鍵    {{{2
 
@@ -405,6 +467,22 @@ filetype plugin indent on
 " }}}1   MAPPINGS              ==============================================
 
 " COMMANDS             {{{1 ==================================================
+
+  if executable('cat')
+    command! EmptyFile call system("cat /dev/null > " . shellescape(expand('%:p'))) | checktime
+  endif
+
+  command! Rnginx exec "!sudo\ service nginx restart"
+
+  " Ref: tsukkee - https://github.com/tsukkee/config
+  command! -nargs=1 -bang -complete=file Rename saveas<bang> <args> | call delete(expand('#'))
+
+  " Ref: kana - https://github.com/kana/config
+  command! -bar -complete=file -nargs=+ Grep call s:grep('grep', [<f-args>])
+  command! -bar -complete=file -nargs=+ Lgrep call s:grep('lgrep', [<f-args>])
+  function! s:grep(command, args)
+    execute a:command '/'.a:args[-1].'/' join(a:args[:-2])
+  endfunction
 
 " }}}1    COMMANDS             ===============================================
 
@@ -473,10 +551,10 @@ endif
 
   " Netrw    {{{2
 
-    " "let g:netrw_ftp = 1
+    " let g:netrw_ftp = 1
     " let g:netrw_preview = 1
     " let g:netrw_ignorenetrc = 0
-    " "let g:netrw_ftpextracmd = 'passive'
+    " let g:netrw_ftpextracmd = 'passive'
 
     let g:netrw_liststyle = 3
     let g:netrw_winsize = 20
@@ -491,57 +569,65 @@ endif
 
   " }}}2    FuzzyFinder    {{{2
 
-    nnoremap <LocalLeader>ff :FufFileWithCurrentBufferDir<CR>
-    " nnoremap <LocalLeader>fd :FufDir<CR>
-    nnoremap <LocalLeader>fr :FufMruFile<CR>
-    " nnoremap <LocalLeader>fm :FufBookmark<CR>
-    nnoremap <LocalLeader>fb :FufBuffer<CR>
-    " nnoremap <LocalLeader>fd :FufBookmarkDir<CR>
-    nnoremap <LocalLeader>fc :FufChangeList<CR>
-    nnoremap <LocalLeader>ft :FufBufferTagAll<CR>
-    nnoremap <LocalLeader>fh :FufHelp<CR>
-    nnoremap <LocalLeader>fq :FufQuickfix<CR>
-    nnoremap <silent> <LocalLeader>f<F5> :FufRenewCache<CR>
+    nnoremap [fuf] <Nop>
+    nmap <LocalLeader>f [fuf]
+    nnoremap [fuf]f :FufFileWithCurrentBufferDir<CR>
+    nnoremap [fuf]r :FufMruFile<CR>
+    nnoremap [fuf]b :FufBuffer<CR>
+    nnoremap [fuf]c :FufChangeList<CR>
+    nnoremap [fuf]t :FufBufferTagAll<CR>
+    nnoremap [fuf]h :FufHelp<CR>
+    nnoremap [fuf]q :FufQuickfix<CR>
+    nnoremap <silent> [fuf]<F5> :FufRenewCache<CR>
+    " nnoremap [fuf]d :FufDir<CR>
+    " nnoremap [fuf]m :FufBookmark<CR>
+    " nnoremap [fuf]d :FufBookmarkDir<CR>
 
     let g:fuf_dataDir = '~/.vim/fuf-data'
     let g:fuf_modesDisable = ['coveragefile', 'dir', 'line', 'bookmarkdir', 'bookmarkfile', 'mrucmd', 'jumplist', 'taggedfile', 'givenfile', 'givedir']
-    let g:fuf_keyOpen=''
+
+    let g:fuf_keyOpen='<LocalLeader><CR>'
     let g:fuf_keyOpenSplit=''
-    let g:fuf_keyOpenVsplit='<LocalLeader><CR>'
+    let g:fuf_keyOpenVsplit=''
     let g:fuf_keyOpenTabpage='<CR>'
     let g:fuf_keyPreview='<Space>'
     let g:fuf_buffer_keyDelete='<C-D>'
+    let g:fuf_keyPrevPattern = '<C-PageUp>'
+    let g:fuf_keyNextPattern = '<C-PageDown>'
+
     if $OSTYPE == 'cygwin'
       let g:fuf_abbrevMap = {
-            \   "^r:" : [ "/cygdrive/g/repository/", "/cygdrive/n/repository/" ],
-            \   "^w:" : ["/cygdrive/g/web"],
-            \   "^c:" : ["~/webdev/code-snippets"],
-            \   "^d:" : ["~/webdev/"],
+            \   "^r:" : [ "/cygdrive/d/repository/" ],
+            \   "^w:" : ["/cygdrive/d/web"],
             \   '^vr:' : map(filter(split(&runtimepath, ','), 'v:val !~ "after$"'), 'v:val . ''/**/'''),
             \ }
     else
       let g:fuf_abbrevMap = {
             \   "^r:" : [ "~/repository/" ],
-            \   "^g:" : [ "/opt/ruby/lib/ruby/gems/1.8/gems/" ],
+            \   "^rb:" : [ "/opt/ruby/lib/ruby/gems/1.8/gems/" ],
             \   "^w:" : [ "/home/www/" ],
-            \   "^c:" : ["~/webdev/code-snippets"],
-            \   "^d:" : ["~/webdev/"],
             \   '^vr:' : map(filter(split(&runtimepath, ','), 'v:val !~ "after$"'), 'v:val . ''/**/'''),
             \ }
     endif
+
     let g:fuf_mrufile_maxItem = 100
     let g:fuf_mrucmd_maxItem = 100
     let g:fuf_maxMenuWidth = 90
+    let g:fuf_enumeratingLimit = 50
+
     " After VimEnter, set bookmark-dir with command 'FufBookmarkDirAdd'.
     " Also use 'FufEditDataFile'.
 
-    autocmd BufEnter \[fuf\] setlocal pumheight=0   " can punheight setlocal?
-    autocmd BufLeave \[fuf\] setlocal pumheight=25
-    autocmd BufEnter \[fuf\] setlocal nowrap
-    autocmd BufEnter \[fuf\] inoremap <buffer> <Tab> <C-N>
-    autocmd BufEnter \[fuf\] inoremap <buffer> <S-Tab> <C-P>
+    augroup my_vimrc
+      autocmd BufEnter \[fuf\] set pumheight=0
+      autocmd BufLeave \[fuf\] set pumheight=25
+      autocmd FileType fuf setlocal nowrap
+      autocmd FileType fuf inoremap <buffer> <Tab> <C-N>
+      autocmd FileType fuf inoremap <buffer> <S-Tab> <C-P>
+    augroup END
 
     " }}}3    FuzzyFinder find registers    {{{3
+
       let g:fuf_regListener = {}
       let g:fuf_regListener.putBefore = 0   " 0: p, 1: P
 
@@ -571,8 +657,8 @@ endif
         call fuf#callbackitem#launch('', 1, 'registers>', g:fuf_regListener, l:regList, 0)
       endf
 
-      nnoremap <LocalLeader>fp :call g:fuf_regFinder(0)<CR>
-      nnoremap <LocalLeader>fP :call g:fuf_regFinder(1)<CR>
+      nnoremap [fuf]p :call g:fuf_regFinder(0)<CR>
+      nnoremap [fuf]P :call g:fuf_regFinder(1)<CR>
 
     " }}}3    FuzzyFinder find tabs    {{{3
 
@@ -601,7 +687,7 @@ endif
           call fuf#callbackitem#launch('', 1, 'tabs>', g:fuf_tabListener, l:tabList, 0)
         endif
       endf
-      nnoremap <LocalLeader>fg :call g:fuf_tabFinder()<CR>
+      nnoremap [fuf]g :call g:fuf_tabFinder()<CR>
 
     " }}}3    FuzzyFinder find tabs
 
@@ -641,35 +727,61 @@ endif
     endfunction
     autocmd! my_vimrc FileType unite call s:unite_settings()
 
+  " }}}2    ku    {{{2
+
+    " nnoremap [ku] <Nop>
+    " nmap <Leader>k [ku]
+    " nnoremap [ku]f :<C-U>:call ku#start(['file'])<CR>
+
+  " }}}2   alignta    {{{2
+
+    xnoremap <silent> <Leader>= :Alignta! \S\+<CR>
+    " xmap <silent><expr> <Leader>= mode() !=# 'v' ? ':Alignta! \S\+'."\<CR>" : 'as'
+    " xnoremap <silent> a: :Alignta  @01 :<CR>
+    " xmap <silent><expr> as mode() !=# 'v' ? ':Alignta! \S\+'."\<CR>" : 'as'
+    " xnoremap al :Alignta<Space>
+
+    " vnoremap <silent> <Leader>= :Alignta! @
+    " vnoremap <silent> <Leader>= :Alignta! ={1}
+    " vnoremap <silent> <Leader>= :Alignta = /* */
+    " vnoremap <silent>  <LocalLeader>= :Alignta! @
+
   " }}}2   Align    {{{2
 
-    let g:Align_xstrlen = 3
-    vnoremap <silent> <Leader>= :Align! l: => = :<CR>
+    " let g:Align_xstrlen = 3
+    " vnoremap <silent> <Leader>= :Align! l: => = :<CR>
 
-    " Modified from http://lilydjwg.is-programmer.com/posts/24706
-    fun! Lilydjwg_Align(type) range
-      try
-        let pat = g:Lilydjwg_align_def[a:type]
-      catch /^Vim\%((\a\+)\)\=:E716/
-        echohl ErrorMsg | echoerr "對齊方式 " . a:type . " 沒有定義。" | echohl None
-        return
-      endtry
-      call Align#AlignPush()
-      call Align#AlignCtrl(pat[0])
-      if len(pat) == 3
-        call Align#AlignCtrl(pat[2])
-      endif
-      exe a:firstline.','.a:lastline."call Align#Align(0, '". pat[1] ."')"
-      call Align#AlignPop()
-    endf
-    fun!  Lilydjwg_Align_complete(ArgLead, CmdLine, CursorPos)
-      return keys(g:Lilydjwg_align_def)
-    endf
-    command! -nargs=1 -range -complete=customlist,Lilydjwg_Align_complete
-          \ LA <line1>,<line2>call Lilydjwg_Align("<args>")
-    let g:Lilydjwg_align_def = {
-          \   'css': ['WP0p1l:', ':\@<=', 'v \v^\s*/\*|\{|\}'],
-          \ }
+    " " Modified from http://lilydjwg.is-programmer.com/posts/24706
+    " fun! Lilydjwg_Align(type) range
+    "   try
+    "     let pat = g:Lilydjwg_align_def[a:type]
+    "   catch /^Vim\%((\a\+)\)\=:E716/
+    "     echohl ErrorMsg | echoerr "對齊方式 " . a:type . " 沒有定義。" | echohl None
+    "     return
+    "   endtry
+    "   call Align#AlignPush()
+    "   call Align#AlignCtrl(pat[0])
+    "   if len(pat) == 3
+    "     call Align#AlignCtrl(pat[2])
+    "   endif
+    "   exe a:firstline.','.a:lastline."call Align#Align(0, '". pat[1] ."')"
+    "   call Align#AlignPop()
+    " endf
+    " fun!  Lilydjwg_Align_complete(ArgLead, CmdLine, CursorPos)
+    "   return keys(g:Lilydjwg_align_def)
+    " endf
+    " command! -nargs=1 -range -complete=customlist,Lilydjwg_Align_complete
+    "       \ LA <line1>,<line2>call Lilydjwg_Align("<args>")
+    " let g:Lilydjwg_align_def = {
+    "       \   'css': ['WP0p1l:', ':\@<=', 'v \v^\s*/\*|\{|\}'],
+    "       \ }
+
+  " }}}2   Indent Guide    {{{2
+
+    let g:indent_guides_enable_on_vim_startup = 0
+    let g:indent_guides_auto_colors = 0
+    let g:indent_guides_guide_size = 1
+    let g:indent_guides_indent_levels = 30
 
   " }}}2   Rails    {{{2
 
@@ -677,8 +789,9 @@ endif
     let g:rails_statusline = 1
     let g:rails_url = 'http://localhost/'
     " set title titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)%(\ %{rails#statusline(1)})%
-    autocmd User Rails command! Rnginx exec "!sudo\ service nginx restart"
     autocmd User Rails command! Rclearlog exec "silent Rake log:clear"
+
+  " }}}2   fugitive    {{{2
 
   " }}}2   TagList   {{{2
 
@@ -697,6 +810,8 @@ endif
 
   " }}}2   GSession   {{{2
 
+    let g:autoload_session = 1
+    let g:autosave_session = 0
     let g:gsession_non_default_mapping = 1
     nnoremap <leader>ss    :call MakeSessionWithSafety()<CR>
     nnoremap <leader>se    :GSessionEliminateCurrent<CR>
@@ -786,9 +901,20 @@ endif
     nnoremap <silent> mo :ShowMarksOn<CR>
     nnoremap <silent> mt :ShowMarksToggle<CR>
 
-  " }}}2   Surround   {{{2
+  " }}}2   Surround (kana version)   {{{2
 
-    " let g:surround_{char2nr("d")} = "<div\1id: \r..*\r id=\"&\"\1>\r</div>"
+    if exists('g:loaded_surround') && exists('*SurroundRegister')
+        call SurroundRegister('g', '&', "&lt;\r&gt;")
+        call SurroundRegister('g', 'C', "<![CDATA[\r]]>")
+
+        call SurroundRegister('g', '（', "（\r）")
+        call SurroundRegister('g', '「', "「\r」")
+        call SurroundRegister('g', '『', "『\r』")
+    endif
+
+    " Overwrite default mapping ys, because y is for yank.
+    nmap s  <plug>Ysurround
+    nmap ss <plug>Yssurround
 
   " }}}2   wokmarks   {{{2
 
@@ -808,10 +934,10 @@ endif
     let g:tcommentMapLeaderOp1 = ''
     let g:tcommentMapLeaderOp2 = ''
     let g:tc_option = ' col=1'
-    noremap <silent> <expr> <LocalLeader>cc ":TComment       " . (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
-    noremap <silent> <expr> <LocalLeader>cb ":TCommentBlock  " . (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
+    noremap <silent> <expr> <LocalLeader>cc ":TComment " .       (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
+    noremap <silent> <expr> <LocalLeader>cb ":TCommentBlock " .  (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
     noremap <silent> <expr> <LocalLeader>ci ":TCommentInline " . (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
-    noremap <silent> <expr> <LocalLeader>c$ ":TCommentRight  " . (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
+    noremap <silent> <expr> <LocalLeader>c$ ":TCommentRight " .  (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
     map <silent><expr> <LocalLeader>ca IsInComment() ?
           \ "vac:TComment " . (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>" :
           \ ":TComment " . (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
@@ -828,6 +954,15 @@ endif
   " }}}2    CamelCaseMotion    {{{2
 
     let g:camelcasemotion_leader='g'
+
+  " }}}2    smartword.vim    {{{2
+
+    " if exists('g:loaded_smartword')
+    "   map w  <Plug>(smartword-w)
+    "   map b  <Plug>(smartword-b)
+    "   map e  <Plug>(smartword-e)
+    "   map ge  <Plug>(smartword-ge)
+    " endif
 
   " }}}2    open-browser    {{{2
 
@@ -855,6 +990,9 @@ endif
 " }}}1    PLUGINS            =================================================
 
 " TabLine 設定             {{{1 ==============================================
+
+  " TODO movetab
+  " TODO mark tab
 
   function! SetTabLine()
     " NOTE: left/right padding of each tab was hard coded as 1 space.
@@ -1048,25 +1186,29 @@ endif
 
   "     變更編碼    {{{2
 
-    command! -nargs=0 Utf8 call ReloadWithEncoding("utf-8")
-    command! -nargs=0 Big5 call ReloadWithEncoding("big-5")
-    function! ReloadWithEncoding(encoding)
-      exec "e! ++enc=" . a:encoding
-    endf
+    " Ref: kana - https://github.com/kana/config
+    command! -bang -bar -complete=file -nargs=? Utf8
+          \ edit<bang> ++enc=utf-8 <args>
+    command! -bang -bar -complete=file -nargs=? Big5
+          \ edit<bang> ++enc=big5 <args>
 
   " }}}2   清除／復原 search pattern   {{{2
 
-    let g:lastSearchPattern = ''
-    function! ToggleSearchPattern()
-      if @/ != ''
-        let g:lastSearchPattern = @/
-        let @/ = ''
-      else
-        let @/ = g:lastSearchPattern
-      endif
-    endf
-    nmap <silent> <F3> :call ToggleSearchPattern()<CR>
-    imap <silent> <F3> <C-O>:call ToggleSearchPattern()<CR>
+    " 問題：let @/ = '' 後再按 n，不知為什麼又會改變 @/ 的值
+    " 替代作法為使用 :nohlsearch，但無法確認目前是否已有 highlight，
+    " 故用掉 <F3> <F4> 兩個鍵作 mapping。
+    "
+    " let g:lastSearchPattern = @/
+    " function! ToggleSearchPattern()
+    "   if @/ != ''
+    "     let g:lastSearchPattern = @/
+    "     let @/ = ''
+    "   else
+    "     let @/ = g:lastSearchPattern
+    "   endif
+    " endf
+    " nmap <silent> <F3> :call ToggleSearchPattern()<CR>
+    " imap <silent> <F3> <C-O>:call ToggleSearchPattern()<CR>
 
   " }}}2   暫存／復原 position    {{{2
 
@@ -1215,6 +1357,7 @@ endif
     function! BigFile(fname)
       if getfsize(a:fname) >= g:BigFile
         syn clear
+
         if ! exists('b:eikeep')
           let b:eikeep = &eventignore
           let b:ulkeep = &undolevels
@@ -1223,19 +1366,26 @@ endif
           let b:swfkeep= &swapfile
         endif
 
-        set eventignore=FileType
-        setlocal noswapfile bufhidden=unload fdm=manual undolevels=-1
+        set eventignore=FileType undolevels=-1
+        setlocal noswapfile bufhidden=unload fdm=manual
+        nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
 
         let fname=escape(substitute(a:fname,'\','/','g'),' ')
+
         exe "au BigFile BufEnter ".fname." set ul=-1"
         exe "au BigFile BufRead ".fname.' call FileTypeForBigFile(expand("<afile>"))'
-        exe "au BigFile BufLeave ".fname." let &ul=".b:ulkeep."|set ei=".b:eikeep
+        exe "au BigFile BufLeave ".fname." set ul=" . b:ulkeep . " ei=" . b:eikeep
         exe "au BigFile BufUnload ".fname." au! BigFile * ". fname
       endif
     endf
 
     command! BigFileUndo call BigFileUndo()
     function! BigFileUndo()
+      " if exists("b:eikeep") |let &ei  = b:eikeep |endif
+      " if exists("b:ulkeep") |let &ul  = b:ulkeep |endif
+      " if exists("b:bhkeep") |let &bh  = b:bhkeep |endif
+      " if exists("b:fdmkeep")|let &fdm = b:fdmkeep|endif
+      " if exists("b:swfkeep")|let &swf = b:swfkeep|endif
       set eventignore&
       set undolevels&
       set bufhidden&
@@ -1398,6 +1548,8 @@ endif
 
     function! LastTab(act)
 
+      " TODO emulate TabClose autocmd
+
       let lt = g:lasttab
       let tabClosed = tabpagenr('$') < lt.knownLength ? 1 : 0
 
@@ -1429,6 +1581,8 @@ endif
       let g:lasttab = {'leave':1, 'prevLeave':1, 'knownLength':1}
     endif
     au TabLeave * :call LastTab('TabLeave')
+    " au TabEnter,VimEnter * :call LastTab('TabEnter')
+    " au BufLeave * :call LastTab('TabEnter')
     au TabEnter * :call LastTab('TabEnter')
     nnoremap <silent> <LocalLeader>t :call LastTab('switch')<CR>
     inoremap <silent> <LocalLeader>t <C-\><C-N>:call LastTab('switch')<CR>
@@ -1464,23 +1618,6 @@ endif
         return [syn, synAttr . " - " . syn . " {fg: " . synIDattr(idTrans, 'fg') . ', bg: ' . synIDattr(idTrans, 'bg') . "}" ]
       endif
     endf
-    " function! SynInfoSimple()
-    "   let synAttr =  synIDattr(synID(line("."), col("."), 1), "name")
-    "   if synAttr == ''
-    "     echomsg 'No synID here.'
-    "   else
-    "     let synAttr .= " (" . synIDattr(synID(line("."), col("."), 0), "name") . ")"
-    "     let idTrans = synIDtrans(synID(line("."), col("."), 1))
-    "     let syn = synIDattr(idTrans, "name")
-    "     exec "echohl " . syn
-    "     let synAttr .= " - " . syn
-    "     let synAttr .= " {fg: " . synIDattr(idTrans, 'fg')
-    "     let synAttr .= ", bg: " . synIDattr(idTrans, 'bg')
-    "     let synAttr .= "}"
-    "     echo synAttr
-    "     echohl None
-    "   endif
-    " endf
 
   " }}}2   TabMessage   {{{2
 
@@ -1759,7 +1896,7 @@ endif
 
   " }}}2   :symbol / 'string' 轉換    {{{2
 
-      " TODO 未實作
+      " TODO 實作
       " fun! SymbolStringTransform()
       "     let w = expand("<cword>")
       "     let x = ''
@@ -1977,6 +2114,26 @@ endif
     endf
     nnoremap <silent> <LocalLeader>q :QFix<CR>
 
+  " }}}2   尋找選取的文字    {{{2
+
+    " Ref: kana - https://github.com/kana/config
+    vnoremap * :<C-U>set hlsearch<CR>:call <SID>search_selected_text_literaly('n')<CR>
+    vnoremap * :<C-U>set hlsearch<CR>:call <SID>search_selected_text_literaly('N')<CR>
+
+    function! s:search_selected_text_literaly(search_command)
+      let reg_0 = [@0, getregtype('0')]
+      let reg_u = [@", getregtype('"')]
+
+      normal! gvy
+      let @/ = @0
+      call histadd('/', '\V' . escape(@0, '\'))
+      execute 'normal!' a:search_command
+      let v:searchforward = a:search_command ==# 'n'
+
+      call setreg('0', reg_0[0], reg_0[1])
+      call setreg('"', reg_u[0], reg_u[1])
+    endfunction
+
   " }}}2   text-object for continuous comment    {{{2
 
     " NOTE: limitations
@@ -2030,7 +2187,8 @@ endif
 " }}}1    FUNCTIONS      =====================================================
 
 " Filetype 個別設定             {{{1 =========================================
-" iskeyword: ASCII 58 => :
+" TODO: manage b:undo_ftplugin option
+" TODO: refactor
 
   " }}}2   JavaScript   {{{2
 
@@ -2045,7 +2203,6 @@ endif
   " }}}2   CSS   {{{2
 
     fun! s:css_rc()
-      let g:surround_99 = "/* \r */"
       set fdm=marker
       setlocal isk-=58
     endf
@@ -2054,7 +2211,6 @@ endif
 
     fun! s:scss_rc()
       let b:tc_option = ''
-      let g:surround_99 = "/* \r */"
       setlocal fdm=marker
       setlocal formatoptions=l2
     endf
@@ -2141,6 +2297,18 @@ endif
       setlocal textwidth=72
     endf
 
+  " }}}2   nginx config   {{{2
+
+    fun! s:nginx_rc()
+      setlocal iskeyword-=.
+      setlocal iskeyword-=/
+    endf
+
+  " }}}2   logs   {{{2
+
+    fun! s:logs_rc()
+    endf
+
   " }}}2
 
 " }}}1    Filetype 個別設定      =============================================
@@ -2165,6 +2333,10 @@ endif
     au FileType vim :call s:vim_rc()
     au FileType zsh :call s:zsh_rc()
     au FileType gitcommit :call s:gitcommit_rc()
+    au FileType nginx :call s:nginx_rc()
+
+    " au FileType httplog :call s:logs_rc()
+    " au FileType railslog :call s:logs_rc()
 
     au FileType sh let g:is_bash=1
 
@@ -2177,7 +2349,10 @@ endif
     au BufNewFile *.css  :0r ~/.vim/templates/css.css
     au BufNewFile,BufRead /bootleq/notes/*.txt set modeline
 
+    " Firefox It's all text
     au BufRead www2.blogger.com*.txt setfiletype html
+    au BufRead redmine.*.com*/*.txt setfiletype textile
+
     au BufRead,BufNewFile /opt/nginx/conf/*.conf,/opt/nginx/conf/*.conf.default setfiletype nginx
     au BufRead /home/www/logs/*.log setfiletype httplog
 
@@ -2197,7 +2372,17 @@ endif
       au GUIEnter * winpos 0 0 | redraw!
     endif
 
-    " Ref from https://github.com/tyru/dotfiles
+    " Change default new file title
+    au BufEnter * call s:change_scratch_name(expand('<afile>'))
+    function! s:change_scratch_name(file)
+      if a:file == ""
+        let &titlestring = "[New]"
+      else
+        set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)
+      endif
+    endfunction
+
+    " Ref: tyru - https://github.com/tyru/dotfiles
     au BufWriteCmd *[,*],*'* call s:write_check_typo(expand('<afile>'))
     function! s:write_check_typo(file)
       let prompt = "possible typo: really want to write to '" . a:file . "'? (y/n):"
@@ -2214,6 +2399,11 @@ endif
       \ endif
     endif
 
+    " Modified from http://nanabit.net/blog/2007/11/03/vim-cursorline/
+    " Note: not recover when canceling FuzzyFinder.
+    " autocmd WinLeave * setlocal nocursorline
+    " autocmd WinEnter,BufRead * setlocal cursorline
+
   augroup END
 
   " http://vim.wikia.com/wiki/VimTip343?cb=4828
@@ -2227,4 +2417,11 @@ endif
 
 " }}}1    AUTOCMD             ================================================
 
+if ! exists('s:vimrc_loaded')
+  let s:vimrc_loaded = 1
+endif
+
 set secure
+
+" vim: expandtab softtabstop=2 shiftwidth=2
+" vim: foldmethod=marker

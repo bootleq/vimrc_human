@@ -6,7 +6,7 @@
 
 " Startup:                 {{{1 ==============================================
 
-if !exists('s:vimrc_loaded')
+if has('vim_starting')
   set all&
   set nocompatible
   mapclear
@@ -31,134 +31,170 @@ endfunction
 " }}}1   Startup                ==============================================
 
 
-" Vundle:                 {{{1 ===============================================
+" Plugin Bundles:                 {{{1 =======================================
 
 " Setup {{{2
 
-let s:rtp="~/.vim"
+if has('vim_starting')
+  if has("gui_win32")
+    let s:rtp = $OSTYPE == 'cygwin' ? 'c:\cygwin\home\admin\.vim' : 'd:\vim\.vim'
+  elseif expand("<sfile>") == '/etc/users/bootleq/.vimrc'
+        \  && substitute(system("whoami"), '\n$', '', '') != 'bootleq'
+        \  && !exists("g:did_bootleq_runtime")
+    let g:did_bootleq_runtime = 1
+    let s:rtp = "/etc/users/bootleq/.vim"
+  elseif expand("<sfile>") == '/tmp/vimrc_human/bootleq/.vimrc'
+        \  && !exists("g:did_vimrc_human_runtime")
+    let g:did_vimrc_human_runtime = 1
+    let s:rtp = "/tmp/vimrc_human/bootleq/.vim"
+  else
+    let s:rtp = "~/.vim"
+  endif
 
-if has("gui_win32") | let s:rtp='c:\cygwin\home\admin\.vim' | endif
+  if !isdirectory(fnamemodify(s:rtp, ':p'))
+    try
+      call mkdir(fnamemodify(s:rtp, ':p'), "p")
+    catch /^Vim\%((\a\+)\)\=:E739/
+      echo "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
+            \  "\nCan't make runtime directory. Skipped sourcing vimrc.\n"
+      finish
+    endtry
+  endif
 
-if expand("<sfile>") == '/etc/users/bootleq/.vimrc'
-      \  && substitute(system("whoami"), '\n$', '', '') != 'bootleq'
-      \  && !exists("g:did_bootleq_runtime")
-  let s:rtp="/etc/users/bootleq/.vim"
-  let g:did_bootleq_runtime = 1
-endif
-
-if expand("<sfile>") == '/tmp/vimrc_human/bootleq/.vimrc'
-      \  && !exists("g:did_vimrc_human_runtime")
-  let s:rtp="/tmp/vimrc_human/bootleq/.vim"
-  let g:did_vimrc_human_runtime = 1
-endif
-
-if !isdirectory(fnamemodify(s:rtp, ':p'))
+  execute "set runtimepath+=" . fnamemodify(s:rtp, ':p') . "bundle/neobundle.vim"
   try
-    call mkdir(fnamemodify(s:rtp, ':p'), "p")
-  catch /^Vim\%((\a\+)\)\=:E739/
+    call neobundle#rc(fnamemodify(s:rtp, ':p') . "bundle")
+  catch /^Vim\%((\a\+)\)\=:E117/
     echo "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
-          \  "\nCan't make vundle runtime directory. Skipped sourcing vimrc.\n"
+          \ "\n\nNo 'Bundle plugin' installed for this vimrc. Skipped sourcing plugins." .
+          \ "\n\nTo install one:\n  " .
+          \ "git clone http://github.com/Shougo/neobundle.vim.git " . fnamemodify(s:rtp, ":p") . "bundle/neobundle.vim\n"
     finish
   endtry
 endif
 
-execute "set runtimepath+=" . fnamemodify(s:rtp, ':p') . "bundle/vundle"
 filetype off
-
-try
-  call vundle#rc(fnamemodify(s:rtp, ':p') . "bundle")
-catch /^Vim\%((\a\+)\)\=:E117/
-  echo "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
-        \ "\n\nNo Vundle installed for this vimrc. Skipped sourcing.\n\nTo install Vundle:\n  " .
-        \ "git clone http://github.com/gmarik/vundle.git " . fnamemodify(s:rtp, ":p") . "bundle/vundle\n"
-  finish
-endtry
 
 set runtimepath-=~/.vim
 
 " }}}2    Bundles   {{{2
-
-Bundle 'gmarik/vundle'
-Bundle 'L9'
-
-Bundle 'FuzzyFinder'
-Bundle 'Indent-Guides'
-Bundle 'JSON.vim'
-Bundle 'JavaScript-syntax'
-Bundle 'Lokaltog/vim-easymotion'
-Bundle 'Raimondi/delimitMate'
-Bundle 'Shougo/neocomplcache'
-Bundle 'VisIncr'
-Bundle 'bootleq/ShowMarks'
-Bundle 'bootleq/camelcasemotion'
-Bundle 'bootleq/gsession.vim'
-Bundle 'bootleq/tcomment_vim'
-Bundle 'bootleq/vim-color-bootleg'
-Bundle 'bootleq/vim-cycle'
-Bundle 'bootleq/xml.vim'
-Bundle 'chrisbra/histwin.vim'
-Bundle 'depuracao/vim-rdoc'
-Bundle 'git://github.com/jiangmiao/simple-javascript-indenter.git'
-Bundle 'h1mesuke/vim-alignta'
-Bundle 'hail2u/vim-css3-syntax'
-Bundle 'httplog'
-Bundle 'kana/vim-surround'
-Bundle 'mrkn256.vim'
-Bundle 'netrw.vim'
-Bundle 'nginx.vim'
-Bundle 'othree/html5.vim'
-Bundle 'plasticboy/vim-markdown'
-Bundle 'taglist.vim'
-Bundle 'thinca/vim-prettyprint'
-Bundle 'thinca/vim-ref'
-Bundle 'timcharper/textile.vim'
-Bundle 'tpope/vim-fugitive'
-Bundle 'tpope/vim-haml'
-Bundle 'tpope/vim-rails'
-Bundle 'tpope/vim-repeat'
-Bundle 'tyru/open-browser.vim'
-Bundle 'vim-ruby/vim-ruby'
-Bundle 'wokmarks.vim'
-
-" Bundle 'thinca/vim-ambicmd'
-" Bundle 'kana/vim-altercmd'
-" Bundle 'kana/vim-fakeclip'
-" Bundle 'kana/vim-grex'
-" Bundle 'CountJump'
-" Bundle 'AndrewRadev/splitjoin.vim'
-" Bundle 'Shougo/vimshell'
-" Bundle 'kana/vim-ku'
-" Bundle 'kana/vim-smartword'
-" let &rtp='~/repository/vim-cycle,' . &rtp
-
-" text-obj-user {{{3
-
-Bundle 'bootleq/vim-textobj-rubysymbol'
-Bundle 'kana/vim-textobj-diff'
-Bundle 'kana/vim-textobj-fold'
-Bundle 'kana/vim-textobj-indent'
-Bundle 'kana/vim-textobj-user'
-Bundle 'nelstrom/vim-textobj-rubyblock'
-
+let s:bundles = [
+      \   ['Shougo/neobundle.vim'],
+      \   ['L9'],
+      \ ]
+let s:bundles += [
+      \   ['FuzzyFinder'],
+      \   ['kana/vim-smartinput'],
+      \   ['kana/vim-surround'],
+      \   ['kana/vim-repeat'],
+      \   ['h1mesuke/vim-alignta'],
+      \   ['Shougo/neocomplcache'],
+      \   ['Shougo/neocomplcache-snippets-complete', {":prefer_local": 1}],
+      \   ['Shougo/vimfiler'],
+      \   ['thinca/vim-prettyprint'],
+      \   ['mojako/ref-sources.vim'],
+      \   ['bootleq/vim-ref-bingzh', {":prefer_local": 1}],
+      \   ['tpope/vim-rails'],
+      \   ['tpope/vim-fugitive'],
+      \   ['mattn/webapi-vim'],
+      \   ['mattn/wwwrenderer-vim'],
+      \   ['thinca/vim-ref'],
+      \   ['tyru/open-browser.vim'],
+      \   ['wokmarks.vim'],
+      \   ['bootleq/ShowMarks'],
+      \   ['bootleq/camelcasemotion'],
+      \   ['bootleq/gsession.vim'],
+      \   ['bootleq/tcomment_vim'],
+      \   ['bootleq/vim-color-bootleg'],
+      \   ['bootleq/vim-cycle', {":prefer_local": 1}],
+      \   ['bootleq/vim-gitdiffall', {":prefer_local": 1}],
+      \   ['Indent-Guides'],
+      \   ['Lokaltog/vim-easymotion'],
+      \   ['netrw.vim'],
+      \   ['VisIncr'],
+      \   ['taglist.vim'],
+      \   ['majutsushi/tagbar'],
+      \ ]
+" filetype {{{3
+let s:bundles += [
+      \   ['bootleq/xml.vim'],
+      \   ['bootleq/JavaScript-syntax'],
+      \   ['JSON.vim'],
+      \   ['depuracao/vim-rdoc'],
+      \   ['git://github.com/jiangmiao/simple-javascript-indenter.git'],
+      \   ['hail2u/vim-css3-syntax'],
+      \   ['httplog'],
+      \   ['nginx.vim'],
+      \   ['othree/html5.vim'],
+      \   ['plasticboy/vim-markdown'],
+      \   ['timcharper/textile.vim'],
+      \   ['tpope/vim-haml'],
+      \   ['vim-ruby/vim-ruby'],
+      \ ]
+" }}}3 text-obj-user {{{3
+let s:bundles += [
+      \   ['kana/vim-textobj-user'],
+      \   ['kana/vim-textobj-diff'],
+      \   ['kana/vim-textobj-fold'],
+      \   ['kana/vim-textobj-indent'],
+      \   ['kana/vim-textobj-line'],
+      \   ['nelstrom/vim-textobj-rubyblock'],
+      \   ['bootleq/vim-textobj-rubysymbol'],
+      \ ]
 " }}}3 operator-user {{{3
-
-Bundle 'kana/vim-operator-user'
-Bundle 'kana/vim-operator-replace'
-Bundle 'tyru/operator-html-escape.vim'
-
+let s:bundles += [
+      \   ['kana/vim-operator-user'],
+      \   ['kana/vim-operator-replace'],
+      \   ['tyru/operator-html-escape.vim'],
+      \ ]
+" }}}3 gf-user {{{3
+let s:bundles += [
+      \   ['kana/vim-gf-user'],
+      \ ]
 " }}}3 unite {{{3
-
-Bundle 'Shougo/unite.vim'
-Bundle 'thinca/vim-unite-history'
-Bundle 'tsukkee/unite-help'
-
-" }}}3 SnipMate {{{3
-Bundle 'bootleq/snipmate.vim'
-" Bundle "MarcWeber/vim-addon-mw-utils"
-" Bundle "tomtom/tlib_vim"
-" Bundle "bootleq/snipmate-snippets"
-" Bundle "garbas/vim-snipmate"
+let s:bundles += [
+      \   ['Shougo/unite.vim'],
+      \   ['h1mesuke/unite-outline'],
+      \   ['tacroe/unite-mark'],
+      \   ['thinca/vim-poslist'],
+      \   ['thinca/vim-unite-history'],
+      \   ['tsukkee/unite-help'],
+      \   ['ujihisa/unite-gem'],
+      \ ]
+" }}}3 unused {{{3
+" let s:bundles += [
+"       \   ['gregsexton/gitv'],
+"       \   ['mrkn256.vim'],
+"       \   ['chrisbra/histwin.vim'],
+"       \   ['Raimondi/delimitMate'],
+"       \   ['tyru/restart.vim'],
+"       \   ['tpope/vim-speeddating'],
+"       \   ['sjl/threesome.vim'],
+"       \   ['thinca/vim-ambicmd'],
+"       \   ['kana/vim-altercmd'],
+"       \   ['kana/vim-fakeclip'],
+"       \   ['kana/vim-grex'],
+"       \   ['CountJump'],
+"       \   ['AndrewRadev/splitjoin.vim'],
+"       \   ['Shougo/vimshell'],
+"       \   ['kana/vim-smartword'],
+"       \ ]
 " }}}3
+
+for bundle in s:bundles
+  let s:tmp_options = get(bundle, 1, {})
+  if get(s:tmp_options, ":skip")
+    continue
+  elseif get(s:tmp_options, ":prefer_local")
+    if isdirectory(fnamemodify('~/repository/' . split(bundle[0], '/')[-1], ':p'))
+      let s:tmp_options = {"base": '~/repository', "type": "nosync"}
+    endif
+  endif
+
+  call filter(s:tmp_options, "v:key[0] != ':'")
+  execute "NeoBundle " . string(bundle[0]) . (empty(s:tmp_options) ? '' : ', ' . string(s:tmp_options))
+endfor
+unlet! s:bundles s:tmp_options
 
 " }}}2    Finish   {{{2
 
@@ -166,7 +202,7 @@ filetype plugin indent on
 
 " }}}2
 
-" }}}1   Vundle                ===============================================
+" }}}1   Plugin Bundles                =======================================
 
 
 " Basic Options:               {{{1 ==========================================
@@ -234,7 +270,7 @@ endif
 
 set expandtab tabstop=2 softtabstop=2 shiftwidth=2 autoindent smartindent smarttab
 set shiftround
-set cinkeys-=:      " TODO 經常亂縮
+set cinkeys-=:
 set cinoptions+=(0
 set textwidth=78
 setlocal formatoptions=roql2m
@@ -320,7 +356,7 @@ set complete+=U
 
 set wildmenu
 set wildmode=longest:full,full
-set wildignore+=*.o,*.a,*.so,*.obj,*.exe,*.lib,*.ncb,*.opt,*.plg,.svn,.git
+" set wildignore+=*.o,*.a,*.so,*.obj,*.exe,*.lib,*.ncb,*.opt,*.plg,.svn,.git
 
 " }}}2   多檔案編輯    {{{2
 
@@ -366,15 +402,20 @@ snoremap <LocalLeader>, <C-\><C-N>
 
 "   各種移動    {{{2
 
-noremap <expr> <Space>  repeat('<ScrollWheelDown>', 2)
-nnoremap <expr> <LocalLeader><Space> repeat('<ScrollWheelUp>', 2)
-noremap <expr> <C-Down> repeat('<ScrollWheelDown>', 3)
-noremap <expr> <C-Up>   repeat('<ScrollWheelUp>', 3)
+" noremap <expr> <Space>  repeat('<ScrollWheelDown>', 2)
+" nnoremap <expr> <LocalLeader><Space> repeat('<ScrollWheelUp>', 2)
+nnoremap <expr> <Space>  <SID>scroll_down()
+nnoremap <expr> <LocalLeader><Space> <SID>scroll_up()
+xnoremap <expr> <Space>  <SID>scroll_down('v')
+xnoremap <expr> <LocalLeader><Space> <SID>scroll_up('v')
 
-noremap j gj
-noremap k gk
-noremap gj j
-noremap gk k
+for map_mode in ['n', 'o', 'x']
+  execute map_mode . "noremap j gj"
+  execute map_mode . "noremap k gk"
+  execute map_mode . "noremap gj j"
+  execute map_mode . "noremap gk k"
+endfor
+
 inoremap <expr> <Down> pumvisible() ? "\<C-N>" : "\<C-O>gj"
 inoremap <expr> <Up> pumvisible() ? "\<C-P>" : "\<C-O>gk"
 
@@ -394,6 +435,7 @@ nnoremap ' `
 
 nmap <LocalLeader>w <C-W>
 nnoremap <C-W>gf :tab wincmd f<CR>
+nnoremap <C-W>V :wincmd K <Bar> wincmd =<CR>
 nnoremap <LocalLeader>gf :tab wincmd f<CR>
 nnoremap <expr> <CR> &modifiable ? "i<CR><C-\><C-N>" : "<C-]>"
 nnoremap <expr> <BS> &modifiable ? "i<C-W><C-\><C-N>" : "<C-O>"
@@ -401,6 +443,8 @@ nnoremap <expr> <BS> &modifiable ? "i<C-W><C-\><C-N>" : "<C-O>"
 nnoremap gr gT
 nnoremap <silent> gT :tablast<CR>
 nnoremap <silent> gR :tabfirst<CR>
+nnoremap <silent> <expr> <LocalLeader>gt printf(":tabmove %s<CR>", tabpagenr() == tabpagenr('$') ? 0 : tabpagenr())
+nnoremap <silent> <expr> <LocalLeader>gr printf(":tabmove %s<CR>", tabpagenr() == 1 ? '' : tabpagenr() - 2)
 nnoremap <silent> <LocalLeader>gT :tabmove<CR>
 nnoremap <silent> <LocalLeader>gR :tabmove 0<CR>
 
@@ -414,10 +458,6 @@ nnoremap <LocalLeader>gv V`]
 
 autocmd FileType qf nnoremap <buffer> <CR> <CR>
 
-noremap  <S-Tab> >>
-inoremap <S-Tab> <C-T>
-xnoremap <Tab>   >gv
-xnoremap <S-Tab> <gv
 nnoremap <LocalLeader>< i0<C-D><C-\><C-N>
 inoremap <LocalLeader>< 0<C-D>
 xnoremap <LocalLeader>< 99<
@@ -456,7 +496,7 @@ inoremap <silent> <F4> <C-O>:set hlsearch<CR>
 
 nnoremap <F5> :call SynStackInfo()<CR>
 nnoremap <Leader><F5> :tabdo e!<CR>
-nnoremap <F6> :GitDiffOff<CR>
+nnoremap <F6> :QuickOff<CR>
 
 nnoremap <silent><F8> :setlocal spell! spelllang=en_us spell?<CR>
 xnoremap <silent><F8> :<C-U>setlocal spell! spelllang=en_us spell?<CR>gv
@@ -531,6 +571,7 @@ autocmd! my_vimrc FileType ruby call s:textobj_rubyblock_settings()
 
 " }}}2   User operators    {{{2
 
+" TODO <LocalLeader>R 應取代到行尾
 nmap <LocalLeader>r <Plug>(operator-replace)
 xmap <LocalLeader>r <Plug>(operator-replace)
 nmap <LocalLeader>he <Plug>(operator-html-escape)
@@ -540,7 +581,7 @@ xmap <LocalLeader>hd <Plug>(operator-html-unescape)
 
 " }}}2   w!!    {{{2
 
-cnoremap <expr> w!! ((getcmdtype() == ':' && getcmdpos() <= 1) ? 'w !sudo tee % >/dev/null'  : 'w!!')
+cnoremap <expr> w!! ((getcmdtype() == ':' && getcmdpos() <= 1) ? 'call SudoWrite()'  : 'w!!')
 
 " }}}2   停用鍵、其他    {{{2
 
@@ -559,6 +600,7 @@ if executable('cat')
 endif
 
 command! Rnginx execute "!sudo\ service nginx restart"
+" command! Rtouch execute "!touch tmp/restart.txt"
 
 " Ref: tsukkee - https://github.com/tsukkee/config
 command! -nargs=1 -bang -complete=file Rename saveas<bang> <args> | call delete(expand('#'))
@@ -570,7 +612,6 @@ function! s:grep(command, args)
   execute a:command '/'.a:args[-1].'/' join(a:args[:-2])
 endfunction
 
-
 " call altercmd#load()
 " call altercmd#define('<buffer>', 'help?', 'HelpForWhat')
 " command! HelpForWhat echoerr "Sure.  Is this help you?"
@@ -578,14 +619,17 @@ endfunction
 " }}}1    Commands             ===============================================
 
 
-" Abbreviations:		             {{{1 ========================================
+" Abbreviations:                     {{{1 ========================================
 
-cnoreabbrev <expr> t ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'tabnew'  : 't')
-cnoreabbrev <expr> m ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'messages'  : 'm')
-cnoreabbrev <expr> u ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'Unite'  : 'm')
-cnoreabbrev <expr> tm ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'TabMessage'  : 'tm')
-cnoreabbrev <expr> tms ((getcmdtype() == ':' && getcmdpos() <= 4) ? 'TabMessage scriptnames'  : 'tms')
-cnoreabbrev <expr> '<,'>q ((getcmdtype() == ':' && getcmdpos() <= 7) ? 'q'  : "'<,'>q")
+cnoreabbrev <expr> t ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'tabnew' : 't')
+cnoreabbrev <expr> m ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'messages' : 'm')
+cnoreabbrev <expr> g ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'GitDiff' : 'g')
+cnoreabbrev <expr> u ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'Unite' : 'u')
+cnoreabbrev <expr> f ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'VimFilerSplit' : 'f')
+cnoreabbrev <expr> tm ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'TabMessage' : 'tm')
+cnoreabbrev <expr> tms ((getcmdtype() == ':' && getcmdpos() <= 4) ? 'TabMessage scriptnames' : 'tms')
+cnoreabbrev <expr> '<,'>q ((getcmdtype() == ':' && getcmdpos() <= 7) ? 'q' : "'<,'>q")
+" cnoreabbrev <expr> re ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'CleanMakeGSession<CR>:qa' : 're')
 cnoreabbrev ll <lt>LocalLeader>
 inoreabbrev ll <lt>LocalLeader>
 
@@ -633,11 +677,11 @@ let tlist_javascript_settings = 'javascript;f:Functions;c:Classes;o:Objects'
 let tlist_css_settings = 'css;c:Classes;o:Objects(ID);t:Tags(Elements)'
 
 set tags+=../tags,./*/tags
-if has("gui_running")
-  noremap <silent> <M-z> :TlistToggle<CR>
-else
-  noremap <silent> z :TlistToggle<CR>
-endif
+" if has("gui_running")
+"   noremap <silent> <M-z> :TlistToggle<CR>
+" else
+"   noremap <silent> z :TlistToggle<CR>
+" endif
 
 " }}}1    Ctags            ===================================================
 
@@ -661,9 +705,6 @@ let g:netrw_timefmt = '%Y-%m-%d %T'
 " if exists("g:qfix_win") && a:forced == 0
 nmap <leader>e :Vexplore<CR>
 
-" }}}2    L9    {{{2
-
-cnoreabbrev <expr> g ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'L9GrepBufferAll'  : 'g')
 
 " }}}2    FuzzyFinder    {{{2
 
@@ -698,7 +739,7 @@ let g:fuf_keyOpen='<LocalLeader><CR>'
 let g:fuf_keyOpenSplit=''
 let g:fuf_keyOpenVsplit=''
 let g:fuf_keyOpenTabpage='<CR>'
-let g:fuf_keyPreview='<Space>'
+" let g:fuf_keyPreview='<Space>'
 let g:fuf_buffer_keyDelete='<C-D>'
 let g:fuf_keyPrevPattern = '<C-PageUp>'
 let g:fuf_keyNextPattern = '<C-PageDown>'
@@ -732,6 +773,8 @@ augroup my_vimrc
   autocmd FileType fuf setlocal nowrap nolist
   autocmd FileType fuf inoremap <buffer> <Tab> <C-N>
   autocmd FileType fuf inoremap <buffer> <S-Tab> <C-P>
+  autocmd FileType fuf inoremap <buffer> <LocalLeader>. **/
+  autocmd FileType fuf inoremap <buffer> <Space> <C-W>
 augroup END
 
 " }}}3    FuzzyFinder find registers    {{{3
@@ -805,76 +848,135 @@ xnoremap [unite] <Nop>
 nmap <Leader>f [unite]
 xmap <Leader>f [unite]
 
-nnoremap [unite]s :<C-U>Unite source<CR>
+nnoremap [unite]S :<C-U>Unite source<CR>
 nnoremap <silent> [unite]f :<C-U>UniteWithBufferDir -buffer-name=files -start-insert file<CR>
 nnoremap <silent> [unite]r :<C-U>Unite -buffer-name=mru -start-insert file_mru<CR>
 nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search line<CR>
 
 nnoremap <silent> [unite]d :<C-U>Unite -buffer-name=mru_dir -start-insert directory_mru<CR>
-" nnoremap <silent> [unite]t :<C-U>Unite -buffer-name=tabs -start-insert tab:no-current<CR>
-nnoremap <silent> [unite]t :<C-U>Unite -buffer-name=tags -start-insert tag<CR>
+nnoremap <silent> [unite]t :<C-U>Unite -buffer-name=tabs -start-insert tab<CR>
 nnoremap <silent> [unite]p :<C-U>Unite -buffer-name=registers -start-insert register<CR>
 xnoremap <silent> [unite]p "_d:<C-U>Unite -buffer-name=register register<CR>
 nnoremap <silent> [unite]b :<C-U>Unite -buffer-name=bookmarks bookmark<CR>
-nnoremap <silent> [unite]b :<C-U>UniteWithBufferDir -buffer-name=files -prompt=%\  buffer file_mru bookmark file<CR>
+nnoremap <silent> [unite]m :<C-U>Unite mark<CR>
 nnoremap <silent> [unite]h :<C-U>Unite -buffer-name=helps help<CR>
-" nnoremap <silent> [unite]h  :<C-u>Unite history/command<CR>
 nnoremap <silent> [unite]o :<C-U>Unite outline<CR>
 nnoremap <silent> [unite]q :<C-u>Unite qflist -no-quit<CR>
-nnoremap <silent> [unite]g :<C-u>Unite grep -no-quit<CR>
-nnoremap <silent> [unite]j :<C-u>Unite poslist<CR>
-
-" call unite#custom_default_action('file', 'tabopen')
+nnoremap <silent> [unite]s :<C-u>Unite -start-insert session<CR>
+nnoremap <silent> [unite]g :<C-u>Unite tab<CR>
+" nnoremap <silent> [unite]G :<C-u>Unite grep -no-quit<CR>
+nnoremap <silent> [unite]j :<C-u>Unite jump<CR>
+nnoremap <silent> [unite]c :<C-u>Unite change<CR>
+nnoremap <silent> [unite]q :<C-u>Unite poslist<CR>
 
 let g:unite_update_time = 70
-" let g:unite_enable_start_insert = 1
 let g:unite_enable_split_vertically = 1
-" let g:unite_winwidth = 78
-let g:unite_source_file_mru_time_format = "(%F %T) "
+let g:unite_source_file_mru_limit = 200
+let g:unite_source_file_mru_time_format = "(%m/%d %T) "
+let g:unite_source_file_rec_max_depth = 5
 
 let g:unite_enable_ignore_case = 1
 let g:unite_enable_smart_case = 1
 
+let g:unite_source_session_path = expand('~/.vim/session/')
+
 function! s:unite_settings()
   nmap <buffer> <C-J> <Plug>(unite_loop_cursor_down)
   nmap <buffer> <C-K> <Plug>(unite_loop_cursor_up)
+  nmap <buffer> m <Plug>(unite_toggle_mark_current_candidate)
+  nmap <buffer> M <Plug>(unite_toggle_mark_all_candidate)
+  nmap <buffer> <LocalLeader><F5> <Plug>(unite_redraw)
+  nmap <buffer> <LocalLeader>q <Plug>(unite_exit)
+
+  vmap <buffer> m <Plug>(unite_toggle_mark_selected_candidates)
+
   imap <buffer> <C-J> <Plug>(unite_select_next_line)
   imap <buffer> <C-K> <Plug>(unite_select_previous_line)
+  imap <buffer> <LocalLeader><BS> <Plug>(unite_delete_backward_path)
+  imap <buffer> <LocalLeader>q <Plug>(unite_exit)
 endfunction
 autocmd! my_vimrc FileType unite call s:unite_settings()
+
+" actions
+" TODO secondary default action
+" TODO bookmark 'rename' action
+call unite#set_substitute_pattern('files', '^v/', unite#util#substitute_path_separator($HOME).'/.vim/', 1000)
+call unite#custom_default_action('file', 'tabopen')
+
+" This is for bookmark, however, define a custom action for jump_list would be better.
+call unite#custom_default_action('directory, jump_list', 'tabopen')
 
 " }}}2    neocomplcache    {{{2
 
 let g:neocomplcache_enable_at_startup = 1
+let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_enable_camel_case_completion = 1
 let g:neocomplcache_enable_underbar_completion = 1
-" let g:neocomplcache_min_syntax_length = 3
-" let g:neocomplcache_auto_completion_start_length = 2
-" let g:neocomplcache_manual_completion_start_length = 0
-" let g:neocomplcache_min_keyword_length = 3
 let g:neocomplcache_enable_auto_select = 1
 let g:neocomplcache_enable_auto_delimiter = 1
-"let g:neocomplcache_disable_auto_select_buffer_name_pattern = '^\[\d\+\]vimshell'
-"let g:neocomplcache_disable_auto_complete = 0
 let g:neocomplcache_max_list = 100
 
-let g:neocomplcache_snippets_dir = expand('~/.vim/snippets')
 let g:neocomplcache_lock_buffer_name_pattern = '\[fuf\]'
 let g:neocomplcache_temporary_dir = expand('~/.vim/.neocon')
-if !isdirectory(g:neocomplcache_temporary_dir)
-  call mkdir(g:neocomplcache_temporary_dir, "p")
-endif
 
 inoremap <LocalLeader>x <C-O>:NeoComplCacheToggle<CR>
-" inoremap <expr><C-L> neocomplcache#complete_common_string()
-" inoremap <expr><C-J> neocomplcache#manual_filename_complete()
-imap <C-l> <Plug>(neocomplcache_snippets_expand)
-smap <C-l> <Plug>(neocomplcache_snippets_expand)
+inoremap <expr><LocalLeader><C-H> neocomplcache#smart_close_popup()."\<BS>"
+inoremap <expr><LocalLeader><BS> neocomplcache#smart_close_popup()."\<BS>"
+inoremap <expr><C-Y> neocomplcache#close_popup()
+inoremap <expr><C-E> neocomplcache#cancel_popup()
 
 let g:neocomplcache_omni_functions = {
       \ 'python' : 'pythoncomplete#Complete',
       \ 'ruby' : 'rubycomplete#Complete',
       \ }
+
+" }}}2    neocomplcache-snippets    {{{2
+
+let g:neocomplcache_snippets_dir = expand('~/.vim/snippets')
+imap <expr><Tab> neocomplcache#sources#snippets_complete#expandable() ?
+      \ "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-N>" : "\<Tab>"
+" TODO jump back to previous placeholder
+imap <expr><S-Tab> neocomplcache#sources#snippets_complete#jumpable() ?
+      \ "\<Plug>(neocomplcache_snippets_jump)" : pumvisible() ? "\<C-P>" : "\<S-Tab>"
+smap <Tab> <Plug>(neocomplcache_snippets_expand)
+
+" TODO migrate all my snipMate settings
+" https://github.com/bootleq/snipmate.vim/tree/master/snippets
+" ~/repository/snipmate.vim
+command! -bang -bar -complete=filetype -nargs=? EditSnippets call s:edit_snippets(<bang>0, [<f-args>])
+function! s:edit_snippets(runtime_snippets, args) "{{{
+  let l:filetype = get(a:args, 0, &l:filetype)
+  if !empty(l:filetype)
+    tab split
+    if a:runtime_snippets
+      execute "NeoComplCacheEditRuntimeSnippets " . l:filetype
+    else
+      execute "NeoComplCacheEditSnippets " . l:filetype
+    endif
+  endif
+endfunction "}}}
+
+" }}}2    vimfiler    {{{2
+
+let g:vimfiler_as_default_explorer = 1
+let g:vimfiler_edit_action = 'tabopen'
+let g:vimfiler_enable_clipboard = 0
+let g:vimfiler_safe_mode_by_default = 0
+
+if $OSTYPE == 'cygwin' || has("gui_win32")
+  let g:unite_kind_file_use_trashbox = 1
+  let g:vimfiler_detect_drives = [
+        \ 'C:/', 'D:/', 'E:/', 'F:/', 'G:/', 'H:/', 'I:/',
+        \ 'J:/', 'K:/', 'L:/', 'M:/', 'N:/']
+elseif $OSTYPE == 'linux-gnu'
+  let g:vimfiler_detect_drives =
+        \ split(glob('/mnt/*'), '\n') + split(glob('/media/*'), '\n')
+endif
+
+autocmd my_vimrc FileType vimfiler call s:vimfiler_my_settings()
+function! s:vimfiler_my_settings()
+  nnoremap <silent><buffer> H <Nop>
+endfunction
 
 " }}}2   alignta    {{{2
 
@@ -912,6 +1014,19 @@ let Tlist_WinWidth = 40
 let Tlist_Enable_Fold_Column = 0
 "let Tlist_Show_Menu = 1
 
+" }}}2   TagBar   {{{2
+
+if !executable('ctags')
+  let g:loaded_tagbar = 1
+endif
+let g:tagbar_autofocus = 1
+
+if has("gui_running")
+  noremap <silent> <M-z> :TagbarToggle<CR>
+else
+  noremap <silent> z :TagbarToggle<CR>
+endif
+
 " }}}2   GSession   {{{2
 
 let g:autoload_session = 1
@@ -922,20 +1037,22 @@ nnoremap <silent> <leader>ss    :call MakeSessionWithSafety()<CR>
 nnoremap <silent> <leader>se    :GSessionEliminateCurrent<CR>
 nnoremap <silent> <leader>sn    :NamedSessionMake<CR>
 nnoremap <silent> <leader>sl    :NamedSessionLoad<CR>
-" nnoremap <leader>sm    :NamedSessionMenu<CR>
 
 " 特定情形下，不直接存 sessoin
 function! MakeSessionWithSafety()
   let prompt = 0
   if exists('b:eikeep') || &undolevels < 0
-    let prompt = '[BigFile] make session anyway? (y/n) '
+    let prompt = '[BigFile] make session anyway? (y/N) '
   else
     for tab in range(tabpagenr('$'))
       if gettabwinvar(tab + 1, 1, '&diff')
-        let prompt = '[Diff mode] make session anyway? (y/n) '
+        let prompt = '[Diff mode] make session anyway? (y/N) '
         break
       elseif bufname(tabpagebuflist(tab + 1)[0]) == '.git/COMMIT_EDITMSG'
-        let prompt = '[Git commit] make session anyway? (y/n)'
+        let prompt = '[Git commit] make session anyway? (y/N)'
+        break
+      elseif tabpagenr() == tabpagenr('$') && tabpagenr() == 1
+        let prompt = '[One tab only] make session anyway? (y/N)'
         break
       endif
     endfor
@@ -962,11 +1079,10 @@ if !isdirectory(g:session_back_dir)
   call mkdir(g:session_back_dir, "p")
 endif
 
-command! -nargs=0 StashSessionBackup call StashSessionBackup()
-command! -nargs=0 StashSessionBackupPop call StashSessionBackup(1)
-function! StashSessionBackup(...)
-  let l:stash = a:0 > 0 ? a:1 : 0
-  if l:stash
+command! -nargs=0 SessionBackupSave call StashSessionBackup(1)
+command! -nargs=0 SessionBackupRestore call StashSessionBackup(0)
+function! StashSessionBackup(save)
+  if a:save
     if filereadable(v:this_session)
       call system("cp ". v:this_session . "\ " . g:session_back_dir)
     endif
@@ -981,8 +1097,8 @@ function! StashSessionBackup(...)
 endfunction
 
 " FIXME 再讀取 session 時 filetype 也忘光了
-command! -nargs=0 CleanMakeGSession call CleanMakeGSession()
-function! CleanMakeGSession()
+command! -bang CleanMakeGSession call CleanMakeGSession(<bang>0)
+function! CleanMakeGSession(no_quit)
   let save_ssop = &sessionoptions
   set sessionoptions-=globals
   set sessionoptions-=localoptions
@@ -992,7 +1108,11 @@ function! CleanMakeGSession()
   mapclear!
   GSessionMake
   execute "set sessionoptions=" . save_ssop
-  echomsg 'For clearer saving, quit and re-enter Vim now.'
+  if !a:no_quit
+    execute 'quitall'
+  else
+    echomsg 'For clearer saving, quit and re-enter Vim now.'
+  endif
 endfunction
 
 " }}}2   ShowMarks   {{{2
@@ -1019,6 +1139,7 @@ endif
 " Overwrite default mapping ys, because y is for yank.
 nmap s  <plug>Ysurround
 nmap ss <plug>Yssurround
+nmap sss <Nop>
 
 " }}}2   wokmarks   {{{2
 
@@ -1031,6 +1152,9 @@ autocmd User WokmarksChange :ShowMarksOn
 
 " }}}2    tComment    {{{2
 
+" TODO b:tc_option is ugly, send some pull request OR try caw plugin
+let g:tcommentMapLeader1 = ''
+let g:tcommentMapLeader2 = ''
 let g:tcommentMapLeaderOp1 = ''
 let g:tcommentMapLeaderOp2 = ''
 let g:tc_option = ' col=1'
@@ -1048,12 +1172,9 @@ let g:camelcasemotion_leader = 'g'
 
 " }}}2    EasyMotion    {{{2
 
-" let g:EasyMotion_do_mapping = 0
 noremap [emotion] <Nop>
 map 0 [emotion]
 let g:EasyMotion_leader_key = '[emotion]'
-" hi EasyMotionTarget ctermbg=none ctermfg=green
-" hi EasyMotionShade  ctermbg=none ctermfg=blue
 
 " }}}2    histwin    {{{2
 
@@ -1068,8 +1189,10 @@ let g:cycle_no_mappings = 1
 let g:cycle_max_conflict = 7
 " let g:cycle_max_conflict = 1
 let g:cycle_phased_search = 1
-silent! nmap <silent> <LocalLeader>a <Plug>CycleNext
-silent! vmap <silent> <LocalLeader>a <Plug>CycleNext
+nmap <silent> <LocalLeader>a <Plug>CycleNext
+vmap <silent> <LocalLeader>a <Plug>CycleNext
+nmap <silent> <Leader>a <Plug>CyclePrev
+vmap <silent> <Leader>a <Plug>CyclePrev
 
 let g:cycle_default_groups = [
       \   [['true', 'false']],
@@ -1080,20 +1203,31 @@ let g:cycle_default_groups = [
       \   [['"', "'"]],
       \   [['==', '!=']],
       \   [['0', '1']],
-      \   [['是', '否']],
       \   [['and', 'or']],
       \   [['in', 'out']],
+      \   [['up', 'down']],
       \   [['min', 'max']],
       \   [['get', 'set']],
       \   [['add', 'remove']],
       \   [['to', 'from']],
       \   [['read', 'write']],
-      \   [['next', 'prev', 'previous']],
+      \   [['save', 'load', 'restore']],
+      \   [['next', 'previous', 'prev']],
       \   [['only', 'except']],
       \   [['without', 'with']],
       \   [['exclude', 'include']],
       \   [['width', 'height']],
       \   [['asc', 'desc']],
+      \   [['start', 'end']],
+      \   [['是', '否']],
+      \   [['上', '下']],
+      \   [['左', '右']],
+      \   [['前', '後']],
+      \   [['男', '女']],
+      \   [['east', 'west']],
+      \   [['south', 'north']],
+      \   [['prefix', 'suffix']],
+      \   [['decode', 'encode']],
       \   [['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
       \     'Friday', 'Saturday'], ['hard_case', {'name': 'Days'}]],
       \   [['{:}', '[:]', '(:)'], 'sub_pairs'],
@@ -1117,13 +1251,25 @@ let g:cycle_default_groups += [
       \   [["margin", "padding"]],
       \   [["before", "after"]],
       \   [["absolute", "relative"]],
+      \   [["horizontal", "vertical"]],
       \   [["first", "last"]],
       \ ]
 " HTML               }}}3 {{{3
 let g:cycle_default_groups += [
       \   [['h1', 'h2', 'h3'], 'sub_tag'],
       \   [['ul', 'ol'], 'sub_tag'],
+      \   [['header', 'footer']],
       \   [['em', 'strong', 'small'], 'sub_tag'],
+      \ ]
+
+" JS               }}}3 {{{3
+let g:cycle_default_groups += [
+      \   [['focus', 'blur']],
+      \ ]
+" 少用項目               }}}3 {{{3
+" TODO %w(foo bar) style
+let g:cycle_default_groups += [
+      \   [['日', '一', '二', '三', '四', '五', '六']],
       \ ]
 
 " }}}3
@@ -1138,8 +1284,6 @@ let g:cycle_default_groups_for_ruby = [
 
 " cnoremap <expr> <Space> ambicmd#expand("\<Space>")
 " cnoremap <expr> <CR> ambicmd#expand("\<CR>")
-
-" }}}2    SnipMate    {{{2
 
 " }}}2    delimitMate    {{{2
 
@@ -1163,6 +1307,45 @@ let delimitMate_balance_matchpairs = 1
 " }}}2    fakeclip    {{{2
 
 " let g:fakeclip_no_default_key_mappings = 1
+
+" }}}2    PrettyPrint    {{{2
+
+" let g:prettyprint_show_expression = 1
+let g:prettyprint_strin = ['split']
+
+" }}}2    Ref    {{{2
+
+let g:ref_cache_dir = expand('~/.vim/ref-cache')
+
+autocmd FileType ref-bingzh call s:initialize_ref_viewer_bingzh()
+function! s:initialize_ref_viewer_bingzh()
+  setlocal number nowrap
+  setlocal noreadonly
+  setlocal modifiable
+  setlocal foldmethod=expr foldlevel=1 foldexpr=RefBingZhFold(v:lnum)
+endfunction
+
+nnoremap <silent> K :call ref#jump('normal', 'bingzh')<CR>
+xnoremap <silent> K :call ref#jump('visual', 'bingzh')<CR>
+cnoreabbrev <expr> k ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'Ref bingzh' : 'k')
+
+nnoremap <silent> <LocalLeader>K :normal! K<CR>
+xnoremap <silent> <LocalLeader>K :normal! K<CR>
+
+function! RefBingZhFold(line)
+  return <SID>ref_bingzh_fold(a:line)
+endfunction
+
+function! s:ref_bingzh_fold(line)
+  let splitter = '\v ##$'
+  if getline(a:line) =~ splitter
+    return '>1'
+  elseif getline(a:line+1) =~ splitter
+    return '<1'
+  else
+    return '='
+  endif
+endfunction
 
 " }}}2    open-browser    {{{2
 
@@ -1397,6 +1580,16 @@ command! -bang -bar -complete=file -nargs=? Utf8
 command! -bang -bar -complete=file -nargs=? Big5
       \ edit<bang> ++enc=big5 <args>
 
+"     sudo write    {{{2
+
+function! SudoWrite()
+  " TODO 'autoread', prevent prompt for reload
+  let modified = &l:modified
+  setlocal nomodified
+  silent! execute 'write !sudo tee % >/dev/null'
+  let &l:modified = v:shell_error ? modified : 0
+endfunction
+
 " }}}2   清除／復原 search pattern   {{{2
 
 " 問題：let @/ = '' 後再按 n，不知為什麼又會改變 @/ 的值
@@ -1493,62 +1686,14 @@ function! StrCrop(str, len, ...)
   endif
 endfunction
 
-" }}}2    git difftool     {{{2
-
-" Most adopted from Bob Hiestand's vsccommand plugin
-" http://www.vim.org/scripts/script.php?script_id=90
-command! -nargs=? GitDiff call GitDiff(<f-args>)
-function! GitDiff(...)
-  let rev = "HEAD~" . (a:0 > 0 ? a:1 : 0)
-  let oldDir = getcwd()
-  let newDir = fnameescape(expand('%:p:h'))
-  let filetype = &filetype
-  let cdCommand = haslocaldir() ? 'lcd' : 'cd'
-
-  execute cdCommand . " " . newDir
-  let prefix = substitute(system("git rev-parse --show-prefix"), '\n$', '', '')
-  let subject = system("git log -1 --format=format:%s " . rev)
-  let info = system("git log -1 --format=format:%s\\ %n%h' -- '%an' -- '%ai\\ '('%ar')' " . rev)
-  let result = system("git show " . rev . ":" . shellescape(prefix . expand('%:.')))
-  execute cdCommand . " " . oldDir
-
-  redraw!
-  if v:shell_error
-    echohl ErrorMsg | echomsg "GitDiff ERROR: " . substitute(result, '[\n]', ' ', 'g') | echohl None
-  else
-    let b:stashFoldMethod=&foldmethod
-    execute 'vertical new'
-    silent put=result | 0delete _
-    execute 'set filetype=' . filetype
-    let t:git_diff_info = info
-    set buftype=nofile
-    diffthis | wincmd p | diffthis
-  endif
-endfunction
-
-command! GitDiffOff call GitDiffOff()
-function! GitDiffOff()
-  if &diff
-    if bufname("%") =~ '^\[git '
-      wincmd q
-    endif
-    only | call MyDiffOff()
-  endif
-endfunction
-
 " }}}2   Custom diffoff     {{{2
 
 command! MyDiffOff call MyDiffOff()
 function! MyDiffOff()
   if &diff
-    setlocal diff&
-    setlocal scrollbind&
-    setlocal cursorbind&
+    setlocal diff& scrollbind& cursorbind& wrap& foldcolumn&
     set scrollopt=ver,hor,jump
-    setlocal wrap&
-    let foldmethod = exists('b:stashFoldMethod') ? b:stashFoldMethod : 'marker'
-    execute "setlocal foldmethod=" . foldmethod
-    setlocal foldcolumn&
+    let &l:foldmethod = exists('b:save_foldmethod') ? b:save_foldmethod : 'marker'
   else
     echomsg 'Not in diff mode.'
   endif
@@ -1556,6 +1701,7 @@ endfunction
 
 " }}}2   Big File     {{{2
 
+" TODO this is not stable!
 " ref LargeFile http://www.vim.org/scripts/script.php?script_id=1506
 function! BigFile(fname)
   if getfsize(a:fname) >= g:BigFile
@@ -1569,15 +1715,20 @@ function! BigFile(fname)
       let b:swfkeep= &swapfile
     endif
 
+    " PP! 'WTF BigFile ' . strftime('%T')
     set eventignore=FileType undolevels=-1
     setlocal noswapfile bufhidden=unload foldmethod=manual
     nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
 
     let fname=escape(substitute(a:fname,'\','/','g'),' ')
 
+    " fg 回來後，有時會發動 BufEnter？
+    execute "autocmd BigFile BufEnter ".fname." PP! 'WTF BufEnter ' . strftime('%T')"
+    execute "autocmd BigFile BufLeave ".fname." PP! 'WTF BufLeave ' . strftime('%T')"
+
     execute "autocmd BigFile BufEnter ".fname." set undolevels=-1"
     execute "autocmd BigFile BufRead ".fname.' call FileTypeForBigFile(expand("<afile>"))'
-    execute "autocmd BigFile BufLeave ".fname." set undodir=" . b:ulkeep . " eventignore=" . b:eikeep
+    execute "autocmd BigFile BufLeave ".fname." set undolevels=" . b:ulkeep . " eventignore=" . b:eikeep
     execute "autocmd BigFile BufUnload ".fname." autocmd! BigFile * ". fname
   endif
 endfunction
@@ -1605,15 +1756,17 @@ endfunction
 " }}}2   Context sensitive H,L.     {{{2
 
 " Ref: tyru - https://github.com/tyru/dotfiles
+" TODO 內部也統一使用 s:scroll_up / down
 nnoremap <silent> H :<C-u>call HContext()<CR>
 nnoremap <silent> L :<C-u>call LContext()<CR>
-" xnoremap <silent> H <ESC>:<C-u>call HContext()<CR>mzgv`z
-" xnoremap <silent> L <ESC>:<C-u>call LContext()<CR>mzgv`z
+xnoremap <silent> H <ESC>:<C-u>call HContext()<CR>mzgv`z
+xnoremap <silent> L <ESC>:<C-u>call LContext()<CR>mzgv`z
 
 function! HContext()
   let l:moved = MoveCursor("H")
   if !l:moved && line('.') != 1
-    execute "normal! " . "\<ScrollWheelUp>H"
+    " execute "normal! " . "\<ScrollWheelUp>H"
+    execute "normal! " . "5kH"
   endif
 endfunction
 
@@ -1621,7 +1774,8 @@ function! LContext()
   let l:moved = MoveCursor("L")
 
   if !l:moved && line('.') != line('$')
-    execute "normal! " . "\<ScrollWheelDown>L"
+    " execute "normal! " . "\<ScrollWheelDown>L"
+    execute "normal! " . "5jL"
   endif
 endfunction
 
@@ -1636,7 +1790,30 @@ function! MoveCursor(key)
   return l:moved
 endfunction
 
-"}}}
+" }}}2   Scroll     {{{2
+
+function! s:scroll_down(...)
+  let mode = a:0 ? a:1 : 'n'
+  let l:count = a:0 > 1 ? a:2 : 2
+
+  if has("gui_running")
+    return '5j'
+  else
+    return repeat("\<ScrollWheelDown>", l:count)
+  endif
+endfunction
+
+
+function! s:scroll_up(...)
+  let mode = a:0 ? a:1 : 'n'
+  let l:count = a:0 > 1 ? a:2 : 2
+
+  if has("gui_running")
+    return '5k'
+  else
+    return repeat("\<ScrollWheelUp>", l:count)
+  endif
+endfunction
 
 " }}}2   Smart Home/End     {{{2
 
@@ -1706,10 +1883,13 @@ function! SmartEnd(mode)
   return ""
 endfunction
 
+"}}}
+
 " }}}2   clipboard 存取    {{{2
 
 " http://vim.wikia.com/wiki/Using_the_Windows_clipboard_in_Cygwin_Vim
 " TODO 正確處理字元編碼
+" TODO gVim <S-Insert>
 function! Putclip(type, ...) range
   let save_sel = &selection
   let &selection = "inclusive"
@@ -1761,22 +1941,6 @@ else
   nnoremap <silent> <LocalLeader>p :call Getclip()<CR>
   inoremap <silent> <LocalLeader>p <C-O>:call Getclip()<CR>
 endif
-
-" }}}2   Firefox reload    {{{2
-
-" http://vim.wikia.com/wiki/Refresh_Firefox_%28preserving_scroll%29_on_Vim_save,_using_MozRepl
-command! FirefoxReload silent call FirefoxReload()
-function! FirefoxReload()
-  update
-  silent !echo  'vimYo = content.window.pageYOffset;
-        \ vimXo = content.window.pageXOffset;
-        \ BrowserReload();
-        \ content.window.scrollTo(vimXo,vimYo);
-        \ repl.quit();'  |
-        \ rlwrap nc localhost 4242 2>&1 > /dev/null
-  redraw!
-endfunction
-cnoreabbrev <expr> ww ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'FirefoxReload<CR>'  : 'ww')
 
 " }}}2   LastTab    {{{2
 
@@ -1935,8 +2099,8 @@ function! EvalVimScriptRegion(s, e)
     redraw
     silent file "EvalResult"
     setlocal noswapfile buftype=nofile bufhidden=wipe
-    setlocal nobuflisted nowrap cursorline nonumber fdc=0
-    set filetype="eval"
+    setlocal nobuflisted nowrap cursorline nonumber foldcolumn=0
+    set filetype=eval
     syntax match ErrorLine +^E\d\+:.*$+
     highlight link ErrorLine Error
     silent $put =@e
@@ -2009,7 +2173,7 @@ nnoremap <LocalLeader>x :call WordTransform()<CR>
 
 " }}}2   :symbol / 'string' 轉換    {{{2
 
-  " TODO 實作
+  " TODO 根本沒實作
   " function! SymbolStringTransform()
   "     let w = expand("<cword>")
   "     let x = ''
@@ -2230,21 +2394,50 @@ nnoremap <silent> <LocalLeader>q :QFix<CR>
 
 " Ref: kana - https://github.com/kana/config
 vnoremap * :<C-U>set hlsearch<CR>:call <SID>search_selected_text_literaly('n')<CR>
-vnoremap * :<C-U>set hlsearch<CR>:call <SID>search_selected_text_literaly('N')<CR>
+vnoremap # :<C-U>set hlsearch<CR>:call <SID>search_selected_text_literaly('N')<CR>
 
 function! s:search_selected_text_literaly(search_command)
-  let reg_0 = [@0, getregtype('0')]
-  let reg_u = [@", getregtype('"')]
+  call SaveReg('0')
+  call SaveReg('"')
 
   normal! gvy
-  let @/ = @0
-  call histadd('/', '\V' . escape(@0, '\'))
+  let pattern = escape(@0, '\')
+  let pattern = substitute(pattern, '\V\n', '\\n', 'g')
+  let @/ = pattern
+  call histadd('/', '\V' . pattern)
   execute 'normal!' a:search_command
   let v:searchforward = a:search_command ==# 'n'
 
-  call setreg('0', reg_0[0], reg_0[1])
-  call setreg('"', reg_u[0], reg_u[1])
+  call RestoreReg('0')
+  call RestoreReg('"')
 endfunction
+
+" }}}2   關閉各種 layout 模式    {{{2
+
+command! -nargs=0 QuickOff call <SID>quick_off()
+function! s:quick_off()
+  if winnr('$') > 1
+    if <SID>ref_window_off()
+      return
+    elseif exists('t:gitdiffall_info')
+      execute 'GitDiffOff'
+    endif
+  endif
+endfunction
+
+function! s:ref_quit()
+  if &filetype =~ 'ref-\w'
+    execute "quit"
+  endif
+endfunction
+
+function! s:ref_window_off()
+  let win_count = winnr('$')
+  silent windo call <SID>ref_quit()
+  execute 'wincmd t'
+  return win_count > winnr('$')
+endfunction
+
 
 " }}}2   text-object for continuous comment    {{{2
 
@@ -2421,11 +2614,24 @@ function! s:gitcommit_rc()
   setlocal textwidth=72
 endfunction
 
+" }}}2   git config   {{{2
+
+function! s:gitconfig_rc()
+  let b:tc_option = ''
+endfunction
+
 " }}}2   nginx config   {{{2
 
 function! s:nginx_rc()
+  let b:tc_option = ''
   setlocal iskeyword-=.
   setlocal iskeyword-=/
+endfunction
+
+" }}}2   yaml config   {{{2
+
+function! s:yaml_rc()
+  let b:tc_option = ''
 endfunction
 
 " }}}2   logs   {{{2
@@ -2457,7 +2663,9 @@ augroup my_vimrc
   autocmd FileType vim call s:vim_rc()
   autocmd FileType zsh call s:zsh_rc()
   autocmd FileType gitcommit call s:gitcommit_rc()
+  autocmd FileType gitconfig call s:gitconfig_rc()
   autocmd FileType nginx call s:nginx_rc()
+  autocmd FileType yaml call s:yaml_rc()
 
   " autocmd FileType httplog :call s:logs_rc()
   " autocmd FileType railslog :call s:logs_rc()
@@ -2544,10 +2752,6 @@ endif
 
 
 " Finish:                  {{{1 ==============================================
-
-if !exists('s:vimrc_loaded')
-  let s:vimrc_loaded = 1
-endif
 
 set secure
 

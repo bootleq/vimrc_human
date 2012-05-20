@@ -3,8 +3,8 @@ vimrc_human
 
 My edited _.vimrc_ for sharing with human.
 
-- Use comments, make it easy to understand. (not implemented yet)
-- Use [Vundle](https://github.com/gmarik/vundle) to manage plugins, for quick and clean trying out.
+- Use comments, make it easy to understand. (not implemented yet...)
+- Use [NeoBundle](https://github.com/Shougo/neobundle.vim) to manage plugins, for quick and clean trying out.
 - May not update frequently, since it's not necessary my in-use config.
 
 Notes
@@ -20,7 +20,7 @@ Usage
 
     `git clone git://github.com/bootleq/vimrc_human.git /tmp/vimrc_human/bootleq`
 
-2. Update submodule (will install Vundle):
+2. Update submodule (will install NeoBundle):
 
     ```
     cd /tmp/vimrc_human/bootleq
@@ -33,7 +33,7 @@ Usage
     `vim -u /tmp/vimrc_human/bootleq/.vimrc`
 
 4. There would be errors during first run. Install plugins can fix them:  
-   Launch `vim` and run `:BundleInstall`
+   Launch `vim` and run `:NeoBundleInstall`
 
 Blog post
 --

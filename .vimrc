@@ -37,7 +37,17 @@ endfunction
 
 if has('vim_starting')
   if has("gui_win32")
-    let s:rtp = $OSTYPE == 'cygwin' ? 'c:\cygwin\home\admin\.vim' : 'd:\vim\.vim'
+    if isdirectory(fnamemodify('c:\cygwin\home\admin\.vim', ':p'))
+      let s:rtp = 'c:\cygwin\home\admin\.vim'
+    else
+      " g:win32_gvim_rtp should be set by gvimrc
+      if exists('g:win32_gvim_rtp') && isdirectory(fnamemodify(g:win32_gvim_rtp, ':p'))
+        let s:rtp = g:win32_gvim_rtp
+      else
+        echoerr "You must set runtimepath (for plugin bundling) manually."
+        finish
+      endif
+    endif
   elseif expand("<sfile>") == '/etc/users/bootleq/.vimrc'
         \  && substitute(system("whoami"), '\n$', '', '') != 'bootleq'
         \  && !exists("g:did_bootleq_runtime")
@@ -55,7 +65,7 @@ if has('vim_starting')
     try
       call mkdir(fnamemodify(s:rtp, ':p'), "p")
     catch /^Vim\%((\a\+)\)\=:E739/
-      echo "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
+      echoerr "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
             \  "\nCan't make runtime directory. Skipped sourcing vimrc.\n"
       finish
     endtry
@@ -65,7 +75,7 @@ if has('vim_starting')
   try
     call neobundle#rc(fnamemodify(s:rtp, ':p') . "bundle")
   catch /^Vim\%((\a\+)\)\=:E117/
-    echo "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
+    echoerr "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
           \ "\n\nNo 'Bundle plugin' installed for this vimrc. Skipped sourcing plugins." .
           \ "\n\nTo install one:\n  " .
           \ "git clone http://github.com/Shougo/neobundle.vim.git " . fnamemodify(s:rtp, ":p") . "bundle/neobundle.vim\n"
@@ -90,7 +100,7 @@ let s:bundles += [
       \   ['h1mesuke/vim-alignta'],
       \   ['Shougo/neocomplcache'],
       \   ['Shougo/neocomplcache-snippets-complete', {":prefer_local": 1}],
-      \   ['Shougo/vimfiler'],
+      \   ['Shougo/vimfiler', {":skip": 1}],
       \   ['thinca/vim-prettyprint'],
       \   ['mojako/ref-sources.vim'],
       \   ['bootleq/vim-ref-bingzh', {":prefer_local": 1}],
@@ -101,7 +111,7 @@ let s:bundles += [
       \   ['thinca/vim-ref'],
       \   ['tyru/open-browser.vim'],
       \   ['wokmarks.vim'],
-      \   ['bootleq/ShowMarks'],
+      \   ['bootleq/ShowMarks', {":prefer_local": 1}],
       \   ['bootleq/camelcasemotion'],
       \   ['bootleq/gsession.vim'],
       \   ['bootleq/tcomment_vim'],
@@ -111,13 +121,13 @@ let s:bundles += [
       \   ['Indent-Guides'],
       \   ['Lokaltog/vim-easymotion'],
       \   ['netrw.vim'],
+      \   ['bootleq/LargeFile', {":prefer_local": 1}],
       \   ['VisIncr'],
       \   ['taglist.vim'],
       \   ['majutsushi/tagbar'],
       \ ]
 " filetype {{{3
 let s:bundles += [
-      \   ['bootleq/xml.vim'],
       \   ['bootleq/JavaScript-syntax'],
       \   ['JSON.vim'],
       \   ['depuracao/vim-rdoc'],
@@ -149,7 +159,7 @@ let s:bundles += [
       \ ]
 " }}}3 gf-user {{{3
 let s:bundles += [
-      \   ['kana/vim-gf-user'],
+      \   ['kana/vim-gf-user', {":skip": 0}],
       \ ]
 " }}}3 unite {{{3
 let s:bundles += [
@@ -571,9 +581,10 @@ autocmd! my_vimrc FileType ruby call s:textobj_rubyblock_settings()
 
 " }}}2   User operators    {{{2
 
-" TODO <LocalLeader>R 應取代到行尾
 nmap <LocalLeader>r <Plug>(operator-replace)
 xmap <LocalLeader>r <Plug>(operator-replace)
+nmap <LocalLeader>R <Plug>(operator-replace)$
+xmap <LocalLeader>R <Plug>(operator-replace)$
 nmap <LocalLeader>he <Plug>(operator-html-escape)
 xmap <LocalLeader>he <Plug>(operator-html-escape)
 nmap <LocalLeader>hd <Plug>(operator-html-unescape)
@@ -625,7 +636,7 @@ cnoreabbrev <expr> t ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'tabnew' : 't'
 cnoreabbrev <expr> m ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'messages' : 'm')
 cnoreabbrev <expr> g ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'GitDiff' : 'g')
 cnoreabbrev <expr> u ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'Unite' : 'u')
-cnoreabbrev <expr> f ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'VimFilerSplit' : 'f')
+cnoreabbrev <expr> f ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'VimFilerSplit -buffer-name=' : 'f')
 cnoreabbrev <expr> tm ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'TabMessage' : 'tm')
 cnoreabbrev <expr> tms ((getcmdtype() == ':' && getcmdpos() <= 4) ? 'TabMessage scriptnames' : 'tms')
 cnoreabbrev <expr> '<,'>q ((getcmdtype() == ':' && getcmdpos() <= 7) ? 'q' : "'<,'>q")
@@ -900,6 +911,7 @@ autocmd! my_vimrc FileType unite call s:unite_settings()
 " actions
 " TODO secondary default action
 " TODO bookmark 'rename' action
+" TODO bookmark should convert slashes for different OS
 call unite#set_substitute_pattern('files', '^v/', unite#util#substitute_path_separator($HOME).'/.vim/', 1000)
 call unite#custom_default_action('file', 'tabopen')
 
@@ -962,6 +974,7 @@ let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_edit_action = 'tabopen'
 let g:vimfiler_enable_clipboard = 0
 let g:vimfiler_safe_mode_by_default = 0
+let g:vimfiler_time_format = '%y-%m-%d %H:%M'
 
 if $OSTYPE == 'cygwin' || has("gui_win32")
   let g:unite_kind_file_use_trashbox = 1
@@ -1041,8 +1054,8 @@ nnoremap <silent> <leader>sl    :NamedSessionLoad<CR>
 " 特定情形下，不直接存 sessoin
 function! MakeSessionWithSafety()
   let prompt = 0
-  if exists('b:eikeep') || &undolevels < 0
-    let prompt = '[BigFile] make session anyway? (y/N) '
+  if exists('b:LargeFile_store') || &undolevels < 0
+    let prompt = '[LargeFile] make session anyway? (y/N) '
   else
     for tab in range(tabpagenr('$'))
       if gettabwinvar(tab + 1, 1, '&diff')
@@ -1241,6 +1254,7 @@ let g:cycle_default_groups += [
       \   [["begin", "end"]],
       \   [["foreign_key", "primary_key"]],
       \   [["inspect", "to_yaml"]],
+      \   [["do:end", "{:}"], 'sub_pairs'],
       \ ]
 " CSS               }}}3 {{{3
 let g:cycle_default_groups += [
@@ -1367,6 +1381,38 @@ let g:openbrowser_iskeyword = join(
       \   + range(char2nr('0'), char2nr('9'))
       \   + ['_', ':', '/', '.', '-', '+', '%', '#', '?', '&', '=', ';', '@', '$', ',', '[', ']', '!', "(", ")", "*", "~", ],
       \ ',')
+
+" }}}2    LargeFile    {{{2
+
+" TODO delcommand Large
+let g:LargeFile           = 40
+" let g:LargeFile           = 0.40
+let g:LargeFile_size_unit = 1024    " KB
+let g:LargeFile_patterns  = '*.log,*.log.1,*.sql'
+let g:LargeFile_verbose   = 0
+autocmd User LargeFileRead call s:large_file_read()
+autocmd User LargeFile call s:large_file_detected()
+
+function! s:large_file_detected()
+  let ext_name = expand('%:e')
+  if ext_name == 'log'
+    " nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
+  elseif ext_name == 'sql'
+    " set syntax=sql
+  endif
+endfunction
+
+function! s:large_file_read()
+  let dir_name = expand('%:p:h')
+  if dir_name =~ '/home/www/fc/\(\w\+/\)\?log'
+    if &fileencoding != 'utf-8'
+      edit! ++enc=utf-8
+    endif
+    syntax match railslogEscape '\e\[[0-9;]*m' conceal
+  elseif dir_name == '/home/www/logs'
+    set syntax=httplog
+  endif
+endfunction
 
 " }}}2
 
@@ -1699,60 +1745,6 @@ function! MyDiffOff()
   endif
 endfunction
 
-" }}}2   Big File     {{{2
-
-" TODO this is not stable!
-" ref LargeFile http://www.vim.org/scripts/script.php?script_id=1506
-function! BigFile(fname)
-  if getfsize(a:fname) >= g:BigFile
-    syntax clear
-
-    if !exists('b:eikeep')
-      let b:eikeep = &eventignore
-      let b:ulkeep = &undolevels
-      let b:bhkeep = &bufhidden
-      let b:foldmethodkeep= &foldmethod
-      let b:swfkeep= &swapfile
-    endif
-
-    " PP! 'WTF BigFile ' . strftime('%T')
-    set eventignore=FileType undolevels=-1
-    setlocal noswapfile bufhidden=unload foldmethod=manual
-    nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
-
-    let fname=escape(substitute(a:fname,'\','/','g'),' ')
-
-    " fg 回來後，有時會發動 BufEnter？
-    execute "autocmd BigFile BufEnter ".fname." PP! 'WTF BufEnter ' . strftime('%T')"
-    execute "autocmd BigFile BufLeave ".fname." PP! 'WTF BufLeave ' . strftime('%T')"
-
-    execute "autocmd BigFile BufEnter ".fname." set undolevels=-1"
-    execute "autocmd BigFile BufRead ".fname.' call FileTypeForBigFile(expand("<afile>"))'
-    execute "autocmd BigFile BufLeave ".fname." set undolevels=" . b:ulkeep . " eventignore=" . b:eikeep
-    execute "autocmd BigFile BufUnload ".fname." autocmd! BigFile * ". fname
-  endif
-endfunction
-
-command! BigFileUndo call BigFileUndo()
-function! BigFileUndo()
-  set eventignore&
-  set undolevels&
-  set bufhidden&
-  setlocal foldmethod=marker
-  set noswapfile
-endfunction
-
-function! FileTypeForBigFile(fname)
-  if fnamemodify(a:fname, ":p:h") =~ '/home/www/fc/\(\w\+/\)\?log'
-    if &fileencoding != 'utf-8'
-      edit! ++enc=utf-8
-    endif
-    syntax match railslogEscape '\e\[[0-9;]*m' conceal
-  elseif fnamemodify(a:fname, ":p:h") == '/home/www/logs'
-    set syntax=httplog
-  endif
-endfunction
-
 " }}}2   Context sensitive H,L.     {{{2
 
 " Ref: tyru - https://github.com/tyru/dotfiles
@@ -1889,7 +1881,6 @@ endfunction
 
 " http://vim.wikia.com/wiki/Using_the_Windows_clipboard_in_Cygwin_Vim
 " TODO 正確處理字元編碼
-" TODO gVim <S-Insert>
 function! Putclip(type, ...) range
   let save_sel = &selection
   let &selection = "inclusive"
@@ -1910,6 +1901,9 @@ if has('clipboard')
   if $OSTYPE == 'cygwin' || has("gui_win32")
     noremap <silent> <LocalLeader>y "*y
     inoremap <silent> <LocalLeader>y <C-O>"*y
+    if has("gui_win32")
+      noremap! <S-Insert> <C-R>*
+    endif
   elseif $OSTYPE == 'linux-gnu'
     noremap <silent> <LocalLeader>y "+y
     inoremap <silent> <LocalLeader>y <C-O>"+y
@@ -2501,8 +2495,15 @@ endfunction
 
 " }}}2   :TOhtml    {{{2
 
+let g:html_no_progress = 0
+let g:html_number_lines = 0
 let g:html_use_css = 1
-let use_xhtml = 1
+let g:html_ignore_conceal = 0
+let g:html_pre_wrap = 0
+let g:html_use_xhtml = 0
+" TODO quick TOHtml
+function! s:to_html()
+endfunction
 
 " }}}2   JavaScript   {{{2
 
@@ -2541,6 +2542,8 @@ endfunction
 
 function! s:html_rc()
   inoremap <LocalLeader>br <br><CR>
+  inoremap <buffer> ;; <C-\><C-N>:call <SID>html_make_tag()<CR>
+  inoremap <buffer> >> <C-\><C-N>:call <SID>html_close_tag()<CR>
   let html_no_rendering = 1
   let g:html_indent_inctags = "html,body,head,tbody"
   let g:event_handler_attributes_complete = 0
@@ -2550,6 +2553,60 @@ function! s:html_rc()
   if exists('g:xmldata_html5')
     let b:html_omni_flavor = 'html5'
   end
+endfunction
+
+function! s:html_make_tag()
+  let save_reg = [getreg(), getregtype()]
+  execute "normal! a \<C-\>\<C-N>db"
+  let tag_name = @"
+  call setreg(v:register, save_reg[0], save_reg[1])
+
+  " Skip invalid tag_name (non-words)
+  if tag_name =~ '\W'
+    " Special case to break single-line tag into multiline form. (that is, 'make' an existed tag)
+    " e.g.: when input ;; between <div></div>
+    if tag_name == '>' && search('\%#\s*<', 'cnW', line('.'))
+      execute "normal! cl" . tag_name . "\<C-\>\<C-N>a\<CR>"
+      call feedkeys('O', 'n')
+    else
+      execute "normal! cl" . tag_name
+      call feedkeys('a;;', 'n')
+    endif
+    return
+  endif
+
+  let unaryTagsStack = get(b:, 'unaryTagsStack', "area base br col command embed hr img input keygen link meta param source track wbr")
+  if index(split(unaryTagsStack, '\s'), tag_name, 'ic') >= 0
+    execute "normal! a<" . tag_name . ">"
+    call feedkeys('a', 'n')
+  else
+    " Don't break tag into multi lines if current line is not empty.
+    if getline('.') =~ '\S'
+      execute "normal! cl<" . tag_name . "></" . tag_name . ">\<C-\>\<C-N>F>"
+      call feedkeys('a', 'n')
+    else
+      execute "normal! cl<" . tag_name . ">\<CR></" . tag_name . ">\<C-\>\<C-N>O"
+      call feedkeys('"_cc', 'n')
+    endif
+  endif
+endfunction
+
+function! s:html_close_tag()
+  " Find < or >, should take action only when < appear first.
+  if search('\v(\<)|(\>)', 'bnpW') == 2
+    let missing_gt = getline('.')[col('.')-1] == '>' ? '' : '>'
+    execute "normal! a" . missing_gt . "</" . "\<C-X>\<C-O>" . "\<C-\>\<C-N>F<"
+    call feedkeys('i', 'n')
+  else
+    call feedkeys('a>>', 'n')
+  endif
+endfunction
+
+" }}}2   XML   {{{2
+
+function! s:xml_rc()
+  inoremap <buffer> ;; <C-\><C-N>:call <SID>html_make_tag()<CR>
+  inoremap <buffer> >> <C-\><C-N>:call <SID>html_close_tag()<CR>
 endfunction
 
 " }}}2   Ruby   {{{2
@@ -2653,7 +2710,8 @@ augroup my_vimrc
   autocmd FileType php,xml,html inoremap <buffer> <LocalLeader>/ </<C-X><C-O>
 
   autocmd FileType ruby call s:ruby_rc()
-  autocmd FileType html call s:html_rc()
+  autocmd FileType xml call s:xml_rc()
+  autocmd FileType html,xhtml,haml,eruby,phtml call s:html_rc()
   autocmd FileType haml call s:haml_rc()
   autocmd FileType php call s:php_rc()
   autocmd FileType javascript call s:js_rc()
@@ -2686,8 +2744,9 @@ augroup my_vimrc
   autocmd BufRead redmine.*.com*.txt setfiletype textile
   autocmd BufRead pma.*com.*.txt setfiletype sql
 
-  autocmd BufRead,BufNewFile /opt/nginx/conf/*.conf,/opt/nginx/conf/*.conf.default setfiletype nginx
+  autocmd BufRead,BufNewFile /opt/nginx*/conf/*.conf,/opt/nginx*/conf/*.default setfiletype nginx
   autocmd BufRead /home/www/logs/*.log setfiletype httplog
+  autocmd BufRead /home/www/fc/log/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
 
   " let apache_version = "2.0"
   " let dosbatch_cmdextversion = 2
@@ -2738,15 +2797,6 @@ augroup my_vimrc
   " autocmd WinEnter,BufRead * setlocal cursorline
 
 augroup END
-
-" http://vim.wikia.com/wiki/VimTip343?cb=4828
-let g:BigFile = 28*1024
-if !exists("big_file_autocmd_loaded")
-  let big_file_autocmd_loaded = 1
-  augroup BigFile
-    autocmd BufReadPre *.log call BigFile(expand("<afile>"))
-  augroup END
-endif
 
 " }}}1    Autocommands             ===========================================
 

@@ -28,6 +28,8 @@ function! s:SID_PREFIX()
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
 
+let s:i = {}
+
 " }}}1   Startup                ==============================================
 
 
@@ -90,7 +92,7 @@ set runtimepath-=~/.vim
 " }}}2    Bundles   {{{2
 let s:bundles = [
       \   ['Shougo/neobundle.vim'],
-      \   ['L9'],
+      \   ['L9', {"stay_same": 1}],
       \ ]
 let s:bundles += [
       \   ['FuzzyFinder'],
@@ -99,7 +101,7 @@ let s:bundles += [
       \   ['kana/vim-repeat'],
       \   ['h1mesuke/vim-alignta'],
       \   ['Shougo/neocomplcache'],
-      \   ['Shougo/neocomplcache-snippets-complete', {":prefer_local": 1}],
+      \   ['Shougo/neosnippet'],
       \   ['Shougo/vimfiler', {":skip": 1}],
       \   ['thinca/vim-prettyprint'],
       \   ['mojako/ref-sources.vim'],
@@ -114,10 +116,13 @@ let s:bundles += [
       \   ['bootleq/ShowMarks', {":prefer_local": 1}],
       \   ['bootleq/camelcasemotion'],
       \   ['bootleq/gsession.vim'],
-      \   ['bootleq/tcomment_vim'],
+      \   ['tomtom/tcomment_vim'],
       \   ['bootleq/vim-color-bootleg'],
       \   ['bootleq/vim-cycle', {":prefer_local": 1}],
+      \   ['bootleq/vim-tabline', {":prefer_local": 1}],
       \   ['bootleq/vim-gitdiffall', {":prefer_local": 1}],
+      \   ['bootleq/vim-hardmotion', {":prefer_local": 1}],
+      \   ['mileszs/ack.vim'],
       \   ['Indent-Guides'],
       \   ['Lokaltog/vim-easymotion'],
       \   ['netrw.vim'],
@@ -141,7 +146,7 @@ let s:bundles += [
       \   ['tpope/vim-haml'],
       \   ['vim-ruby/vim-ruby'],
       \ ]
-" }}}3 text-obj-user {{{3
+" }}}3 text-objs {{{3
 let s:bundles += [
       \   ['kana/vim-textobj-user'],
       \   ['kana/vim-textobj-diff'],
@@ -150,6 +155,7 @@ let s:bundles += [
       \   ['kana/vim-textobj-line'],
       \   ['nelstrom/vim-textobj-rubyblock'],
       \   ['bootleq/vim-textobj-rubysymbol'],
+      \   ['coderifous/textobj-word-column.vim', {':skip': 1}],
       \ ]
 " }}}3 operator-user {{{3
 let s:bundles += [
@@ -164,6 +170,7 @@ let s:bundles += [
 " }}}3 unite {{{3
 let s:bundles += [
       \   ['Shougo/unite.vim'],
+      \   ['Shougo/unite-session'],
       \   ['h1mesuke/unite-outline'],
       \   ['tacroe/unite-mark'],
       \   ['thinca/vim-poslist'],
@@ -188,21 +195,33 @@ let s:bundles += [
 "       \   ['AndrewRadev/splitjoin.vim'],
 "       \   ['Shougo/vimshell'],
 "       \   ['kana/vim-smartword'],
+"       \   ['PAntoine/vimgitlog'],
 "       \ ]
 " }}}3
 
-for bundle in s:bundles
-  let s:tmp_options = get(bundle, 1, {})
+for s:i.dir in ['~/repository/', 'D:/repository/']
+  if isdirectory(fnamemodify(s:i.dir, ':p'))
+    let s:bundle_local_repo_dir = s:i.dir
+  endif
+endfor
+let s:bundle_local_repo_dir = expand(get(s:, 'bundle_local_repo_dir', ''))
+
+for s:i.bundle in s:bundles
+  let s:tmp_options = get(s:i.bundle, 1, {})
   if get(s:tmp_options, ":skip")
     continue
   elseif get(s:tmp_options, ":prefer_local")
-    if isdirectory(fnamemodify('~/repository/' . split(bundle[0], '/')[-1], ':p'))
-      let s:tmp_options = {"base": '~/repository', "type": "nosync"}
+    if isdirectory(fnamemodify(s:bundle_local_repo_dir . split(s:i.bundle[0], '/')[-1], ':p'))
+      call extend(s:tmp_options, {
+            \ "base": s:bundle_local_repo_dir,
+            \ "type": "nosync",
+            \ "stay_same": 1}
+            \ )
     endif
   endif
 
   call filter(s:tmp_options, "v:key[0] != ':'")
-  execute "NeoBundle " . string(bundle[0]) . (empty(s:tmp_options) ? '' : ', ' . string(s:tmp_options))
+  execute "NeoBundle " . string(s:i.bundle[0]) . (empty(s:tmp_options) ? '' : ', ' . string(s:tmp_options))
 endfor
 unlet! s:bundles s:tmp_options
 
@@ -336,7 +355,6 @@ set title titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)
 set statusline=%<%f\ %h%m%r%w%=%-14.(%l,%c%V%)\ %P
 " set statusline=%<%f\ %h%m%r%w%=[%{&undolevels}]\ %-14.(%l,%c%V%)\ %P
 " set laststatus=2
-set tabline=%!SetTabLine()
 set showtabline=2
 
 " }}}2    尋找、搜尋    {{{2
@@ -419,11 +437,11 @@ nnoremap <expr> <LocalLeader><Space> <SID>scroll_up()
 xnoremap <expr> <Space>  <SID>scroll_down('v')
 xnoremap <expr> <LocalLeader><Space> <SID>scroll_up('v')
 
-for map_mode in ['n', 'o', 'x']
-  execute map_mode . "noremap j gj"
-  execute map_mode . "noremap k gk"
-  execute map_mode . "noremap gj j"
-  execute map_mode . "noremap gk k"
+for s:i.map_mode in ['n', 'o', 'x']
+  execute s:i.map_mode . "noremap j gj"
+  execute s:i.map_mode . "noremap k gk"
+  execute s:i.map_mode . "noremap gj j"
+  execute s:i.map_mode . "noremap gk k"
 endfor
 
 inoremap <expr> <Down> pumvisible() ? "\<C-N>" : "\<C-O>gj"
@@ -485,6 +503,9 @@ xnoremap <silent> <C-S> <C-\><C-N>:update<CR>
 noremap <C-Del> :quit<CR>
 noremap <C-kDel> :quit<CR>
 map <kDel> <Del>
+
+" TODO command mode text-object delete
+" noremap! <LocalLeader>w 
 
 " Ref: tyru - https://github.com/tyru/dotfiles
 cnoremap <LocalLeader>d <C-\>e getcmdpos() == 1 ? '' : getcmdline()[:getcmdpos()-2]<CR>
@@ -581,14 +602,13 @@ autocmd! my_vimrc FileType ruby call s:textobj_rubyblock_settings()
 
 " }}}2   User operators    {{{2
 
-nmap <LocalLeader>r <Plug>(operator-replace)
-xmap <LocalLeader>r <Plug>(operator-replace)
-nmap <LocalLeader>R <Plug>(operator-replace)$
-xmap <LocalLeader>R <Plug>(operator-replace)$
-nmap <LocalLeader>he <Plug>(operator-html-escape)
-xmap <LocalLeader>he <Plug>(operator-html-escape)
-nmap <LocalLeader>hd <Plug>(operator-html-unescape)
-xmap <LocalLeader>hd <Plug>(operator-html-unescape)
+for s:i.map_mode in ['n', 'x']
+  execute s:i.map_mode . "map <LocalLeader>r               <Plug>(operator-replace)"
+  execute s:i.map_mode . "map <LocalLeader>r<LocalLeader>r <Plug>(operator-replace)Vl"
+  execute s:i.map_mode . "map <LocalLeader>R               <Plug>(operator-replace)$"
+  execute s:i.map_mode . "map <LocalLeader>he              <Plug>(operator-html-escape)"
+  execute s:i.map_mode . "map <LocalLeader>hd              <Plug>(operator-html-unescape)"
+endfor
 
 " }}}2   w!!    {{{2
 
@@ -598,6 +618,8 @@ cnoremap <expr> w!! ((getcmdtype() == ':' && getcmdpos() <= 1) ? 'call SudoWrite
 
 nmap ZZ <Nop>
 nmap ZQ <Nop>
+nnoremap <LocalLeader>md :<C-U>delmarks!<CR>
+nnoremap m<LocalLeader>d :<C-U>delmarks!<CR>
 
 " }}}2
 
@@ -664,10 +686,10 @@ if has("cscope") && filereadable("/usr/bin/cscope")
       \   '/home/www/cscope.out',
       \   '/home/www/include/cscope.out',
       \ ]
-  for outFile in s:outFiles
-    if filereadable(outFile)
+  for s:i.outFile in s:outFiles
+    if filereadable(s:i.outFile)
       try
-        silent execute 'cscope add ' . expand(outFile)
+        silent execute 'cscope add ' . expand(s:i.outFile)
       catch /^Vim(cscope):E568:/
       endtry
     endif
@@ -701,6 +723,8 @@ set tags+=../tags,./*/tags
 
 runtime! ftplugin/man.vim    " 啟用 |:Man| 指令
 runtime! macros/matchit.vim
+
+let g:loaded_getscriptPlugin = 1
 
 " Netrw    {{{2
 
@@ -778,15 +802,19 @@ let g:fuf_enumeratingLimit = 50
 " After VimEnter, set bookmark-dir with command 'FufBookmarkDirAdd'.
 " Also use 'FufEditDataFile'.
 
-augroup my_vimrc
-  autocmd BufEnter \[fuf\] set pumheight=0
-  autocmd BufLeave \[fuf\] set pumheight=25
-  autocmd FileType fuf setlocal nowrap nolist
-  autocmd FileType fuf inoremap <buffer> <Tab> <C-N>
-  autocmd FileType fuf inoremap <buffer> <S-Tab> <C-P>
-  autocmd FileType fuf inoremap <buffer> <LocalLeader>. **/
-  autocmd FileType fuf inoremap <buffer> <Space> <C-W>
-augroup END
+function! s:fuf_settings()
+  if exists(':NeoComplCacheLock')
+    :NeoComplCacheLock
+  endif
+  set pumheight=0
+  set pumheight=25
+  setlocal nowrap nolist
+  inoremap <buffer> <Tab> <C-N>
+  inoremap <buffer> <S-Tab> <C-P>
+  inoremap <buffer> <LocalLeader>. **/
+  inoremap <buffer> <Space> <C-W>
+endfunction
+autocmd! my_vimrc FileType fuf call s:fuf_settings()
 
 " }}}3    FuzzyFinder find registers    {{{3
 
@@ -837,9 +865,9 @@ function! g:fuf_tabListener.onAbort()
 endfunction
 
 function! g:fuf_tabFinder()
-  if exists("s:tabLineTabs")
+  if exists("*tabline#tabs")
     let l:tabList = []
-    for tab in s:tabLineTabs
+    for tab in tabline#tabs()
       let label = tab.n . '. ' . (strlen(tab.split) > 0 ? ('(' . tab.split . ')') : '') . tab.flag . tab.filename
       if tab.n == tabpagenr()
         let label = '*' . label
@@ -862,7 +890,7 @@ xmap <Leader>f [unite]
 nnoremap [unite]S :<C-U>Unite source<CR>
 nnoremap <silent> [unite]f :<C-U>UniteWithBufferDir -buffer-name=files -start-insert file<CR>
 nnoremap <silent> [unite]r :<C-U>Unite -buffer-name=mru -start-insert file_mru<CR>
-nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search line<CR>
+nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search -start-insert line<CR>
 
 nnoremap <silent> [unite]d :<C-U>Unite -buffer-name=mru_dir -start-insert directory_mru<CR>
 nnoremap <silent> [unite]t :<C-U>Unite -buffer-name=tabs -start-insert tab<CR>
@@ -879,16 +907,20 @@ nnoremap <silent> [unite]g :<C-u>Unite tab<CR>
 nnoremap <silent> [unite]j :<C-u>Unite jump<CR>
 nnoremap <silent> [unite]c :<C-u>Unite change<CR>
 nnoremap <silent> [unite]q :<C-u>Unite poslist<CR>
+nnoremap <silent> [unite]y :<C-u>Unite history/yank<CR>
 
 let g:unite_update_time = 70
 let g:unite_enable_split_vertically = 1
-let g:unite_source_file_mru_limit = 200
+let g:unite_source_file_mru_limit = 140
 let g:unite_source_file_mru_time_format = "(%m/%d %T) "
 let g:unite_source_file_rec_max_depth = 5
 
 let g:unite_enable_ignore_case = 1
 let g:unite_enable_smart_case = 1
+let g:unite_source_history_yank_enable = 1
+let g:unite_source_history_yank_limit	= 40
 
+let g:unite_data_directory = expand(s:rtp . '/.unite/')
 let g:unite_source_session_path = expand('~/.vim/session/')
 
 function! s:unite_settings()
@@ -904,7 +936,15 @@ function! s:unite_settings()
   imap <buffer> <C-J> <Plug>(unite_select_next_line)
   imap <buffer> <C-K> <Plug>(unite_select_previous_line)
   imap <buffer> <LocalLeader><BS> <Plug>(unite_delete_backward_path)
+  " imap <buffer> <Space> <Plug>(unite_delete_backward_path)
+  imap <buffer> <LocalLeader>w <Plug>(unite_delete_backward_path)
   imap <buffer> <LocalLeader>q <Plug>(unite_exit)
+
+  let unite = unite#get_current_unite()
+  if unite.buffer_name =~# '^(search)'
+    nnoremap <silent><buffer><expr> <CR> unite#do_action('open')
+    inoremap <silent><buffer><expr> <CR> unite#do_action('open')
+  endif
 endfunction
 autocmd! my_vimrc FileType unite call s:unite_settings()
 
@@ -922,11 +962,13 @@ call unite#custom_default_action('directory, jump_list', 'tabopen')
 
 let g:neocomplcache_enable_at_startup = 1
 let g:neocomplcache_enable_smart_case = 1
-let g:neocomplcache_enable_camel_case_completion = 1
-let g:neocomplcache_enable_underbar_completion = 1
+let g:neocomplcache_enable_camel_case_completion = 0
+let g:neocomplcache_enable_underbar_completion = 0
 let g:neocomplcache_enable_auto_select = 1
 let g:neocomplcache_enable_auto_delimiter = 1
+" let g:neocomplcache_enable_insert_char_pre = 1
 let g:neocomplcache_max_list = 100
+let g:neocomplcache_force_overwrite_completefunc = 1
 
 let g:neocomplcache_lock_buffer_name_pattern = '\[fuf\]'
 let g:neocomplcache_temporary_dir = expand('~/.vim/.neocon')
@@ -934,23 +976,30 @@ let g:neocomplcache_temporary_dir = expand('~/.vim/.neocon')
 inoremap <LocalLeader>x <C-O>:NeoComplCacheToggle<CR>
 inoremap <expr><LocalLeader><C-H> neocomplcache#smart_close_popup()."\<BS>"
 inoremap <expr><LocalLeader><BS> neocomplcache#smart_close_popup()."\<BS>"
-inoremap <expr><C-Y> neocomplcache#close_popup()
-inoremap <expr><C-E> neocomplcache#cancel_popup()
+inoremap <expr> <C-Y> pumvisible() ? neocomplcache#close_popup() : '<C-Y>'
+inoremap <expr> <C-E> pumvisible() ? neocomplcache#cancel_popup() : '<C-E>'
+
+imap <expr> <LocalLeader>- pumvisible() ?
+      \ "\<Plug>(neocomplcache_start_unite_quick_match)" : '-'
 
 let g:neocomplcache_omni_functions = {
       \ 'python' : 'pythoncomplete#Complete',
       \ 'ruby' : 'rubycomplete#Complete',
       \ }
 
-" }}}2    neocomplcache-snippets    {{{2
+" }}}2    neosnippet    {{{2
 
-let g:neocomplcache_snippets_dir = expand('~/.vim/snippets')
-imap <expr><Tab> neocomplcache#sources#snippets_complete#expandable() ?
-      \ "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-N>" : "\<Tab>"
+let g:neosnippet#snippets_directory = expand('~/.vim/snippets')
+imap <expr><Tab> neosnippet#expandable_or_jumpable() ?
+      \ "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-N>" : "\<Tab>"
 " TODO jump back to previous placeholder
-imap <expr><S-Tab> neocomplcache#sources#snippets_complete#jumpable() ?
-      \ "\<Plug>(neocomplcache_snippets_jump)" : pumvisible() ? "\<C-P>" : "\<S-Tab>"
-smap <Tab> <Plug>(neocomplcache_snippets_expand)
+imap <expr><S-Tab> neosnippet#jumpable() ?
+      \ "\<Plug>(neosnippet_jump_or_expand)" : pumvisible() ? "\<C-P>" : "\<S-Tab>"
+smap <Tab> <Plug>(neosnippet_expand_or_jump)
+
+let g:neosnippet#disable_runtime_snippets = {
+      \ 'css': 1
+      \ }
 
 " TODO migrate all my snipMate settings
 " https://github.com/bootleq/snipmate.vim/tree/master/snippets
@@ -961,9 +1010,9 @@ function! s:edit_snippets(runtime_snippets, args) "{{{
   if !empty(l:filetype)
     tab split
     if a:runtime_snippets
-      execute "NeoComplCacheEditRuntimeSnippets " . l:filetype
+      execute "NeoSnippetEdit -runtime " . l:filetype
     else
-      execute "NeoComplCacheEditSnippets " . l:filetype
+      execute "NeoSnippetEdit " . l:filetype
     endif
   endif
 endfunction "}}}
@@ -1165,19 +1214,17 @@ autocmd User WokmarksChange :ShowMarksOn
 
 " }}}2    tComment    {{{2
 
-" TODO b:tc_option is ugly, send some pull request OR try caw plugin
-let g:tcommentMapLeader1 = ''
-let g:tcommentMapLeader2 = ''
-let g:tcommentMapLeaderOp1 = ''
-let g:tcommentMapLeaderOp2 = ''
-let g:tc_option = ' col=1'
-noremap <silent> <expr> <LocalLeader>cc ":TComment " .       (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
-noremap <silent> <expr> <LocalLeader>cb ":TCommentBlock " .  (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
-noremap <silent> <expr> <LocalLeader>ci ":TCommentInline " . (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
-noremap <silent> <expr> <LocalLeader>c$ ":TCommentRight " .  (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
-map <silent><expr> <LocalLeader>ca IsInComment() ?
-      \ "vac:TComment " . (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>" :
-      \ ":TComment " . (exists('b:tc_option') ? b:tc_option : g:tc_option) . "<CR>"
+let g:tcommentMaps = 0
+let g:tcommentBlankLines = 0
+" let g:tcommentOptions = {'col': 1}
+" let g:tcomment_types = {
+"       \   'vim': {"commentstring": '" %s',  "col": 0}
+"       \ }
+nnoremap <silent> <LocalLeader>cc :TComment<CR>
+vnoremap <silent> <LocalLeader>cc :TCommentMaybeInline<CR>
+nnoremap <silent> <LocalLeader>cb :TCommentBlock<CR>
+vnoremap <silent> <LocalLeader>cb :TCommentBlock<CR>
+nnoremap <silent> <LocalLeader>c :let w:tcommentPos = getpos(".") \| set opfunc=tcomment#Operator<cr>g@
 
 " }}}2    CamelCaseMotion    {{{2
 
@@ -1187,6 +1234,9 @@ let g:camelcasemotion_leader = 'g'
 
 noremap [emotion] <Nop>
 map 0 [emotion]
+map <LocalLeader>e [emotion]w
+map <LocalLeader>H [emotion]k
+map <LocalLeader>L [emotion]j
 let g:EasyMotion_leader_key = '[emotion]'
 
 " }}}2    histwin    {{{2
@@ -1236,11 +1286,14 @@ let g:cycle_default_groups = [
       \   [['上', '下']],
       \   [['左', '右']],
       \   [['前', '後']],
+      \   [['內', '外']],
       \   [['男', '女']],
       \   [['east', 'west']],
       \   [['south', 'north']],
       \   [['prefix', 'suffix']],
       \   [['decode', 'encode']],
+      \   [['short', 'long']],
+      \   [['pop', 'shift']],
       \   [['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
       \     'Friday', 'Saturday'], ['hard_case', {'name': 'Days'}]],
       \   [['{:}', '[:]', '(:)'], 'sub_pairs'],
@@ -1294,10 +1347,20 @@ let g:cycle_default_groups_for_ruby = [
       \   [['stylesheet_link_tag ', 'javascript_include_tag ']],
       \ ]
 
+" }}}2    HardMotion    {{{2
+
+nmap <silent> <LocalLeader><Space> <Plug>HardMotion
+
+
 " }}}2    ambicmd    {{{2
 
 " cnoremap <expr> <Space> ambicmd#expand("\<Space>")
 " cnoremap <expr> <CR> ambicmd#expand("\<CR>")
+
+" }}}2    ack.vim    {{{2
+
+let g:ackprg = 'ag --nogroup --nocolor --column'
+" alias ag='noglob ag --nobreak --nogroup --noheading --smart-case --depth=27'
 
 " }}}2    delimitMate    {{{2
 
@@ -1372,7 +1435,7 @@ let g:openbrowser_search_engines = {
       \   'dictionary': 'http://www.google.com/dictionary?q={query}',
       \   'google': 'http://google.com/search?q={query}',
       \ }
-let g:openbrowser_default_search = 'morebile'
+let g:openbrowser_default_search = 'google'
 
 " remove ["'"]
 let g:openbrowser_iskeyword = join(
@@ -1386,7 +1449,6 @@ let g:openbrowser_iskeyword = join(
 
 " TODO delcommand Large
 let g:LargeFile           = 40
-" let g:LargeFile           = 0.40
 let g:LargeFile_size_unit = 1024    " KB
 let g:LargeFile_patterns  = '*.log,*.log.1,*.sql'
 let g:LargeFile_verbose   = 0
@@ -1410,7 +1472,7 @@ function! s:large_file_read()
     endif
     syntax match railslogEscape '\e\[[0-9;]*m' conceal
   elseif dir_name == '/home/www/logs'
-    set syntax=httplog
+    " set syntax=httplog
   endif
 endfunction
 
@@ -1418,191 +1480,6 @@ endfunction
 
 
 " }}}1    Plugins            =================================================
-
-
-" TabLine Setting:             {{{1 ==========================================
-
-" TODO movetab
-" TODO mark tab
-
-function! SetTabLine()
-  " NOTE: left/right padding of each tab was hard coded as 1 space.
-  " NOTE: require Vim 7.3 strwidth() to display fullwidth text correctly.
-
-  " settings
-  let tabMinWidth = 0
-  let tabMaxWidth = 40
-  let tabMinWidthResized = 15
-  let tabScrollOff = 5
-  let tabEllipsis = '…'
-  let tabDivideEquel = 0
-
-  let s:tabLineTabs = []
-
-  let tabCount = tabpagenr('$')
-  let tabSel = tabpagenr()
-
-  " fill s:tabLineTabs with {n, filename, split, flag} for each tab
-  for i in range(tabCount)
-    let tabnr = i + 1
-    let buflist = tabpagebuflist(tabnr)
-    let winnr = tabpagewinnr(tabnr)
-    let bufnr = buflist[winnr - 1]
-
-    let filename = bufname(bufnr)
-    let filename = fnamemodify(filename, ':p:t')
-    let buftype = getbufvar(bufnr, '&buftype')
-    if filename == ''
-      if buftype == 'nofile'
-        let filename .= '[Scratch]'
-      else
-        let filename .= '[New]'
-      endif
-    endif
-    let split = ''
-    let winCount = tabpagewinnr(tabnr, '$')
-    if winCount > 1   " has split windows
-      let split .= winCount
-    endif
-    let flag = ''
-    if getbufvar(bufnr, '&modified')  " modified
-      let flag .= '+'
-    endif
-    if strlen(flag) > 0 || strlen(split) > 0
-      let flag .= ' '
-    endif
-
-    call add(s:tabLineTabs, {'n': tabnr, 'split': split, 'flag': flag, 'filename': filename})
-  endfor
-
-  " variables for final oupout
-  let s = ''
-  let l:tabLineTabs = deepcopy(s:tabLineTabs)
-
-  " overflow adjustment
-  " 1. apply min/max tabWidth option
-  if s:TabLineTotalLength(l:tabLineTabs) > &columns
-    unlet i
-    for i in l:tabLineTabs
-      let tabLength = s:CalcTabLength(i)
-      if tabLength < tabMinWidth
-        let i.filename .= repeat(' ', tabMinWidth - tabLength)
-      elseif tabMaxWidth > 0 && tabLength > tabMaxWidth
-        let reserve = tabLength - StrWidth(i.filename) + StrWidth(tabEllipsis)
-        if tabMaxWidth > reserve
-          let i.filename = StrCrop(i.filename, (tabMaxWidth - reserve), '~') . tabEllipsis
-        endif
-      endif
-    endfor
-  endif
-  " 2. try divide each tab equal-width
-  if tabDivideEquel
-    if s:TabLineTotalLength(l:tabLineTabs) > &columns
-      let divideWidth = max([tabMinWidth, tabMinWidthResized, &columns / tabCount, StrWidth(tabEllipsis)])
-      unlet i
-      for i in l:tabLineTabs
-        let tabLength = s:CalcTabLength(i)
-        if tabLength > divideWidth
-          let i.filename = StrCrop(i.filename, divideWidth - StrWidth(tabEllipsis), '~') . tabEllipsis
-        endif
-      endfor
-    endif
-  endif
-  " 3. ensure visibility of current tab
-  let rhWidth = 0
-  let t = tabCount - 1
-  let rhTabStart = min([tabSel - 1, tabSel - tabScrollOff])
-  while t >= max([rhTabStart, 0])
-    let tab = l:tabLineTabs[t]
-    let tabLength = s:CalcTabLength(tab)
-    let rhWidth += tabLength
-    let t -= 1
-  endwhile
-  while rhWidth >= &columns
-    let tab = l:tabLineTabs[-1]
-    let tabLength = s:CalcTabLength(tab)
-    let lastTabSpace = &columns - (rhWidth - tabLength)
-    let rhWidth -= tabLength
-    if rhWidth > &columns
-      call remove(l:tabLineTabs, -1)
-    else
-      " add special flag (will be removed later) indicating that how many
-      " columns could be used for last displayed tab.
-      if tabSel <= tabScrollOff || tabSel < tabCount - tabScrollOff
-        let tab.flag .= '>' . lastTabSpace
-      endif
-    endif
-  endwhile
-
-  " final ouput
-  unlet i
-  for i in l:tabLineTabs
-    let tabnr = i.n
-
-    let split = ''
-    if strlen(i.split) > 0
-      if tabnr == tabSel
-        let split = '%#TabLineSplitNrSel#' . i.split .'%#TabLineSel#'
-      else
-        let split = '%#TabLineSplitNr#' . i.split .'%#TabLine#'
-      endif
-    endif
-
-    let text = ' ' . split . i.flag . i.filename . ' '
-
-    if i.n == l:tabLineTabs[-1].n
-        if match(i.flag, '>\d\+') > -1 || i.n < tabCount
-        let lastTabSpace = matchstr(i.flag, '>\zs\d\+')
-        let i.flag = substitute(i.flag, '>\d\+', '', '')
-        if lastTabSpace <= strlen(i.n)
-          if lastTabSpace == 0
-            let s = strpart(s, 0, strlen(s) - 1)
-          endif
-          let s .= '%#TabLineMore#>'
-          continue
-        else
-          let text = ' ' . i.split . i.flag . i.filename . ' '
-          let text = StrCrop(text, (lastTabSpace - strlen(i.n) - 1), '~') . '%#TabLineMore#>'
-          let text = substitute(text, ' ' . i.split, ' ' . split, '')
-        endif
-        endif
-    endif
-
-    let s .= '%' . tabnr . 'T'  " start of tab N
-
-    if tabnr == tabSel
-      let s .= '%#TabLineNrSel#' . tabnr . '%#TabLineSel#'
-    else
-      let s .= '%#TabLineNr#' . tabnr . '%#TabLine#'
-    endif
-
-    let s .= text
-
-  endfor
-
-  let s .= '%#TabLineFill#%T'
-  if exists('s:tabLineResult') && s:tabLineResult !=# s
-    let s:tabLineNeedRedraw = 1
-  endif
-  let s:tabLineResult = s
-  return s
-endfunction
-
-
-function! s:CalcTabLength(tab)
-  return strlen(a:tab.n) + 2 + strlen(a:tab.split) + strlen(a:tab.flag) + StrWidth(a:tab.filename)
-endfunction
-
-
-function! s:TabLineTotalLength(dict)
-  let length = 0
-  for i in (a:dict)
-    let length += strlen(i.n) + 2 + strlen(i.split) + strlen(i.flag) + StrWidth(i.filename)
-  endfor
-  return length
-endfunction
-
-" }}}1    TabLine Setting             ========================================
 
 
 " Functions:     {{{1 ========================================================
@@ -1691,45 +1568,6 @@ endfunction
 function! RestoreMark(...)
   let l:name = a:0 ? a:1 : 'm'
   call setpos("'" . l:name, s:save_mark)
-endfunction
-
-" }}}2   字串長度（column 數）   {{{2
-
-function! StrWidth(str)
-  if exists('*strwidth')
-    return strwidth(a:str)
-  else
-    let strlen = strlen(a:str)
-    let mstrlen = strlen(substitute(a:str, ".", "x", "g"))
-    if strlen == mstrlen
-      return strlen
-    else
-      " Note: 暫不處理全形字（以下值不正確）
-      return strlen
-    endif
-  endif
-endfunction
-
-" }}}2   依字串長度（column 數）裁切多餘文字   {{{2
-
-function! StrCrop(str, len, ...)
-  let l:padChar = a:0 > 0 ? a:1 : ' '
-  if exists('*strwidth')
-    let text = substitute(a:str, '\%>' . a:len . 'c.*', '', '')
-    let remainChars = split(substitute(a:str, text, '', ''), '\zs')
-    while strwidth(text) < a:len
-      let longer = len(remainChars) > 0 ? (text . remove(remainChars, 0)) : text
-      if strwidth(longer) < a:len
-        let text = longer
-      else
-        let text .= l:padChar
-      endif
-    endwhile
-    return text
-  else
-    " Note: 暫不處理全形字（以下值不正確）
-    return substitute(a:str, '\%>' . a:len . 'c.*', '', '')
-  endif
 endfunction
 
 " }}}2   Custom diffoff     {{{2
@@ -1934,6 +1772,29 @@ if has('clipboard')
 else
   nnoremap <silent> <LocalLeader>p :call Getclip()<CR>
   inoremap <silent> <LocalLeader>p <C-O>:call Getclip()<CR>
+endif
+
+" }}}2   Bracketed Paste Mode   {{{2
+
+" Ref http://slashdot.jp/journal/506765/Bracketed-Paste-Mode
+" - Use tmux 1.7 `paste-buffer -p` to paste
+" - Use <F11> and tmux `send-keys "\e[201~"` for pastetoggle
+if &term =~ "xterm" && exists('$TMUX')
+  let &t_ti = &t_ti . "\e[?2004h"
+  let &t_te = "\e[?2004l" . &t_te
+  let &pastetoggle = "\e[201~"
+  map <F11> <Esc>[201~
+  imap <F11> <Esc>[201~
+
+  function! XTermPasteBegin(ret)
+    set paste
+    return a:ret
+  endfunction
+
+  map <special> <expr> <Esc>[200~ XTermPasteBegin("i")
+  imap <special> <expr> <Esc>[200~ XTermPasteBegin("")
+  cmap <special> <Esc>[200~ <nop>
+  cmap <special> <Esc>[201~ <nop>
 endif
 
 " }}}2   LastTab    {{{2
@@ -2496,19 +2357,32 @@ endfunction
 " }}}2   :TOhtml    {{{2
 
 let g:html_no_progress = 0
-let g:html_number_lines = 0
 let g:html_use_css = 1
 let g:html_ignore_conceal = 0
 let g:html_pre_wrap = 0
 let g:html_use_xhtml = 0
-" TODO quick TOHtml
-function! s:to_html()
+function! s:to_html(line1, line2)
+  let save_number = get(g:, 'html_number_lines', -1)
+  let g:html_number_lines = 0
+  call tohtml#Convert2HTML(a:line1, a:line2)
+  setlocal buftype=nofile bufhidden=hide noswapfile nobuflisted
+  call search("<pre[^<]*>")
+  normal! dit
+  %delete _
+  let @" = '<pre>' . substitute(@", '\v^\n\s*', '', '') . '</pre>'
+  call setline(1, split(@", '\n'))
+  if save_number > -1
+    let g:html_number_lines = save_number
+  else
+    unlet g:html_number_lines
+  endif
 endfunction
+command! -range=% TOhtml :call <SID>to_html(<line1>, <line2>)
+command! -range=% TOhtmlDoc :call tohtml#Convert2HTML(<line1>, <line2>)
 
 " }}}2   JavaScript   {{{2
 
 function! s:js_rc()
-  let b:tc_option = ''
   let g:SimpleJsIndenter_BriefMode = 1
   setlocal iskeyword+=$
   setlocal iskeyword-=58
@@ -2525,7 +2399,6 @@ endfunction
 " }}}2   SCSS   {{{2
 
 function! s:scss_rc()
-  let b:tc_option = ''
   setlocal foldmethod=marker
   setlocal formatoptions=l2
 endfunction
@@ -2534,7 +2407,6 @@ endfunction
 
 function! s:haml_rc()
   inoremap <LocalLeader>br <br><CR>
-  let b:tc_option = ''
   setlocal iskeyword-=58
 endfunction
 
@@ -2612,7 +2484,6 @@ endfunction
 " }}}2   Ruby   {{{2
 
 function! s:ruby_rc()
-  let b:tc_option = ''
   setlocal cindent
   setlocal iskeyword-=58
 
@@ -2653,7 +2524,6 @@ endfunction
 " }}}2   Vim   {{{2
 
 function! s:vim_rc()
-  let b:tc_option = ''
   " let g:vim_indent_cont = 0
   set path+=~/.vim/bundle
 endfunction
@@ -2661,7 +2531,6 @@ endfunction
 " }}}2   zsh   {{{2
 
 function! s:zsh_rc()
-  let b:tc_option = ''
   setlocal iskeyword-=-
 endfunction
 
@@ -2674,13 +2543,11 @@ endfunction
 " }}}2   git config   {{{2
 
 function! s:gitconfig_rc()
-  let b:tc_option = ''
 endfunction
 
 " }}}2   nginx config   {{{2
 
 function! s:nginx_rc()
-  let b:tc_option = ''
   setlocal iskeyword-=.
   setlocal iskeyword-=/
 endfunction
@@ -2688,7 +2555,6 @@ endfunction
 " }}}2   yaml config   {{{2
 
 function! s:yaml_rc()
-  let b:tc_option = ''
 endfunction
 
 " }}}2   logs   {{{2
@@ -2803,6 +2669,7 @@ augroup END
 
 " Finish:                  {{{1 ==============================================
 
+unlet! s:i
 set secure
 
 " vim: expandtab softtabstop=2 shiftwidth=2 foldmethod=marker

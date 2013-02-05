@@ -102,8 +102,9 @@ let s:bundles += [
       \   ['h1mesuke/vim-alignta'],
       \   ['Shougo/neocomplcache'],
       \   ['Shougo/neosnippet'],
-      \   ['Shougo/vimfiler', {":skip": 1}],
+      \   ['Shougo/vimfiler'],
       \   ['thinca/vim-prettyprint'],
+      \   ['thinca/vim-qfreplace'],
       \   ['mojako/ref-sources.vim'],
       \   ['bootleq/vim-ref-bingzh', {":prefer_local": 1}],
       \   ['tpope/vim-rails'],
@@ -128,23 +129,22 @@ let s:bundles += [
       \   ['netrw.vim'],
       \   ['bootleq/LargeFile', {":prefer_local": 1}],
       \   ['VisIncr'],
-      \   ['taglist.vim'],
       \   ['majutsushi/tagbar'],
       \ ]
 " filetype {{{3
 let s:bundles += [
-      \   ['bootleq/JavaScript-syntax'],
-      \   ['JSON.vim'],
-      \   ['depuracao/vim-rdoc'],
-      \   ['git://github.com/jiangmiao/simple-javascript-indenter.git'],
-      \   ['hail2u/vim-css3-syntax'],
-      \   ['httplog'],
-      \   ['nginx.vim'],
-      \   ['othree/html5.vim'],
-      \   ['plasticboy/vim-markdown'],
-      \   ['timcharper/textile.vim'],
-      \   ['tpope/vim-haml'],
-      \   ['vim-ruby/vim-ruby'],
+      \   ['bootleq/JavaScript-syntax', {':filetypes': ['javascript']}],
+      \   ['leshill/vim-json', {':filetypes': ['json']}],
+      \   ['depuracao/vim-rdoc', {':filetypes': ['rdoc']}],
+      \   ['jiangmiao/simple-javascript-indenter', {':filetypes': ['javascript']}],
+      \   ['hail2u/vim-css3-syntax', {':filetypes': ['css']}],
+      \   ['httplog', {':filetypes': ['httplog']}],
+      \   ['nginx.vim', {':filetypes': ['nginx']}],
+      \   ['othree/html5.vim', {':filetypes': ['html']}],
+      \   ['plasticboy/vim-markdown', {':filetypes': ['markdown']}],
+      \   ['timcharper/textile.vim', {':filetypes': ['textile']}],
+      \   ['tpope/vim-haml', {':filetypes': ['haml']}],
+      \   ['vim-ruby/vim-ruby', {':filetypes': ['ruby']}],
       \ ]
 " }}}3 text-objs {{{3
 let s:bundles += [
@@ -194,6 +194,7 @@ let s:bundles += [
 "       \   ['CountJump'],
 "       \   ['AndrewRadev/splitjoin.vim'],
 "       \   ['Shougo/vimshell'],
+"       \   ['taglist.vim', {'lazy': 1}],
 "       \   ['kana/vim-smartword'],
 "       \   ['PAntoine/vimgitlog'],
 "       \ ]
@@ -213,11 +214,18 @@ for s:i.bundle in s:bundles
   elseif get(s:tmp_options, ":prefer_local")
     if isdirectory(fnamemodify(s:bundle_local_repo_dir . split(s:i.bundle[0], '/')[-1], ':p'))
       call extend(s:tmp_options, {
-            \ "base": s:bundle_local_repo_dir,
-            \ "type": "nosync",
-            \ "stay_same": 1}
-            \ )
+            \   "base": s:bundle_local_repo_dir,
+            \   "type": "nosync",
+            \   "stay_same": 1
+            \ })
     endif
+  endif
+
+  if type(get(s:tmp_options, ":filetypes")) == type([])
+    call extend(s:tmp_options, {
+          \   "lazy": 1,
+          \   "autoload": {'filetypes': get(s:tmp_options, ":filetypes")}
+          \ })
   endif
 
   call filter(s:tmp_options, "v:key[0] != ':'")
@@ -659,6 +667,7 @@ cnoreabbrev <expr> m ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'messages' : '
 cnoreabbrev <expr> g ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'GitDiff' : 'g')
 cnoreabbrev <expr> u ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'Unite' : 'u')
 cnoreabbrev <expr> f ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'VimFilerSplit -buffer-name=' : 'f')
+cnoreabbrev <expr> ag ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'Ack' : 'ag')
 cnoreabbrev <expr> tm ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'TabMessage' : 'tm')
 cnoreabbrev <expr> tms ((getcmdtype() == ':' && getcmdpos() <= 4) ? 'TabMessage scriptnames' : 'tms')
 cnoreabbrev <expr> '<,'>q ((getcmdtype() == ':' && getcmdpos() <= 7) ? 'q' : "'<,'>q")
@@ -728,18 +737,26 @@ let g:loaded_getscriptPlugin = 1
 
 " Netrw    {{{2
 
-" let g:netrw_ftp = 1
-" let g:netrw_preview = 1
-" let g:netrw_ignorenetrc = 0
-" let g:netrw_ftpextracmd = 'passive'
+call neobundle#config('netrw.vim', {
+      \   'lazy': 1,
+      \   'autoload': {
+      \     'commands': 'Explore'
+      \   }
+      \ })
+let bundle = neobundle#get('netrw.vim')
+function! bundle.hooks.on_source(bundle)
+  " let g:netrw_ftp = 1
+  " let g:netrw_preview = 1
+  " let g:netrw_ignorenetrc = 0
+  " let g:netrw_ftpextracmd = 'passive'
 
-let g:netrw_liststyle = 3
-let g:netrw_winsize = 20
-" let g:netrw_browsex_viewer = '-'
-let g:netrw_timefmt = '%Y-%m-%d %T'
-" if exists("g:qfix_win") && a:forced == 0
-nmap <leader>e :Vexplore<CR>
-
+  let g:netrw_liststyle = 3
+  let g:netrw_winsize = 20
+  " let g:netrw_browsex_viewer = '-'
+  let g:netrw_timefmt = '%Y-%m-%d %T'
+  " if exists("g:qfix_win") && a:forced == 0
+  nmap <leader>e :Vexplore<CR>
+endfunction
 
 " }}}2    FuzzyFinder    {{{2
 
@@ -1019,25 +1036,40 @@ endfunction "}}}
 
 " }}}2    vimfiler    {{{2
 
-let g:vimfiler_as_default_explorer = 1
-let g:vimfiler_edit_action = 'tabopen'
-let g:vimfiler_enable_clipboard = 0
-let g:vimfiler_safe_mode_by_default = 0
-let g:vimfiler_time_format = '%y-%m-%d %H:%M'
+call neobundle#config('vimfiler', {
+      \   'lazy': 1,
+      \   'depends': 'Shougo/unite.vim',
+      \   'autoload': {
+      \     'commands': [
+      \       {'name': 'VimFiler', 'complete': 'customlist,vimfiler#complete'},
+      \       'VimFilerExplorer', 'VimFilerSplit', 'Edit', 'Read', 'Source', 'Write'
+      \     ],
+      \     'mappings': ['<Plug>(vimfiler_switch)']
+      \   }
+      \ })
 
-if $OSTYPE == 'cygwin' || has("gui_win32")
-  let g:unite_kind_file_use_trashbox = 1
-  let g:vimfiler_detect_drives = [
-        \ 'C:/', 'D:/', 'E:/', 'F:/', 'G:/', 'H:/', 'I:/',
-        \ 'J:/', 'K:/', 'L:/', 'M:/', 'N:/']
-elseif $OSTYPE == 'linux-gnu'
-  let g:vimfiler_detect_drives =
-        \ split(glob('/mnt/*'), '\n') + split(glob('/media/*'), '\n')
-endif
+let bundle = neobundle#get('vimfiler')
+function! bundle.hooks.on_source(bundle)
+  let g:vimfiler_as_default_explorer = 1
+  let g:vimfiler_edit_action = 'tabopen'
+  let g:vimfiler_enable_clipboard = 0
+  let g:vimfiler_safe_mode_by_default = 0
+  let g:vimfiler_time_format = '%y-%m-%d %H:%M'
 
-autocmd my_vimrc FileType vimfiler call s:vimfiler_my_settings()
-function! s:vimfiler_my_settings()
-  nnoremap <silent><buffer> H <Nop>
+  if $OSTYPE == 'cygwin' || has("gui_win32")
+    let g:unite_kind_file_use_trashbox = 1
+    let g:vimfiler_detect_drives = [
+          \ 'C:/', 'D:/', 'E:/', 'F:/', 'G:/', 'H:/', 'I:/',
+          \ 'J:/', 'K:/', 'L:/', 'M:/', 'N:/']
+  elseif $OSTYPE == 'linux-gnu'
+    let g:vimfiler_detect_drives =
+          \ split(glob('/mnt/*'), '\n') + split(glob('/media/*'), '\n')
+  endif
+
+  autocmd my_vimrc FileType vimfiler call s:vimfiler_my_settings()
+  function! s:vimfiler_my_settings()
+    nnoremap <silent><buffer> H <Nop>
+  endfunction
 endfunction
 
 " }}}2   alignta    {{{2
@@ -1048,10 +1080,17 @@ xnoremap <silent> <LocalLeader>A :Alignta! \S\+<CR>
 
 " }}}2   Indent Guide    {{{2
 
+call neobundle#config('Indent-Guides', {
+      \   'lazy': 1,
+      \   'autoload': {
+      \     'commands': 'IndentGuidesToggle'
+      \   }
+      \ })
 let g:indent_guides_enable_on_vim_startup = 0
 let g:indent_guides_auto_colors = 0
 let g:indent_guides_guide_size = 1
 let g:indent_guides_indent_levels = 30
+nnoremap <Leader>ig :IndentGuidesToggle<CR>
 
 " }}}2   Rails    {{{2
 
@@ -1075,6 +1114,15 @@ let Tlist_Use_Right_Window = 1
 let Tlist_WinWidth = 40
 let Tlist_Enable_Fold_Column = 0
 "let Tlist_Show_Menu = 1
+
+" }}}2   VisIncr  {{{2
+
+call neobundle#config('VisIncr', {
+      \   'lazy': 1,
+      \   'autoload': {
+      \     'commands': ['I', 'II', 'IA']
+      \   }
+      \ })
 
 " }}}2   TagBar   {{{2
 
@@ -1359,6 +1407,12 @@ nmap <silent> <LocalLeader><Space> <Plug>HardMotion
 
 " }}}2    ack.vim    {{{2
 
+call neobundle#config('ack.vim', {
+      \   'lazy': 1,
+      \   'autoload': {
+      \     'commands': {'name': 'Ack', 'complete': 'dir'},
+      \   }
+      \ })
 let g:ackprg = 'ag --nogroup --nocolor --column'
 " alias ag='noglob ag --nobreak --nogroup --noheading --smart-case --depth=27'
 
@@ -1390,16 +1444,58 @@ let delimitMate_balance_matchpairs = 1
 " let g:prettyprint_show_expression = 1
 let g:prettyprint_strin = ['split']
 
+" }}}2    qfreplace    {{{2
+
+call neobundle#config('vim-qfreplace', {
+      \   'lazy': 1,
+      \   'autoload': {
+      \     'filetypes': ['unite', 'qf']
+      \   }
+      \ })
+autocmd my_vimrc FileType qf nnoremap <buffer> r :<C-U>Qfreplace tabnew<CR>
+
 " }}}2    Ref    {{{2
 
 let g:ref_cache_dir = expand('~/.vim/ref-cache')
 
-autocmd FileType ref-bingzh call s:initialize_ref_viewer_bingzh()
-function! s:initialize_ref_viewer_bingzh()
-  setlocal number nowrap
-  setlocal noreadonly
-  setlocal modifiable
-  setlocal foldmethod=expr foldlevel=1 foldexpr=RefBingZhFold(v:lnum)
+call neobundle#config('vim-ref', {
+      \   'lazy': 1,
+      \   'autoload': {
+      \     'commands': 'Ref'
+      \   }
+      \ })
+
+call neobundle#config('vim-ref-bingzh', {
+      \   'lazy': 0,
+      \   'autoload': {
+      \     'commands': 'Ref',
+      \     'function_prefix': 'ref'
+      \   }
+      \ })
+let bundle = neobundle#get('vim-ref-bingzh')
+function! bundle.hooks.on_source(bundle)
+  autocmd FileType ref-bingzh call s:initialize_ref_viewer_bingzh()
+  function! s:initialize_ref_viewer_bingzh()
+    setlocal number nowrap
+    setlocal noreadonly
+    setlocal modifiable
+    setlocal foldmethod=expr foldlevel=1 foldexpr=RefBingZhFold(v:lnum)
+  endfunction
+
+  function! RefBingZhFold(line)
+    return <SID>ref_bingzh_fold(a:line)
+  endfunction
+
+  function! s:ref_bingzh_fold(line)
+    let splitter = '\v ##$'
+    if getline(a:line) =~ splitter
+      return '>1'
+    elseif getline(a:line+1) =~ splitter
+      return '<1'
+    else
+      return '='
+    endif
+  endfunction
 endfunction
 
 nnoremap <silent> K :call ref#jump('normal', 'bingzh')<CR>
@@ -1409,41 +1505,36 @@ cnoreabbrev <expr> k ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'Ref bingzh' :
 nnoremap <silent> <LocalLeader>K :normal! K<CR>
 xnoremap <silent> <LocalLeader>K :normal! K<CR>
 
-function! RefBingZhFold(line)
-  return <SID>ref_bingzh_fold(a:line)
-endfunction
-
-function! s:ref_bingzh_fold(line)
-  let splitter = '\v ##$'
-  if getline(a:line) =~ splitter
-    return '>1'
-  elseif getline(a:line+1) =~ splitter
-    return '<1'
-  else
-    return '='
-  endif
-endfunction
-
 " }}}2    open-browser    {{{2
+
+call neobundle#config('open-browser.vim', {
+      \   'lazy': 1,
+      \   'autoload': {
+      \     'mappings': ['<Plug>(openbrowser-search)', '<Plug>(openbrowser-smart-search)']
+      \   }
+      \ })
+let bundle = neobundle#get('open-browser.vim')
+function! bundle.hooks.on_source(bundle)
+  let g:openbrowser_search_engines = {
+        \   'morebile': 'http://www.google.com.tw/m/search?site=dictionary&gdm=1&wtr=1&q={query}',
+        \   'dictionary': 'http://www.google.com/dictionary?q={query}',
+        \   'google': 'http://google.com/search?q={query}',
+        \ }
+  let g:openbrowser_default_search = 'google'
+
+  " remove ["'"]
+  let g:openbrowser_iskeyword = join(
+        \   range(char2nr('A'), char2nr('Z'))
+        \   + range(char2nr('a'), char2nr('z'))
+        \   + range(char2nr('0'), char2nr('9'))
+        \   + ['_', ':', '/', '.', '-', '+', '%', '#', '?', '&', '=', ';', '@', '$', ',', '[', ']', '!', "(", ")", "*", "~", ],
+        \ ',')
+endfunction
 
 nmap <Leader><CR> <Plug>(openbrowser-smart-search)
 vmap <Leader><CR> <Plug>(openbrowser-smart-search)
 nmap <Leader>s<CR> <Plug>(openbrowser-search)
 vmap <Leader>s<CR> <Plug>(openbrowser-search)
-let g:openbrowser_search_engines = {
-      \   'morebile': 'http://www.google.com.tw/m/search?site=dictionary&gdm=1&wtr=1&q={query}',
-      \   'dictionary': 'http://www.google.com/dictionary?q={query}',
-      \   'google': 'http://google.com/search?q={query}',
-      \ }
-let g:openbrowser_default_search = 'google'
-
-" remove ["'"]
-let g:openbrowser_iskeyword = join(
-      \   range(char2nr('A'), char2nr('Z'))
-      \   + range(char2nr('a'), char2nr('z'))
-      \   + range(char2nr('0'), char2nr('9'))
-      \   + ['_', ':', '/', '.', '-', '+', '%', '#', '?', '&', '=', ';', '@', '$', ',', '[', ']', '!', "(", ")", "*", "~", ],
-      \ ',')
 
 " }}}2    LargeFile    {{{2
 
@@ -2401,6 +2492,7 @@ endfunction
 function! s:scss_rc()
   setlocal foldmethod=marker
   setlocal formatoptions=l2
+  " TODO load hail2u/vim-css3-syntax plugin
 endfunction
 
 " }}}2   HAML   {{{2
@@ -2412,16 +2504,20 @@ endfunction
 
 " }}}2   HTML   {{{2
 
+let bundle = neobundle#get('html5.vim')
+function! bundle.hooks.on_source(bundle)
+  setfiletype html  " require for loading html5.vim/indent files (why?)
+endfunction
+
 function! s:html_rc()
   inoremap <LocalLeader>br <br><CR>
   inoremap <buffer> ;; <C-\><C-N>:call <SID>html_make_tag()<CR>
   inoremap <buffer> >> <C-\><C-N>:call <SID>html_close_tag()<CR>
   let html_no_rendering = 1
-  let g:html_indent_inctags = "html,body,head,tbody"
-  let g:event_handler_attributes_complete = 0
-  let g:rdfa_attributes_complete = 0
-  let g:microdata_attributes_complete = 0
-  let g:atia_attributes_complete = 0
+  let g:html5_event_handler_attributes_complete = 0
+  let g:html5_rdfa_attributes_complete = 0
+  let g:html5_microdata_attributes_complete = 0
+  let g:html5_aria_attributes_complete = 0
   if exists('g:xmldata_html5')
     let b:html_omni_flavor = 'html5'
   end
@@ -2643,6 +2739,9 @@ augroup my_vimrc
   " Ref: tyru - https://github.com/tyru/dotfiles
   autocmd BufWriteCmd *[,*],*'* call s:write_check_typo(expand('<afile>'))
   function! s:write_check_typo(file)
+    if a:file =~ '[qfreplace]'
+      return
+    endif
     let prompt = "possible typo: really want to write to '" . a:file . "'? (y/n):"
     if input(prompt) =~? '^\s*y'
       execute 'write' a:file

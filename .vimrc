@@ -109,6 +109,7 @@ let s:bundles += [
       \   ['mojako/ref-sources.vim'],
       \   ['bootleq/vim-ref-bingzh', {":prefer_local": 1}],
       \   ['tpope/vim-rails'],
+      \   ['tpope/vim-tbone', {":skip": 1}],
       \   ['tpope/vim-fugitive'],
       \   ['mattn/webapi-vim'],
       \   ['mattn/wwwrenderer-vim'],
@@ -124,10 +125,11 @@ let s:bundles += [
       \   ['bootleq/vim-cycle', {":prefer_local": 1}],
       \   ['bootleq/vim-tabline', {":prefer_local": 1}],
       \   ['bootleq/vim-gitdiffall', {":prefer_local": 1}],
-      \   ['bootleq/vim-hardmotion', {":prefer_local": 1}],
+      \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
       \   ['mileszs/ack.vim'],
       \   ['Indent-Guides'],
       \   ['Lokaltog/vim-easymotion'],
+      \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
       \   ['bootleq/LargeFile', {":prefer_local": 1}],
       \   ['VisIncr'],
@@ -147,6 +149,7 @@ let s:bundles += [
       \   ['timcharper/textile.vim', {':filetypes': ['textile']}],
       \   ['tpope/vim-haml', {':filetypes': ['haml']}],
       \   ['vim-ruby/vim-ruby', {':filetypes': ['ruby']}],
+      \   ['bootleq/vim-ruby-enccomment', {':filetypes': ['ruby'], ":prefer_local": 1}],
       \ ]
 " }}}3 text-objs {{{3
 let s:bundles += [
@@ -191,6 +194,7 @@ let s:bundles += [
 "       \   ['thinca/vim-ambicmd'],
 "       \   ['kana/vim-fakeclip'],
 "       \   ['kana/vim-grex'],
+"       \   ['tyru/vim-capture'],
 "       \   ['CountJump'],
 "       \   ['AndrewRadev/splitjoin.vim'],
 "       \   ['Shougo/vimshell'],
@@ -346,13 +350,17 @@ set showcmd
 set shortmess+=I
 set nolinebreak
 set display=lastline
-set listchars=tab:>-,eol:¬,trail:*
+set listchars=tab:>-,eol:¬,trail:*,extends:»,precedes:«
 set background=dark
-set ambiwidth=double
+set ambiwidth=single
+" set ambiwidth=double
 syntax on
 
 " http://blogger.godfat.org/2011/07/spellcheck-only-for-english-in-vim.html
 syntax match Normal /[^!-~]/ contains=@NoSpell
+
+autocmd Syntax * syntax match FullWidthSpace /\%d12288/ containedin=ALL
+autocmd Syntax * highlight FullWidthSpace gui=NONE guibg=blue cterm=bold ctermbg=blue
 
 if !exists('g:colors_name')
   set background=dark
@@ -394,9 +402,11 @@ set pumheight=20
 set menuitems=35
 set completeopt=longest,menu
 set complete+=U
+set showfulltag
 
 set wildmenu
 set wildmode=longest:full,full
+set wildoptions=tagfile
 " set wildignore+=*.o,*.a,*.so,*.obj,*.exe,*.lib,*.ncb,*.opt,*.plg,.svn,.git
 
 " }}}2   多檔案編輯    {{{2
@@ -489,6 +499,10 @@ nnoremap <silent> <expr> <LocalLeader>gr printf(":tabmove %s<CR>", tabpagenr() =
 nnoremap <silent> <LocalLeader>gT :tabmove<CR>
 nnoremap <silent> <LocalLeader>gR :tabmove 0<CR>
 
+" Scroll to top/center/bottom (@Shougo)
+noremap <expr> zz (winline() == (winheight(0)+1)/ 2) ?
+      \ 'zt' : (winline() == 1)? 'zb' : 'zz'
+
 " }}}2   編輯    {{{2
 
 nmap <C-H> <BS>
@@ -520,8 +534,14 @@ map <kDel> <Del>
 " TODO command mode text-object delete
 " noremap! <LocalLeader>w
 
+cnoremap <LocalLeader>; <C-W>
+
 " Delete to end, from @tyru https://github.com/tyru/dotfiles
 cnoremap <LocalLeader>d <C-\>e getcmdpos() == 1 ? '' : getcmdline()[:getcmdpos()-2]<CR>
+
+" Auto escape / and ? in search command (@Shougo)
+cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
+cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 
 " }}}2   功能鍵    {{{2
 
@@ -654,9 +674,8 @@ function! s:grep(command, args)
   execute a:command '/'.a:args[-1].'/' join(a:args[:-2])
 endfunction
 
-" call altercmd#load()
-" call altercmd#define('<buffer>', 'help?', 'HelpForWhat')
-" command! HelpForWhat echoerr "Sure.  Is this help you?"
+" Split and diff (@Shougo)
+command! -nargs=1 -complete=file Diff vertical diffsplit <args>
 
 " }}}1    Commands             ===============================================
 
@@ -1238,6 +1257,8 @@ if exists('g:loaded_surround') && exists('*SurroundRegister')
     call SurroundRegister('g', '『', "『\r』")
 endif
 
+cnoremap <LocalLeader>> >
+
 " Overwrite default mapping ys, because y is for yank.
 nmap s  <plug>Ysurround
 nmap ss <plug>Yssurround
@@ -1333,6 +1354,7 @@ let g:cycle_default_groups = [
       \   [['prefix', 'suffix']],
       \   [['decode', 'encode']],
       \   [['short', 'long']],
+      \   [['request', 'response']],
       \   [['pop', 'shift']],
       \   [['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
       \     'Friday', 'Saturday'], ['hard_case', {'name': 'Days'}]],
@@ -1956,7 +1978,7 @@ inoremap <silent> <LocalLeader>t <C-\><C-N>:call LastTab('switch')<CR>
 " }}}2   目前位置 highlight group   {{{2
 
 function! SynStackInfo()
-  let synStack =  synstack(line("."), col("."))
+  let synStack = synstack(line("."), col("."))
   if len(synStack) == 0
     echomsg 'No synID here.'
   else
@@ -2507,6 +2529,7 @@ endfunction
 function! s:css_rc()
   set foldmethod=marker
   setlocal iskeyword-=58
+  setlocal path+=./;/home/www/
 endfunction
 
 " }}}2   SCSS   {{{2
@@ -2514,6 +2537,7 @@ endfunction
 function! s:scss_rc()
   setlocal foldmethod=marker
   setlocal formatoptions=l2
+  setlocal path+=./;/home/www/
   " TODO load hail2u/vim-css3-syntax plugin
 endfunction
 
@@ -2532,6 +2556,7 @@ function! bundle.hooks.on_source(bundle)
 endfunction
 
 function! s:html_rc()
+  setlocal path+=./;/
   inoremap <LocalLeader>br <br><CR>
   inoremap <buffer> ;; <C-\><C-N>:call <SID>html_make_tag()<CR>
   inoremap <buffer> >> <C-\><C-N>:call <SID>html_close_tag()<CR>
@@ -2736,6 +2761,7 @@ augroup my_vimrc
   " let dosbatch_cmdextversion = 2
 
   autocmd CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
+  autocmd InsertLeave * if &paste | set nopaste | set paste? | endif
   autocmd BufReadPost * if line("'\"") > 0 && line ("'\"") <= line("$") | execute "normal! g'\"" | endif
   autocmd BufWinEnter * if exists('s:tabLineNeedRedraw') && s:tabLineNeedRedraw | redraw! | let s:tabLineNeedRedraw = 0 | endif
   autocmd QuickFixCmdPost * redraw!

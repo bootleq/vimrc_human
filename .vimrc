@@ -92,10 +92,8 @@ set runtimepath-=~/.vim
 " }}}2    Bundles   {{{2
 let s:bundles = [
       \   ['Shougo/neobundle.vim'],
-      \   ['L9', {"stay_same": 1}],
       \ ]
 let s:bundles += [
-      \   ['FuzzyFinder'],
       \   ['kana/vim-smartinput', {":skip": 1}],
       \   ['Raimondi/delimitMate'],
       \   ['kana/vim-surround'],
@@ -176,14 +174,17 @@ let s:bundles += [
 let s:bundles += [
       \   ['Shougo/unite.vim'],
       \   ['Shougo/unite-session'],
-      \   ['h1mesuke/unite-outline'],
+      \   ['Shougo/unite-outline'],
       \   ['tacroe/unite-mark'],
       \   ['thinca/vim-unite-history'],
-      \   ['tsukkee/unite-help'],
+      \   ['tsukkee/unite-help', {"rev": 'tags-caching'}],
       \   ['ujihisa/unite-gem'],
+      \   ['kmnk/vim-unite-giti', {":skip": 1}],
       \ ]
 " }}}3 unused {{{3
 " let s:bundles += [
+"       \   ['L9', {"stay_same": 1}],
+"       \   ['FuzzyFinder'],
 "       \   ['gregsexton/gitv'],
 "       \   ['mrkn256.vim'],
 "       \   ['chrisbra/histwin.vim'],
@@ -769,184 +770,50 @@ function! bundle.hooks.on_source(bundle)
   nmap <leader>e :Vexplore<CR>
 endfunction
 
-" }}}2    FuzzyFinder    {{{2
-
-noremap [fuf] <Nop>
-map <LocalLeader>f [fuf]
-noremap [fuf]f :FufFileWithCurrentBufferDir<CR>
-noremap [fuf]r :FufMruFile<CR>
-noremap [fuf]b :FufBuffer<CR>
-" noremap [fuf]c :FufChangeList<CR>
-noremap [fuf]t :FufBufferTagAll<CR>
-noremap [fuf]h :FufHelp<CR>
-noremap [fuf]q :FufQuickfix<CR>
-noremap <silent> [fuf]<F5> :FufRenewCache<CR>
-" nnoremap [fuf]d :FufDir<CR>
-" nnoremap [fuf]m :FufBookmark<CR>
-" nnoremap [fuf]d :FufBookmarkDir<CR>
-noremap [fuf]p :call g:fuf_regFinder(0)<CR>
-noremap [fuf]P :call g:fuf_regFinder(1)<CR>
-noremap [fuf]g :call g:fuf_tabFinder()<CR>
-
-inoremap «fuf» <Nop>
-imap <LocalLeader>f «fuf»
-inoremap «fuf»f <C-\><C-N>:FufFileWithCurrentBufferDir<CR>
-inoremap «fuf»p <C-\><C-N>:call g:fuf_regFinder(0)<CR>
-inoremap «fuf»P <C-\><C-N>:call g:fuf_regFinder(1)<CR>
-inoremap «fuf»g <C-\><C-N>:call g:fuf_tabFinder()<CR>
-
-let g:fuf_dataDir = '~/.vim/fuf-data'
-let g:fuf_modesDisable = ['coveragefile', 'dir', 'line', 'bookmarkdir', 'bookmarkfile', 'mrucmd', 'jumplist', 'taggedfile', 'givenfile', 'givedir']
-
-let g:fuf_keyOpen='<LocalLeader><CR>'
-let g:fuf_keyOpenSplit=''
-let g:fuf_keyOpenVsplit=''
-let g:fuf_keyOpenTabpage='<CR>'
-" let g:fuf_keyPreview='<Space>'
-let g:fuf_buffer_keyDelete='<C-D>'
-let g:fuf_keyPrevPattern = '<C-PageUp>'
-let g:fuf_keyNextPattern = '<C-PageDown>'
-
-if $OSTYPE == 'cygwin'
-  let g:fuf_abbrevMap = {
-        \   "^r:" : [ "/cygdrive/d/repository/" ],
-        \   "^w:" : ["/cygdrive/d/web"],
-        \   '^vr:' : map(filter(split(&runtimepath, ','), 'v:val !~ "after$"'), 'v:val . ''/**/'''),
-        \ }
-else
-  let g:fuf_abbrevMap = {
-        \   "^r:" : [ "~/repository/" ],
-        \   "^rb:" : [ "/opt/ruby/lib/ruby/gems/1.8/gems/" ],
-        \   "^w:" : [ "/home/www/" ],
-        \   '^vr:' : map(filter(split(&runtimepath, ','), 'v:val !~ "after$"'), 'v:val . ''/**/'''),
-        \ }
-endif
-
-let g:fuf_mrufile_maxItem = 100
-let g:fuf_mrucmd_maxItem = 100
-let g:fuf_maxMenuWidth = 90
-let g:fuf_enumeratingLimit = 50
-
-" After VimEnter, set bookmark-dir with command 'FufBookmarkDirAdd'.
-" Also use 'FufEditDataFile'.
-
-function! s:fuf_settings()
-  if exists(':NeoComplCacheLock')
-    :NeoComplCacheLock
-  endif
-  set pumheight=0
-  set pumheight=25
-  setlocal nowrap nolist
-  inoremap <buffer> <Tab> <C-N>
-  inoremap <buffer> <S-Tab> <C-P>
-  inoremap <buffer> <LocalLeader>. **/
-  inoremap <buffer> <Space> <C-W>
-endfunction
-autocmd! my_vimrc FileType fuf call s:fuf_settings()
-
-" }}}3    FuzzyFinder find registers    {{{3
-
-let g:fuf_regListener = {}
-let g:fuf_regListener.putBefore = 0   " 0: p, 1: P
-
-function! g:fuf_regListener.onComplete(item, method)
-  let l:regName = strpart(a:item, 1, 1)
-  if a:method == 4
-    silent execute 'normal! "' . l:regName . (g:fuf_regListener.putBefore ? 'P' : 'p')
-  else
-    execute '7new [@' . escape( l:regName, '"' ) . ']'
-    setlocal noswapfile buftype=nofile bufhidden=wipe
-    execute '0put=@' . l:regName
-    redraw
-    setlocal nomodified
-  endif
-endfunction
-
-function! g:fuf_regListener.onAbort()
-endfunction
-
-function! g:fuf_regFinder(putBefore)
-  let g:fuf_regListener.putBefore = a:putBefore
-  redir => l:regs
-  silent execute ':registers'
-  redir END
-  let l:regList = split(l:regs, '\n')
-  let l:regList = filter(l:regList, 'v:val =~ "' . escape('\m^".\s\{3,}\S\+', '\"') . '"')  " remove non-register lines
-  " let l:regList = map(l:regList, 'substitute(v:val, "\\m.\\{' . &columns . '}\\zs.*", "...", "")')  " has problem with long line
-  call fuf#callbackitem#launch('', 1, 'registers>', g:fuf_regListener, l:regList, 0)
-endfunction
-
-" }}}3    FuzzyFinder find tabs    {{{3
-
-let g:fuf_tabListener = {}
-
-function! g:fuf_tabListener.onComplete(item, method)
-  let l:tabnr = matchstr(a:item, '\d\+')
-  if a:method == 4
-    silent execute 'normal! ' . l:tabnr . 'gt'
-  else
-    silent execute 'tabclose ' . l:tabnr
-  endif
-endfunction
-
-function! g:fuf_tabListener.onAbort()
-endfunction
-
-function! g:fuf_tabFinder()
-  if exists("*tabline#tabs")
-    let l:tabList = []
-    for tab in tabline#tabs()
-      let label = tab.n . '. ' . (strlen(tab.split) > 0 ? ('(' . tab.split . ')') : '') . tab.flag . tab.filename
-      if tab.n == tabpagenr()
-        let label = '*' . label
-      endif
-      call add(l:tabList, label)
-    endfor
-    call fuf#callbackitem#launch('', 1, 'tabs>', g:fuf_tabListener, l:tabList, 0)
-  endif
-endfunction
-
-" }}}3    FuzzyFinder find tabs
-
 " }}}2    Unite    {{{2
 
 nnoremap [unite] <Nop>
 xnoremap [unite] <Nop>
-nmap <Leader>f [unite]
-xmap <Leader>f [unite]
+nmap <LocalLeader>f [unite]
+xmap <LocalLeader>f [unite]
+imap <LocalLeader>f <C-\><C-N>[unite]
+imap <LocalLeader>c <Plug>(neocomplcache_start_unite_complete)
 
 nnoremap [unite]S :<C-U>Unite source<CR>
-nnoremap <silent> [unite]f :<C-U>UniteWithBufferDir -buffer-name=files -start-insert file<CR>
-nnoremap <silent> [unite]r :<C-U>Unite -buffer-name=mru -start-insert file_mru<CR>
-nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search -start-insert line<CR>
-
-nnoremap <silent> [unite]d :<C-U>Unite -buffer-name=mru_dir -start-insert directory_mru<CR>
-nnoremap <silent> [unite]t :<C-U>Unite -buffer-name=tabs -start-insert tab<CR>
+nnoremap <silent> [unite]f :<C-U>UniteWithBufferDir -buffer-name=files file<CR>
+nnoremap <silent> [unite]F :<C-U>UniteWithBufferDir -buffer-name=files file_rec<CR>
+nnoremap <silent> [unite]r :<C-U>Unite -profile-name=mru file_mru<CR>
+nnoremap <silent> [unite]d :<C-U>Unite -profile-name=mru directory_mru<CR>
+nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search -start-insert line/fast<CR>
 nnoremap <silent> [unite]p :<C-U>Unite -buffer-name=registers -start-insert register<CR>
 xnoremap <silent> [unite]p "_d:<C-U>Unite -buffer-name=register register<CR>
-nnoremap <silent> [unite]b :<C-U>Unite -buffer-name=bookmarks bookmark<CR>
+nnoremap <silent> [unite]b :<C-U>Unite bookmark<CR>
 nnoremap <silent> [unite]m :<C-U>Unite mark<CR>
-nnoremap <silent> [unite]h :<C-U>Unite -buffer-name=helps help<CR>
+nnoremap <silent> [unite]h :<C-U>Unite -update-time=600 -start-insert help<CR>
 nnoremap <silent> [unite]o :<C-U>Unite outline<CR>
-nnoremap <silent> [unite]q :<C-u>Unite qflist -no-quit<CR>
-nnoremap <silent> [unite]s :<C-u>Unite -start-insert session<CR>
-nnoremap <silent> [unite]g :<C-u>Unite tab<CR>
-" nnoremap <silent> [unite]G :<C-u>Unite grep -no-quit<CR>
-nnoremap <silent> [unite]j :<C-u>Unite jump<CR>
-nnoremap <silent> [unite]c :<C-u>Unite change<CR>
-nnoremap <silent> [unite]q :<C-u>Unite poslist<CR>
-nnoremap <silent> [unite]y :<C-u>Unite history/yank<CR>
+nnoremap <silent> [unite]s :<C-U>Unite -start-insert session<CR>
+" TODO use vim-tabline
+nnoremap <silent> [unite]g :<C-U>Unite -start-insert tab<CR>
+nnoremap <silent> [unite]j :<C-U>Unite jump<CR>
+nnoremap <silent> [unite]c :<C-U>Unite change<CR>
+nnoremap <silent> [unite]: :<C-U>Unite history/command<CR>
+nnoremap <silent> [unite]y :<C-U>Unite history/yank<CR>
+nnoremap <silent> [unite]a :<C-u>Unite alignta:options<CR>
+xnoremap <silent> [unite]a :<C-u>Unite alignta:arguments<CR>
+nnoremap <silent> [unite]G :<C-u>Unite giti<CR>
 
-let g:unite_update_time = 70
+let g:unite_update_time = 240
 let g:unite_enable_split_vertically = 1
 let g:unite_source_file_mru_limit = 140
-let g:unite_source_file_mru_time_format = "(%m/%d %T) "
+let g:unite_source_file_mru_time_format = "%m/%d %T "
+let g:unite_source_directory_mru_limit = 80
+let g:unite_source_directory_mru_time_format = "%m/%d %T "
 let g:unite_source_file_rec_max_depth = 5
 
 let g:unite_enable_ignore_case = 1
 let g:unite_enable_smart_case = 1
 let g:unite_source_history_yank_enable = 1
-let g:unite_source_history_yank_limit	= 40
+let g:unite_source_history_yank_limit = 40
 
 let g:unite_data_directory = expand(s:rtp . '/.unite/')
 let g:unite_source_session_path = expand('~/.vim/session/')
@@ -954,37 +821,50 @@ let g:unite_source_session_path = expand('~/.vim/session/')
 function! s:unite_settings()
   nmap <buffer> <C-J> <Plug>(unite_loop_cursor_down)
   nmap <buffer> <C-K> <Plug>(unite_loop_cursor_up)
-  nmap <buffer> m <Plug>(unite_toggle_mark_current_candidate)
-  nmap <buffer> M <Plug>(unite_toggle_mark_all_candidate)
-  nmap <buffer> <LocalLeader><F5> <Plug>(unite_redraw)
-  nmap <buffer> <LocalLeader>q <Plug>(unite_exit)
-
-  vmap <buffer> m <Plug>(unite_toggle_mark_selected_candidates)
-
   imap <buffer> <C-J> <Plug>(unite_select_next_line)
   imap <buffer> <C-K> <Plug>(unite_select_previous_line)
-  imap <buffer> <LocalLeader><BS> <Plug>(unite_delete_backward_path)
-  " imap <buffer> <Space> <Plug>(unite_delete_backward_path)
-  imap <buffer> <LocalLeader>w <Plug>(unite_delete_backward_path)
+  nmap <buffer> <F5> <Plug>(unite_redraw)
+  imap <buffer> <F5> <Plug>(unite_redraw)
+  nmap <buffer> <LocalLeader>q <Plug>(unite_exit)
   imap <buffer> <LocalLeader>q <Plug>(unite_exit)
+  nmap <buffer> <LocalLeader>Q <Plug>(unite_all_exit)
+  imap <buffer> <LocalLeader>Q <C-\><C-N><Plug>(unite_all_exit)
+
+  imap <buffer> <LocalLeader><BS> <Plug>(unite_delete_backward_path)
+  imap <buffer> ; <Plug>(unite_delete_backward_word)
+  inoremap <buffer> <LocalLeader>. **/
 
   let unite = unite#get_current_unite()
-  if unite.buffer_name =~# '^(search)'
-    nnoremap <silent><buffer><expr> <CR> unite#do_action('open')
-    inoremap <silent><buffer><expr> <CR> unite#do_action('open')
+  if index(unite.source_names, 'file') > -1 || index(unite.source_names, 'file_mru') > -1
+    nnoremap <silent><buffer><expr> <LocalLeader><CR> unite#do_action('open')
+    inoremap <silent><buffer><expr> <LocalLeader><CR> unite#do_action('open')
   endif
 endfunction
 autocmd! my_vimrc FileType unite call s:unite_settings()
 
-" actions
 " TODO secondary default action
-" TODO bookmark 'rename' action
-" TODO bookmark should convert slashes for different OS
-call unite#set_substitute_pattern('files', '^v/', unite#util#substitute_path_separator($HOME).'/.vim/', 1000)
-call unite#custom_default_action('file', 'tabopen')
+" TODO bookmark should convert slashes for different OSes
+call unite#custom_default_action('file', 'tabdrop')
+call unite#custom_default_action('directory', 'narrow')
+call unite#custom_default_action('source/bookmark/jump_list', 'tabdrop')
+call unite#custom_default_action('source/help/common', 'tabopen')
+call unite#custom_source('file,buffer,file_rec', 'matchers', 'matcher_fuzzy')
 
-" This is for bookmark, however, define a custom action for jump_list would be better.
-call unite#custom_default_action('directory, jump_list', 'tabopen')
+call unite#set_profile('files', 'context', {
+      \   'start_insert': 1,
+      \   'hide_source_names': 1
+      \ })
+" Ref: thinca - http://d.hatena.ne.jp/thinca/20101027/1288190498
+call unite#set_substitute_pattern('source/file', '\$\w\+', '\=eval(submatch(0))', 200)
+
+call unite#set_profile('mru', 'context', {
+      \   'start_insert': 1,
+      \   'hide_source_names': 1
+      \ })
+
+command! -bar -nargs=? UniteEditBookmark execute
+      \ "Unite -immediately -auto-resize file:" . g:unite_source_bookmark_directory
+
 
 " }}}2    neocomplcache    {{{2
 
@@ -1088,6 +968,16 @@ endfunction
 let g:alignta_default_arguments = '! \S\+'
 xnoremap <silent> <LocalLeader>= :Alignta! \S\+<CR>
 xnoremap <silent> <LocalLeader>A :Alignta! \S\+<CR>
+let g:unite_source_alignta_preset_arguments = [
+      \   ["對齊 : (key: val)",            '01 :'],
+      \   ["對齊 , (ruby array #comment)", ',\zs 0:1 #'],
+      \   ["對齊 =",                       '='],
+      \   ["對齊 =>",                      '=>'],
+      \   ["對齊 |",                       '|' ],
+      \   ["對齊 ,",                       '01 ,' ],
+      \   ["對齊 , （一次）",              '01 ,/1' ],
+      \   ["對齊空白",                     '\S\+'],
+      \ ]
 
 " }}}2   Indent Guide    {{{2
 

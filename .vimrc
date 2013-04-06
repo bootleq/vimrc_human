@@ -96,7 +96,8 @@ let s:bundles = [
       \ ]
 let s:bundles += [
       \   ['FuzzyFinder'],
-      \   ['kana/vim-smartinput'],
+      \   ['kana/vim-smartinput', {":skip": 1}],
+      \   ['Raimondi/delimitMate'],
       \   ['kana/vim-surround'],
       \   ['kana/vim-repeat'],
       \   ['h1mesuke/vim-alignta'],
@@ -379,6 +380,11 @@ set ignorecase
 set smartcase
 set incsearch
 set matchpairs+=<:>
+" https://github.com/lilydjwg/dotvim/commit/880fc3b
+try
+  set matchpairs+=《:》,〈:〉,［:］,（:）,「:」,『:』,‘:’,“:”
+catch /^Vim\%((\a\+)\)\=:E474/
+endtry
 " set includeexpr=substitute(v:fname,'\\.','/','g')
 
 " }}}2    自動完成    {{{2
@@ -1404,10 +1410,10 @@ let g:ackprg = 'ag --nogroup --nocolor --column'
 
 " }}}2    delimitMate    {{{2
 
-let delimitMate_matchpairs = "(:),[:],{:},「:」,（:）"
+let delimitMate_matchpairs = "(:),{:},[:],<:>,《:》,〈:〉,［:］,（:）,「:」,『:』,‘:’,“:”"
 let delimitMate_excluded_regions = ""
-" let delimitMate_expand_space = 1
-" let delimitMate_expand_cr = 1
+let delimitMate_expand_space = 1
+let delimitMate_expand_cr = 1
 " let delimitMate_smart_quotes = 0
 " let delimitMate_smart_matchpairs = ''
 let delimitMate_balance_matchpairs = 1

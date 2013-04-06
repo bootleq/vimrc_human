@@ -545,13 +545,13 @@ cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 
 " }}}2   功能鍵    {{{2
 
-map  <F1> :help <C-R>=expand('<cword>')<CR><CR>
-map  <LocalLeader><F1> :tab help <C-R>=expand('<cword>')<CR><CR>
-xmap <F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>:help <C-R>=b:tempReg<CR><CR>
-xmap <LocalLeader><F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>:help <C-R>=b:tempReg<CR><CR>
+noremap  <F1> :help <C-R>=expand('<cword>')<CR><CR>
+noremap  <LocalLeader><F1> :tab help <C-R>=expand('<cword>')<CR><CR>
+xnoremap <F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>:help <C-R>=b:tempReg<CR><CR>
+xnoremap <LocalLeader><F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>:help <C-R>=b:tempReg<CR><CR>
 
-nmap <F2> :%s/<C-R><C-W>
-xmap <F2> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>gv:<C-U>%s/ <C-R>=b:tempReg<CR>
+nnoremap <F2> :%s/<C-R><C-W>
+xnoremap <F2> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>gv:<C-U>%s/<C-R>=b:tempReg<CR>/
 
 noremap <silent> <F3> :nohlsearch<CR>
 inoremap <silent> <F3> <C-O>:nohlsearch<CR>

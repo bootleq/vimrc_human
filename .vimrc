@@ -113,6 +113,7 @@ let s:bundles += [
       \   ['mattn/wwwrenderer-vim'],
       \   ['thinca/vim-ref'],
       \   ['tyru/open-browser.vim'],
+      \   ['tyru/vim-altercmd'],
       \   ['wokmarks.vim'],
       \   ['bootleq/ShowMarks', {":prefer_local": 1}],
       \   ['bootleq/camelcasemotion'],
@@ -173,7 +174,6 @@ let s:bundles += [
       \   ['Shougo/unite-session'],
       \   ['h1mesuke/unite-outline'],
       \   ['tacroe/unite-mark'],
-      \   ['thinca/vim-poslist'],
       \   ['thinca/vim-unite-history'],
       \   ['tsukkee/unite-help'],
       \   ['ujihisa/unite-gem'],
@@ -188,7 +188,6 @@ let s:bundles += [
 "       \   ['tpope/vim-speeddating'],
 "       \   ['sjl/threesome.vim'],
 "       \   ['thinca/vim-ambicmd'],
-"       \   ['kana/vim-altercmd'],
 "       \   ['kana/vim-fakeclip'],
 "       \   ['kana/vim-grex'],
 "       \   ['CountJump'],
@@ -513,9 +512,9 @@ noremap <C-kDel> :quit<CR>
 map <kDel> <Del>
 
 " TODO command mode text-object delete
-" noremap! <LocalLeader>w 
+" noremap! <LocalLeader>w
 
-" Ref: tyru - https://github.com/tyru/dotfiles
+" Delete to end, from @tyru https://github.com/tyru/dotfiles
 cnoremap <LocalLeader>d <C-\>e getcmdpos() == 1 ? '' : getcmdline()[:getcmdpos()-2]<CR>
 
 " }}}2   功能鍵    {{{2
@@ -618,10 +617,6 @@ for s:i.map_mode in ['n', 'x']
   execute s:i.map_mode . "map <LocalLeader>hd              <Plug>(operator-html-unescape)"
 endfor
 
-" }}}2   w!!    {{{2
-
-cnoremap <expr> w!! ((getcmdtype() == ':' && getcmdpos() <= 1) ? 'call SudoWrite()'  : 'w!!')
-
 " }}}2   停用鍵、其他    {{{2
 
 nmap ZZ <Nop>
@@ -662,16 +657,7 @@ endfunction
 
 " Abbreviations:                     {{{1 ========================================
 
-cnoreabbrev <expr> t ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'tabnew' : 't')
-cnoreabbrev <expr> m ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'messages' : 'm')
-cnoreabbrev <expr> g ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'GitDiff' : 'g')
-cnoreabbrev <expr> u ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'Unite' : 'u')
-cnoreabbrev <expr> f ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'VimFilerSplit -buffer-name=' : 'f')
-cnoreabbrev <expr> ag ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'Ack' : 'ag')
-cnoreabbrev <expr> tm ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'TabMessage' : 'tm')
-cnoreabbrev <expr> tms ((getcmdtype() == ':' && getcmdpos() <= 4) ? 'TabMessage scriptnames' : 'tms')
 cnoreabbrev <expr> '<,'>q ((getcmdtype() == ':' && getcmdpos() <= 7) ? 'q' : "'<,'>q")
-" cnoreabbrev <expr> re ((getcmdtype() == ':' && getcmdpos() <= 3) ? 'CleanMakeGSession<CR>:qa' : 're')
 cnoreabbrev ll <lt>LocalLeader>
 inoreabbrev ll <lt>LocalLeader>
 
@@ -1443,6 +1429,36 @@ let delimitMate_balance_matchpairs = 1
 
 " let g:prettyprint_show_expression = 1
 let g:prettyprint_strin = ['split']
+
+" }}}2    altercmd    {{{2
+
+let bundle = neobundle#get('vim-altercmd')
+function! bundle.hooks.on_source(bundle)
+  call altercmd#load()
+
+  AlterCommand h help
+  AlterCommand m messages
+  AlterCommand t tabnew
+  AlterCommand w!! call SudoWrite()
+  AlterCommand tm TabMessage
+  AlterCommand tms TabMessage scriptnames
+  AlterCommand mov[eintotabpage] MoveIntoTabpage
+  AlterCommand g GitDiff
+  AlterCommand d[iff] Diff
+  AlterCommand r[ename] Rename
+  AlterCommand pp PP
+  AlterCommand u[nite] Unite
+  AlterCommand f VimFilerSplit -buffer-name=
+  AlterCommand ag Ack
+  AlterCommand qw wq
+  AlterCommand ref Ref
+  AlterCommand man Ref man
+  AlterCommand bingzh Ref bingzh
+  AlterCommand k Ref bingzh
+  AlterCommand bu NeoBundleUpdate
+  AlterCommand bl TabMessage NeoBundleUpdatesLog
+endfunction
+" TODO unlet bundle
 
 " }}}2    qfreplace    {{{2
 

@@ -747,6 +747,41 @@ runtime! macros/matchit.vim
 
 let g:loaded_getscriptPlugin = 1
 
+" NeoBundle    {{{2
+
+let g:neobundle#log_filename = expand(printf('~/.vim/%s.neobundlelog', strftime('%m%d-%H%M%S')))
+
+noremap <Leader>gf :call BundleLogDiff("<C-R>=expand('<cword>')<CR>")<CR>
+function! BundleLogDiff(rev)
+  let patterns = {
+        \   'name': '\[neobundle\/install] (.\+): |\(.\+\)|'
+        \ }
+  let bundle_name = ''
+  let rev = a:rev
+  let line = search(patterns.name, 'bnW')
+  if line == 0
+    echoerr printf("Can't find bundle name for rev %s.", rev)
+    return
+  endif
+  let bundle_name = get(matchlist(getline(line), patterns.name), 1, '')
+  let path = get(neobundle#get(bundle_name), 'path', '')
+  if len(path) == 0
+    echoerr printf("Can't get bundle with name %s.", bundle_name)
+    return
+  endif
+  tabnew `=path . printf('/.bundle-gitdiffall-%s.vim', rev)`
+  set nomodified
+  setlocal buftype=nofile
+  setlocal bufhidden=hide
+  setlocal noswapfile
+  setlocal nobuflisted
+  execute 'Git diff-tree --no-commit-id --name-only -r ' . rev
+
+  " TODO gitdiffall#get_diff_files(rev)
+  " (git diff-tree --no-commit-id --name-only -r rev)
+  " and export to unite.vim
+endfunction
+
 " Netrw    {{{2
 
 call neobundle#config('netrw.vim', {

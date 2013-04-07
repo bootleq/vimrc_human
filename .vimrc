@@ -856,23 +856,30 @@ let g:unite_source_session_path = expand('~/.vim/session/')
 function! s:unite_settings()
   nmap <buffer> <C-J> <Plug>(unite_loop_cursor_down)
   nmap <buffer> <C-K> <Plug>(unite_loop_cursor_up)
-  imap <buffer> <C-J> <Plug>(unite_select_next_line)
-  imap <buffer> <C-K> <Plug>(unite_select_previous_line)
+  imap <buffer> <C-J> <Plug>(unite_insert_leave)<C-J>
+  imap <buffer> <C-K> <Plug>(unite_insert_leave)<C-K>
   nmap <buffer> <F5> <Plug>(unite_redraw)
   imap <buffer> <F5> <Plug>(unite_redraw)
+  nmap <buffer> <C-U> <Plug>(unite_append_end)<Plug>(unite_delete_backward_line)
   nmap <buffer> <LocalLeader>q <Plug>(unite_exit)
   imap <buffer> <LocalLeader>q <Plug>(unite_exit)
   nmap <buffer> <LocalLeader>Q <Plug>(unite_all_exit)
   imap <buffer> <LocalLeader>Q <C-\><C-N><Plug>(unite_all_exit)
+  imap <buffer> <LocalLeader>; <C-\><C-N><Plug>(unite_all_exit)
 
   imap <buffer> <LocalLeader><BS> <Plug>(unite_delete_backward_path)
   imap <buffer> ; <Plug>(unite_delete_backward_word)
-  inoremap <buffer> <LocalLeader>. **/
+  inoremap <buffer><expr> <LocalLeader>/ unite#do_action('narrow')
 
   let unite = unite#get_current_unite()
   if index(unite.source_names, 'file') > -1 || index(unite.source_names, 'file_mru') > -1
     nnoremap <silent><buffer><expr> <LocalLeader><CR> unite#do_action('open')
     inoremap <silent><buffer><expr> <LocalLeader><CR> unite#do_action('open')
+  endif
+  if index(unite.source_names, 'file_rec') > -1
+    imap <buffer> <LocalLeader>. <Plug>(unite_redraw)
+  else
+    inoremap <buffer> <LocalLeader>.  **/
   endif
 endfunction
 autocmd! my_vimrc FileType unite call s:unite_settings()
@@ -889,6 +896,15 @@ call unite#set_profile('files', 'context', {
       \   'start_insert': 1,
       \   'hide_source_names': 1
       \ })
+
+for s:i.unite_pattern in values(unite#get_substitute_pattern('files'))
+  call unite#set_substitute_pattern('source/file',
+        \   s:i.unite_pattern.pattern,
+        \   s:i.unite_pattern.subst,
+        \   s:i.unite_pattern.priority
+        \ )
+endfor
+
 " Ref: thinca - http://d.hatena.ne.jp/thinca/20101027/1288190498
 call unite#set_substitute_pattern('source/file', '\$\w\+', '\=eval(submatch(0))', 200)
 
@@ -897,9 +913,13 @@ call unite#set_profile('mru', 'context', {
       \   'hide_source_names': 1
       \ })
 
-command! -bar -nargs=? UniteEditBookmark execute
-      \ "Unite -immediately -auto-resize file:" . g:unite_source_bookmark_directory
-
+command! -bar -nargs=? EditBookmarks call s:edit_bookmarks()
+function! s:edit_bookmarks() "{{{
+  if !has_key(g:, 'unite_source_bookmark_directory')
+    call unite#get_candidates(['bookmark'])
+  endif
+  execute printf("Unite -immediately -auto-resize file:%s", get(g:, 'unite_source_bookmark_directory', ''))
+endfunction "}}}
 
 " }}}2    neocomplcache    {{{2
 

@@ -1056,6 +1056,14 @@ let g:rails_url = 'http://localhost/'
 " set title titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)%(\ %{rails#statusline(1)})%
 autocmd User Rails command! Rclearlog execute "silent Rake log:clear"
 
+" }}}2   SimpleJavascriptIndenter    {{{2
+
+let bundle = neobundle#get('simple-javascript-indenter')
+function! bundle.hooks.on_source(bundle)
+  let g:SimpleJsIndenter_BriefMode = 1
+  let g:SimpleJsIndenter_CaseIndentLevel = -1
+endfunction
+
 " }}}2   TagList   {{{2
 
 if !executable('ctags')
@@ -2463,7 +2471,6 @@ command! -range=% TOhtmlDoc :call tohtml#Convert2HTML(<line1>, <line2>)
 " }}}2   JavaScript   {{{2
 
 function! s:js_rc()
-  let g:SimpleJsIndenter_BriefMode = 1
   setlocal iskeyword+=$
   setlocal iskeyword-=58
   setlocal cindent

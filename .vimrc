@@ -1056,6 +1056,24 @@ let g:rails_url = 'http://localhost/'
 " set title titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)%(\ %{rails#statusline(1)})%
 autocmd User Rails command! Rclearlog execute "silent Rake log:clear"
 
+" }}}2   gitdiffall    {{{2
+
+function! s:gitdiff_next()
+  if exists('t:gitdiffall_info')
+    let revision = get(t:gitdiffall_info, 'args', '')
+    if revision =~ '\v\+\d+$'
+      let next_revision = str2nr(matchstr(revision, '\v\d+')) + 1
+      execute 'GitDiffOff'
+      execute printf('GitDiff +%s', next_revision)
+    else
+      echomsg 'No "+n" revision recognized.'
+    endif
+  else
+    echomsg 'Not in gitdiffall tab.'
+  endif
+endfunction
+nnoremap <silent><S-F6> :call <SID>gitdiff_next()<CR>
+
 " }}}2   SimpleJavascriptIndenter    {{{2
 
 let bundle = neobundle#get('simple-javascript-indenter')

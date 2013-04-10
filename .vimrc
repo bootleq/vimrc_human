@@ -126,7 +126,7 @@ let s:bundles += [
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
       \   ['mileszs/ack.vim'],
       \   ['Indent-Guides'],
-      \   ['Lokaltog/vim-easymotion'],
+      \   ['bootleq/vim-easymotion', {"rev": "buffer-name"}],
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
       \   ['bootleq/LargeFile', {":prefer_local": 1}],

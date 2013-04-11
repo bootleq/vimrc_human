@@ -1370,6 +1370,7 @@ let g:cycle_default_groups += [
 " TODO %w(foo bar) style
 let g:cycle_default_groups += [
       \   [['日', '一', '二', '三', '四', '五', '六']],
+      \   [['portrait', 'landscape']],
       \ ]
 
 " }}}3
@@ -2703,9 +2704,6 @@ augroup my_vimrc
   autocmd FileType gitconfig call s:gitconfig_rc()
   autocmd FileType nginx call s:nginx_rc()
   autocmd FileType yaml call s:yaml_rc()
-
-  " autocmd FileType httplog :call s:logs_rc()
-  " autocmd FileType railslog :call s:logs_rc()
 
   autocmd FileType sh let g:is_bash=1
 

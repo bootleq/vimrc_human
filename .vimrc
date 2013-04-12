@@ -1195,6 +1195,7 @@ function! CleanMakeGSession(no_quit)
   set sessionoptions-=globals
   set sessionoptions-=localoptions
   set sessionoptions-=options
+  set sessionoptions-=buffers
   abclear
   mapclear
   mapclear!

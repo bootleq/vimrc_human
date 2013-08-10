@@ -124,7 +124,7 @@ let s:bundles += [
       \   ['bootleq/vim-tabline', {":prefer_local": 1}],
       \   ['bootleq/vim-gitdiffall', {":prefer_local": 1}],
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
-      \   ['mileszs/ack.vim'],
+      \   ['rking/ag.vim'],
       \   ['Indent-Guides'],
       \   ['bootleq/vim-easymotion', {"rev": "buffer-name"}],
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
@@ -1392,15 +1392,15 @@ nmap <silent> <LocalLeader><Space> <Plug>HardMotion
 " cnoremap <expr> <Space> ambicmd#expand("\<Space>")
 " cnoremap <expr> <CR> ambicmd#expand("\<CR>")
 
-" }}}2    ack.vim    {{{2
+" }}}2    ack/ag    {{{2
 
-call neobundle#config('ack.vim', {
+call neobundle#config('ag.vim', {
       \   'lazy': 1,
       \   'autoload': {
-      \     'commands': {'name': 'Ack', 'complete': 'dir'},
+      \     'commands': {'name': 'Ag', 'complete': 'dir'},
       \   }
       \ })
-let g:ackprg = 'ag --nogroup --nocolor --column'
+" let g:ackprg = 'ag --nogroup --nocolor --column'
 " alias ag='noglob ag --nobreak --nogroup --noheading --smart-case --depth=27'
 
 " }}}2    delimitMate    {{{2
@@ -1450,7 +1450,7 @@ function! bundle.hooks.on_source(bundle)
   AlterCommand pp PP
   AlterCommand u[nite] Unite
   AlterCommand f VimFilerSplit -buffer-name=
-  AlterCommand ag Ack
+  AlterCommand ag Ag
   AlterCommand qw wq
   AlterCommand ref Ref
   AlterCommand man Ref man

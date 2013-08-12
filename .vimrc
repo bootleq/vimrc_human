@@ -315,7 +315,11 @@ set shiftround
 set cinkeys-=:
 set cinoptions+=(0
 set textwidth=78
-setlocal formatoptions=roql2m
+try
+  setlocal formatoptions=roql2mj
+catch /^Vim\%((\a\+)\)\=:E539/
+  setlocal formatoptions=roql2m
+endtry
 " NOTE foldmethod can be local, but I prefer global setting
 if &foldmethod == 'manual'
   set foldmethod=marker
@@ -420,7 +424,7 @@ set switchbuf=useopen,usetab,newtab
 set tabpagemax=80
 set diffopt+=vertical,context:4,foldcolumn:1
 
-" }}}2   Vim 7.3    {{{2
+" }}}2   Vim 7.3 / 7.4    {{{2
 
 if version >= 703
   set conceallevel=1
@@ -436,6 +440,14 @@ if version >= 703
   map  <C-ScrollWheelUp>   <ScrollWheelLeft>
   imap <C-ScrollWheelDown> <ScrollWheelRight>
   imap <C-ScrollWheelUp>   <ScrollWheelLeft>
+  if exists('+regexpengine')
+    set regexpengine=0
+  endif
+
+  try
+    setlocal formatoptions+=j
+  catch /^Vim\%((\a\+)\)\=:E539/
+  endtry
 endif
 
 " }}}2
@@ -2509,6 +2521,10 @@ endfunction
 function! s:scss_rc()
   setlocal foldmethod=marker
   setlocal formatoptions=l2
+  try
+    setlocal formatoptions+=j
+  catch /^Vim\%((\a\+)\)\=:E539/
+  endtry
   setlocal path+=./;/home/www/
   " TODO load hail2u/vim-css3-syntax plugin
 endfunction
@@ -2686,7 +2702,11 @@ endfunction
 
 augroup my_vimrc
 
-  autocmd FileType * setlocal formatoptions=roql2
+  autocmd FileType * try |
+        \   setlocal formatoptions=roql2mj |
+        \ catch /^Vim\%((\a\+)\)\=:E539/ |
+        \   setlocal formatoptions=roql2m |
+        \ endtry
 
   autocmd FileType php,xml,html inoremap <buffer> <LocalLeader>/ </<C-X><C-O>
 

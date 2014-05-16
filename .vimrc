@@ -1494,6 +1494,8 @@ function! bundle.hooks.on_source(bundle)
   AlterCommand man Ref man
   AlterCommand bingzh Ref bingzh
   AlterCommand k Ref bingzh
+  AlterCommand jsl JSLint
+  AlterCommand jsh JSHint
   AlterCommand bu NeoBundleUpdate
   AlterCommand bl TabMessage NeoBundleUpdatesLog
 endfunction
@@ -2228,6 +2230,63 @@ function! DoJSLint(cmd, file)
   let ret = system(a:cmd)
   if v:shell_error
     cexpr ret
+    if len(getqflist()) > 0
+      QFix!<CR>
+    endif
+  else
+    redraw
+    echomsg "No problems found in " . a:file
+    return
+  endif
+endfunction
+
+" }}}2   JSHint   {{{2
+
+command! -nargs=* JSHint call JSHint(<f-args>)
+" TODO cli flags (--verbose, --reporter, .etc)
+function! JSHint(...)
+  if !executable('jshint')
+    echohl WarningMsg | echoerr "jshint command not found." | echohl None
+    return
+  endif
+  let input    = expand('%')
+  let interact = a:0 > 0 ? a:1 : 0
+  let options  = a:0 > 1 ? a:2 : ''
+
+  if &modified
+    echomsg 'No write since last change, write before lint? (y/n) '
+    let answer = getchar()
+    if nr2char(answer) == 'y' | w
+    elseif nr2char(answer) != 'n' | redraw! | echomsg 'JSHint aborted.' | return
+    endif
+  endif
+
+  if &filetype == 'javascript'
+    let reporter = expand('~/.vim/jshint-reporter.js')
+    let cmd = 'jshint ' . input . ' ' . options . ' --reporter=' . reporter
+    if interact
+      echomsg 'JSHint ' . input . '? (y/n) ' | redraw
+      let yes = getchar()
+      if nr2char(yes) == 'y'
+        return DoJSHint(cmd, input)
+      else
+        redraw!
+        echomsg 'JSLint aborted.'
+        return
+      endif
+    else
+      return DoJSHint(cmd, input)
+    endif
+  else
+    echohl WarningMsg | echomsg "Unsupported filetype." | echohl None
+  endif
+endfunction
+
+function! DoJSHint(cmd, file)
+  echomsg "JSHint in progress..."
+  let ret = system(a:cmd)
+  if v:shell_error
+    silent cexpr ret
     if len(getqflist()) > 0
       QFix!<CR>
     endif

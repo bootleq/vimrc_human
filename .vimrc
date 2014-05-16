@@ -361,8 +361,11 @@ set ambiwidth=single
 " set ambiwidth=double
 syntax on
 
-" http://blogger.godfat.org/2011/07/spellcheck-only-for-english-in-vim.html
-syntax match Normal /[^!-~]/ contains=@NoSpell
+if v:version > 704 || (v:version == 704 && has('patch88'))
+else
+  " http://blogger.godfat.org/2011/07/spellcheck-only-for-english-in-vim.html
+  syntax match Normal /[^!-~]/ contains=@NoSpell
+endif
 
 autocmd Syntax * syntax match FullWidthSpace /\%d12288/ containedin=ALL
 autocmd Syntax * highlight FullWidthSpace gui=NONE guibg=blue cterm=bold ctermbg=blue
@@ -575,9 +578,15 @@ nnoremap <F5> :call SynStackInfo()<CR>
 nnoremap <Leader><F5> :tabdo e!<CR>
 nnoremap <F6> :QuickOff<CR>
 
-nnoremap <silent><F8> :setlocal spell! spelllang=en_us spell?<CR>
-xnoremap <silent><F8> :<C-U>setlocal spell! spelllang=en_us spell?<CR>gv
-inoremap <silent><F8> <C-O>:setlocal spell! spelllang=en_us spell?<CR>
+if v:version > 704 || (v:version == 704 && has('patch88'))
+  nnoremap <silent><F8> :setlocal spell! spelllang=en_us,cjk spell?<CR>
+  xnoremap <silent><F8> :<C-U>setlocal spell! spelllang=en_us,cjk spell?<CR>gv
+  inoremap <silent><F8> <C-O>:setlocal spell! spelllang=en_us,cjk spell?<CR>
+else
+  nnoremap <silent><F8> :setlocal spell! spelllang=en_us spell?<CR>
+  xnoremap <silent><F8> :<C-U>setlocal spell! spelllang=en_us spell?<CR>gv
+  inoremap <silent><F8> <C-O>:setlocal spell! spelllang=en_us spell?<CR>
+endif
 
 set pastetoggle=<F11>
 map  <silent> <F12> :set list!<CR>

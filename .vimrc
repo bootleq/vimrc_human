@@ -682,9 +682,23 @@ nnoremap m<LocalLeader>d :<C-U>delmarks!<CR>
 
 " Commands:             {{{1 =================================================
 
-if executable('cat')
-  command! EmptyFile call system("cat /dev/null > " . shellescape(expand('%:p'))) | checktime
-endif
+command! -bang EmptyFile call <SID>empty_file(<bang>0)
+function! s:empty_file(with_sudo) "{{{
+  if executable('cat')
+    let result = system(printf(
+          \   "!cat /dev/null | %s tee %s",
+          \   a:with_sudo ? 'sudo' : '',
+          \   shellescape(expand('%:p'))
+          \ ))
+    if v:shell_error
+      echohl WarningMsg | echomsg printf("Error: %s.\n Try :EmptyFile! (<bang>)", result) | echohl None
+    else
+      checktime
+    endif
+  else
+    echohl WarningMsg | echomsg "cat command not executable." | echohl None
+  endif
+endfunction "}}}
 
 command! Rnginx execute "!sudo\ service nginx restart"
 " command! Rtouch execute "!touch tmp/restart.txt"
@@ -1590,7 +1604,7 @@ autocmd User LargeFile call s:large_file_detected()
 function! s:large_file_detected()
   let ext_name = expand('%:e')
   if ext_name == 'log'
-    " nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
+    nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
   elseif ext_name == 'sql'
     " set syntax=sql
   endif
@@ -2756,6 +2770,7 @@ augroup my_vimrc
 
   autocmd BufRead,BufNewFile /opt/nginx*/conf/*.conf,/opt/nginx*/conf/*.default setfiletype nginx
   autocmd BufRead /home/www/logs/*.log setfiletype httplog
+  autocmd BufRead /home/www/logs/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
   autocmd BufRead /home/www/fc/log/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
 
   " let apache_version = "2.0"

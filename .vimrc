@@ -493,6 +493,9 @@ imap <silent><End> <C-R>=SmartEnd("i")<CR>
 vmap <silent><Home> <Esc>:call SmartHome("v")<CR>
 vmap <silent><End> <Esc>:call SmartEnd("v")<CR>
 
+nnoremap <LocalLeader>I ^
+nnoremap <LocalLeader>A $
+
 map  <kHome> <Home>
 map! <kHome> <Home>
 map  <kEnd>  <End>

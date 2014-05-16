@@ -90,9 +90,7 @@ filetype off
 set runtimepath-=~/.vim
 
 " }}}2    Bundles   {{{2
-let s:bundles = [
-      \   ['Shougo/neobundle.vim'],
-      \ ]
+let s:bundles = []
 let s:bundles += [
       \   ['kana/vim-smartinput', {":skip": 1}],
       \   ['Raimondi/delimitMate'],
@@ -211,6 +209,8 @@ for s:i.dir in ['~/repository/', 'D:/repository/']
   endif
 endfor
 let s:bundle_local_repo_dir = expand(get(s:, 'bundle_local_repo_dir', ''))
+
+NeoBundleFetch 'Shougo/neobundle.vim'
 
 for s:i.bundle in s:bundles
   let s:tmp_options = get(s:i.bundle, 1, {})

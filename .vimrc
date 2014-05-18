@@ -567,19 +567,21 @@ cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 noremap  <F1> :help <C-R>=expand('<cword>')<CR><CR>
 noremap  <LocalLeader><F1> :tab help <C-R>=expand('<cword>')<CR><CR>
 xnoremap <F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>:help <C-R>=b:tempReg<CR><CR>
-xnoremap <LocalLeader><F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>:help <C-R>=b:tempReg<CR><CR>
+xnoremap <LocalLeader><F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>:tab help <C-R>=b:tempReg<CR><CR>
 
 nnoremap <F2> :%s/<C-R><C-W>
-xnoremap <F2> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>gv:<C-U>%s/<C-R>=b:tempReg<CR>/
+xnoremap <F2> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>gv:<C-U>%s/\V<C-R>=b:tempReg<CR>/
 
 noremap <silent> <F3> :nohlsearch<CR>
 inoremap <silent> <F3> <C-O>:nohlsearch<CR>
+" TODO use Vim 7.4.079 v:hlsearch to eliminate <F4> mapping
 noremap <silent> <F4> :set hlsearch<CR>
 inoremap <silent> <F4> <C-O>:set hlsearch<CR>
 
 nnoremap <F5> :call SynStackInfo()<CR>
 nnoremap <Leader><F5> :tabdo e!<CR>
 nnoremap <F6> :QuickOff<CR>
+nnoremap <LocalLeader><F6> :tabclose<CR>
 
 if v:version > 704 || (v:version == 704 && has('patch88'))
   nnoremap <silent><F8> :setlocal spell! spelllang=en_us,cjk spell?<CR>

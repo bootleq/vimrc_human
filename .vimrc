@@ -718,6 +718,36 @@ endfunction
 " Split and diff (@Shougo)
 command! -nargs=1 -complete=file Diff vertical diffsplit <args>
 
+" Echo range text or register content, for tmux manual yank
+command! -nargs=? -range Echo <line1>,<line2>call s:echo(<f-args>)
+function! s:echo(...) range "{{{
+  if a:0
+    let var = a:1
+    if var =~ '^@\?'
+      echo getreg(var[1:])
+    else
+      echo a:1
+    endif
+    return
+  endif
+
+  let save_sel = &selection
+  let &selection = "inclusive"
+  let save_reg = @@
+  let mode = (a:firstline == a:lastline) ? 'n' : visualmode()
+
+  if mode == 'n'
+    silent execute a:firstline . "," . a:lastline . "y"
+  elseif mode == 'c'
+    silent execute a:1 . "," . a:2 . "y"
+  else
+    silent execute "normal! `<" . mode . "`>y"
+  endif
+  echo @@
+  let &selection = save_sel
+  let @@ = save_reg
+endfunction "}}}
+
 " }}}1    Commands             ===============================================
 
 
@@ -1484,6 +1514,8 @@ function! bundle.hooks.on_source(bundle)
   AlterCommand tm TabMessage
   AlterCommand tms TabMessage scriptnames
   AlterCommand mov[eintotabpage] MoveIntoTabpage
+  AlterCommand p Echo
+  AlterCommand '<,'>p '<,'>Echo
   AlterCommand g GitDiff
   AlterCommand d[iff] Diff
   AlterCommand r[ename] Rename

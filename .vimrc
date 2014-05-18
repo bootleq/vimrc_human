@@ -125,6 +125,7 @@ let s:bundles += [
       \   ['rking/ag.vim'],
       \   ['Indent-Guides'],
       \   ['bootleq/vim-easymotion', {"rev": "buffer-name"}],
+      \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
       \   ['bootleq/LargeFile', {":prefer_local": 1}],
@@ -1314,6 +1315,20 @@ nmap mm <Plug>ToggleMarkWok
 map mj <Plug>NextMarkWok
 map mk <Plug>PrevMarkWok
 autocmd User WokmarksChange :ShowMarksOn
+
+" }}}2   anzu   {{{2
+
+let bundle = neobundle#get('vim-anzu')
+if !empty(bundle)
+  function! bundle.hooks.on_source(bundle)
+    let g:anzu_status_format = "/%#Type#%p%#None#  %i/%l %#WarningMsg#%w"
+    let g:airline#extensions#anzu#enabled = 0
+    nmap n <Plug>(anzu-n-with-echo)
+    nmap N <Plug>(anzu-N-with-echo)
+    nmap * <Plug>(anzu-star-with-echo)
+    nmap # <Plug>(anzu-sharp-with-echo)
+  endfunction
+endif
 
 " }}}2    tComment    {{{2
 

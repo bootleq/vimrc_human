@@ -761,8 +761,20 @@ function! s:empty_file(with_sudo) "{{{
   endif
 endfunction "}}}
 
+command! Rtouch call <SID>passenger_touch_restart()
 command! Rnginx execute "!sudo\ service nginx restart"
-" command! Rtouch execute "!touch tmp/restart.txt"
+function! s:passenger_touch_restart() "{{{
+  if isdirectory('tmp')
+    let result = system("touch tmp/restart.txt")
+    if v:shell_error
+      echohl WarningMsg | echomsg printf("Error: %s", result) | echohl None
+    else
+      echomsg "Touched."
+    endif
+  else
+    echohl WarningMsg | echomsg "tmp directory not found." | echohl None
+  endif
+endfunction "}}}
 
 " Ref: tsukkee - https://github.com/tsukkee/config
 command! -nargs=1 -bang -complete=file Rename saveas<bang> <args> | call delete(expand('#'))

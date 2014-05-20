@@ -155,6 +155,13 @@ let s:bundles += [
       \   ['kana/vim-textobj-fold'],
       \   ['kana/vim-textobj-indent'],
       \   ['kana/vim-textobj-line'],
+      \   ['kana/vim-textobj-function'],
+      \   ['thinca/vim-textobj-function-javascript'],
+      \   ['sgur/vim-textobj-parameter'],
+      \   ['kana/vim-textobj-jabraces'],
+      \   ['thinca/vim-textobj-between'],
+      \   ['saihoooooooo/vim-textobj-space'],
+      \   ['osyo-manga/vim-textobj-multitextobj'],
       \   ['nelstrom/vim-textobj-rubyblock'],
       \   ['bootleq/vim-textobj-rubysymbol'],
       \   ['coderifous/textobj-word-column.vim', {':skip': 1}],
@@ -660,6 +667,52 @@ function! s:textobj_rubyblock_settings()
   omap <buffer> ib <Plug>(textobj-rubyblock-i)
 endfunction
 autocmd! my_vimrc FileType ruby call s:textobj_rubyblock_settings()
+
+let g:textobj_space_no_default_key_mappings = 1
+xmap a<Space> <Plug>(textobj-space-a)
+omap a<Space> <Plug>(textobj-space-a)
+xmap i<Space> <Plug>(textobj-space-i)
+omap i<Space> <Plug>(textobj-space-i)
+
+let g:textobj_between_no_default_key_mappings = 1
+xmap a/ <Plug>(textobj-between-a)
+omap a/ <Plug>(textobj-between-a)
+xmap i/ <Plug>(textobj-between-i)
+omap i/ <Plug>(textobj-between-i)
+
+let g:textobj_parameter_no_default_key_mappings = 1
+xmap a; <Plug>(textobj-parameter-a)
+omap a; <Plug>(textobj-parameter-a)
+xmap i; <Plug>(textobj-parameter-i)
+omap i; <Plug>(textobj-parameter-i)
+
+let g:textobj_jabraces_no_default_key_mappings = 1
+let s:textobj_multitextobj_textobjects_group_base_paren = [
+      \   '%(',
+      \   '%[',
+      \   "\<Plug>(textobj-jabraces-parens-%)",
+      \   "\<Plug>(textobj-jabraces-kakko-%)",
+      \   "\<Plug>(textobj-jabraces-double-kakko-%)",
+      \   "\<Plug>(textobj-jabraces-yama-kakko-%)",
+      \   "\<Plug>(textobj-jabraces-double-yama-kakko-%)",
+      \   "\<Plug>(textobj-jabraces-sumi-kakko-%)",
+      \ ]
+let g:textobj_multitextobj_textobjects_group_i = {
+      \   "paren": map(
+      \     copy(s:textobj_multitextobj_textobjects_group_base_paren),
+      \     'substitute(v:val, "%", "i", "")'
+      \   )
+      \ }
+let g:textobj_multitextobj_textobjects_group_a = {
+      \   "paren": map(
+      \     copy(s:textobj_multitextobj_textobjects_group_base_paren),
+      \     'substitute(v:val, "%", "a", "")'
+      \   )
+      \ }
+omap <expr> a. textobj#multitextobj#mapexpr_a("paren")
+vmap <expr> a. textobj#multitextobj#mapexpr_a("paren")
+omap <expr> i. textobj#multitextobj#mapexpr_i("paren")
+vmap <expr> i. textobj#multitextobj#mapexpr_i("paren")
 
 " }}}2   User operators    {{{2
 

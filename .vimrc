@@ -124,8 +124,8 @@ let s:bundles += [
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
       \   ['rking/ag.vim'],
       \   ['Indent-Guides'],
-      \   ['bootleq/vim-easymotion', {"rev": "buffer-name"}],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
+      \   ['Lokaltog/vim-easymotion'],
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
       \   ['bootleq/LargeFile', {":prefer_local": 1}],
@@ -1403,12 +1403,26 @@ let g:camelcasemotion_leader = 'g'
 
 " }}}2    EasyMotion    {{{2
 
-noremap [emotion] <Nop>
-map 0 [emotion]
-map <LocalLeader>e [emotion]w
-map <LocalLeader>H [emotion]k
-map <LocalLeader>L [emotion]j
-let g:EasyMotion_leader_key = '[emotion]'
+map <LocalLeader>e <Plug>(easymotion-w)
+map <LocalLeader>E <Plug>(easymotion-bd-w)
+map <LocalLeader>L <Plug>(easymotion-j)
+map <LocalLeader>H <Plug>(easymotion-k)
+map <LocalLeader>n <Plug>(easymotion-n)
+map <LocalLeader>N <Plug>(easymotion-N)
+map <LocalLeader>s <Plug>(easymotion-sn)
+" map <LocalLeader>J <Plug>(easymotion-jumptoanywhere)
+" omap <LocalLeader>l <Plug>(easymotion-special-l)
+" omap <LocalLeader>p <Plug>(easymotion-special-p)
+" xmap <LocalLeader>l <Plug>(easymotion-special-l)
+" xmap <LocalLeader>p <Plug>(easymotion-special-p)
+nmap <LocalLeader>; <Plug>(easymotion-next)
+nmap <LocalLeader>: <Plug>(easymotion-prev)
+let g:EasyMotion_keys = tolower('asdghklqwertyuiopzxcvbnmfj;')
+let g:EasyMotion_use_upper = 0
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline = 0
+let g:EasyMotion_space_jump_first = 1
+let g:EasyMotion_enter_jump_first = 1
 
 " }}}2    histwin    {{{2
 

@@ -97,7 +97,6 @@ let s:bundles += [
       \   ['kana/vim-surround'],
       \   ['kana/vim-repeat'],
       \   ['h1mesuke/vim-alignta'],
-      \   ['Shougo/neocomplcache'],
       \   ['Shougo/neosnippet'],
       \   ['Shougo/vimfiler'],
       \   ['thinca/vim-prettyprint'],
@@ -134,7 +133,6 @@ let s:bundles += [
       \ ]
 " filetype {{{3
 let s:bundles += [
-      \   ['bootleq/JavaScript-syntax', {':filetypes': ['javascript']}],
       \   ['leshill/vim-json', {':filetypes': ['json']}],
       \   ['depuracao/vim-rdoc', {':filetypes': ['rdoc']}],
       \   ['jiangmiao/simple-javascript-indenter', {':filetypes': ['javascript']}],
@@ -181,12 +179,19 @@ let s:bundles += [
       \   ['Shougo/unite.vim'],
       \   ['Shougo/unite-session'],
       \   ['Shougo/unite-outline'],
+      \   ['Shougo/neomru.vim'],
       \   ['tacroe/unite-mark'],
       \   ['thinca/vim-unite-history'],
       \   ['tsukkee/unite-help', {"rev": 'tags-caching'}],
       \   ['ujihisa/unite-gem'],
       \   ['kmnk/vim-unite-giti', {":skip": 1}],
       \ ]
+" }}}3 neocomplete {{{3
+if has('lua') && (v:version > 703 || (v:version == 703 && has('patch885')))
+  let s:bundles += [['Shougo/neocomplete']]
+else
+  let s:bundles += [['Shougo/neocomplcache']]
+endif
 " }}}3 unused {{{3
 " let s:bundles += [
 "       \   ['L9', {"stay_same": 1}],
@@ -936,7 +941,6 @@ xnoremap [unite] <Nop>
 nmap <LocalLeader>f [unite]
 xmap <LocalLeader>f [unite]
 imap <LocalLeader>f <C-\><C-N>[unite]
-imap <LocalLeader>c <Plug>(neocomplcache_start_unite_complete)
 
 nnoremap [unite]S :<C-U>Unite source<CR>
 nnoremap <silent> [unite]f :<C-U>UniteWithBufferDir -buffer-name=files file<CR>
@@ -1045,34 +1049,55 @@ function! s:edit_bookmarks() "{{{
   execute printf("Unite -immediately -auto-resize file:%s", get(g:, 'unite_source_bookmark_directory', ''))
 endfunction "}}}
 
-" }}}2    neocomplcache    {{{2
+" }}}2    neocomplete    {{{2
 
-let g:neocomplcache_enable_at_startup = 1
-let g:neocomplcache_enable_smart_case = 1
-let g:neocomplcache_enable_camel_case_completion = 0
-let g:neocomplcache_enable_underbar_completion = 0
-let g:neocomplcache_enable_auto_select = 1
-let g:neocomplcache_enable_auto_delimiter = 1
-" let g:neocomplcache_enable_insert_char_pre = 1
-let g:neocomplcache_max_list = 100
-let g:neocomplcache_force_overwrite_completefunc = 1
-
-let g:neocomplcache_lock_buffer_name_pattern = '\[fuf\]'
-let g:neocomplcache_temporary_dir = expand('~/.vim/.neocon')
-
-inoremap <LocalLeader>x <C-O>:NeoComplCacheToggle<CR>
-inoremap <expr><LocalLeader><C-H> neocomplcache#smart_close_popup()."\<BS>"
-inoremap <expr><LocalLeader><BS> neocomplcache#smart_close_popup()."\<BS>"
-inoremap <expr> <C-Y> pumvisible() ? neocomplcache#close_popup() : '<C-Y>'
-inoremap <expr> <C-E> pumvisible() ? neocomplcache#cancel_popup() : '<C-E>'
-
-imap <expr> <LocalLeader>- pumvisible() ?
-      \ "\<Plug>(neocomplcache_start_unite_quick_match)" : '-'
-
-let g:neocomplcache_omni_functions = {
-      \ 'python' : 'pythoncomplete#Complete',
-      \ 'ruby' : 'rubycomplete#Complete',
+let s:neco_settings = {
+      \   'number': {
+      \     'enable_at_startup'           : 1,
+      \     'enable_smart_case'           : 1,
+      \     'enable_camel_case_completion': 0,
+      \     'enable_underbar_completion'  : 0,
+      \     'enable_auto_select'          : 1,
+      \     'enable_auto_delimiter'       : 1,
+      \     'max_list'                    : 100,
+      \     'force_overwrite_completefunc': 1
+      \   },
+      \   'list': {
+      \     'same_filetype_lists': {
+      \       '_': {}
+      \     },
+      \     'omni_functions': {
+      \       'python': 'pythoncomplete#Complete',
+      \       'ruby'  : 'rubycomplete#Complete'
+      \     }
+      \   },
+      \   'string': {
+      \     'lock_buffer_name_pattern': '\[fuf\]',
+      \     'temporary_dir'           : expand('~/.vim/.neocomplete'),
+      \     'data_directory'          : expand('~/.vim/.neocomplete')
+      \   }
       \ }
+
+let bundle = neobundle#get('neocomplete')
+if empty(bundle)
+  let bundle = neobundle#get('neocomplcache')
+endif
+let s:neco_prefix = bundle.name == 'neocomplete' ? 'neocomplete#' : 'neocomplcache_'
+for s:i.type in ['number', 'list', 'string']
+  for [s:i.key, s:i.value] in items(s:neco_settings[s:i.type])
+    let s:neco_settings_key = s:neco_prefix . s:i.key
+    if !exists('g:' . s:neco_settings_key)
+      let g:{s:neco_settings_key} = s:i.value
+    endif
+  endfor
+  unlet s:i.value
+endfor
+unlet! s:neco_settings s:neco_prefix s:neco_settings_key
+
+execute 'inoremap <expr><LocalLeader><C-H> ' . bundle.name . '#smart_close_popup()."\<BS>"'
+execute 'inoremap <expr><LocalLeader><BS>  ' . bundle.name . '#smart_close_popup()."\<BS>"'
+execute 'inoremap <expr> <C-Y> pumvisible() ? ' . bundle.name . '#close_popup() : "\<C-Y>"'
+execute 'inoremap <expr> <C-E> pumvisible() ? ' . bundle.name . '#cancel_popup() : "\<C-E>"'
 
 " }}}2    neosnippet    {{{2
 

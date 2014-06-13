@@ -1223,6 +1223,31 @@ let g:rails_url = 'http://localhost/'
 " set title titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)%(\ %{rails#statusline(1)})%
 autocmd User Rails command! Rclearlog execute "silent Rake log:clear"
 
+" }}}2   fugitive  {{{2
+
+command! -nargs=0 GBlameA Gblame | call <SID>fugitiveblame_after()
+function! s:fugitiveblame_after() "{{{
+  call feedkeys('A')
+endfunction "}}}
+
+function! s:fugitiveblame_gitdiffall(all) "{{{
+  let rev = matchstr(getline('.'), '\v^\w{7}')
+  let buffer = fugitive#buffer(bufname(b:fugitive_blamed_bufnr))
+  if a:all
+    call TmuxNewWindow({
+          \   "text": "gitdiffall @" . rev,
+          \   "title": '⎇',
+          \   "directory": buffer.repo().tree()
+          \ })
+  else
+    execute printf("tabnew %s | silent GitDiff @%s", buffer.path(), rev)
+  endif
+endfunction "}}}
+
+autocmd! my_vimrc FileType fugitiveblame
+      \ nnoremap <buffer> gf :call <SID>fugitiveblame_gitdiffall(0)<CR> |
+      \ nnoremap <buffer> <LocalLeader>gf :call <SID>fugitiveblame_gitdiffall(1)<CR>
+
 " }}}2   gitdiffall    {{{2
 
 function! s:gitdiff_next()
@@ -1664,6 +1689,8 @@ function! bundle.hooks.on_source(bundle)
   AlterCommand '<,'>p '<,'>Echo
   AlterCommand g GitDiff
   AlterCommand d[iff] Diff
+  AlterCommand gits Gstatus
+  AlterCommand gb[lame] GBlameA
   AlterCommand r[ename] Rename <C-R>%<C-R>=EatChar('\s')<CR>
   AlterCommand to[uch] Touch %<C-R>=EatChar('\s')<CR>
   AlterCommand pp PP
@@ -2110,8 +2137,9 @@ else
   inoremap <silent> <LocalLeader>p <C-O>:call Getclip()<CR>
 endif
 
-" }}}2   Bracketed Paste Mode   {{{2
+" }}}2   Tmux   {{{2
 
+" Bracketed Paste Mode
 " Ref http://slashdot.jp/journal/506765/Bracketed-Paste-Mode
 " - Use tmux 1.7 `paste-buffer -p` to paste
 " - Use <F11> and tmux `send-keys "\e[201~"` for pastetoggle
@@ -2132,6 +2160,21 @@ if &term =~ "xterm" && exists('$TMUX')
   cmap <special> <Esc>[200~ <nop>
   cmap <special> <Esc>[201~ <nop>
 endif
+
+function! TmuxNewWindow(...) "{{{
+  let options = a:0 ? a:1 : {}
+  let text = get(options, 'text', '')
+  let title = get(options, 'title', '')
+  let directory = get(options, 'directory', getcwd())
+  let cmd = 'tmux new-window -a '
+        \ . (empty(title) ? '' : printf('-n %s', shellescape(title)))
+        \ . printf(' -c %s', shellescape(directory))
+  call system(cmd)
+  if !empty(text)
+    let cmd = printf('tmux set-buffer %s \; paste-buffer -d \; send-keys Enter', shellescape(text))
+    call system(cmd)
+  endif
+endfunction "}}}
 
 " }}}2   LastTab    {{{2
 
@@ -2665,10 +2708,16 @@ endfunction
 command! -nargs=0 QuickOff call <SID>quick_off()
 function! s:quick_off()
   if winnr('$') > 1
-    if <SID>ref_window_off()
+    if <SID>gblame_window_off()
+      return
+    elseif <SID>ref_window_off()
       return
     elseif exists('t:gitdiffall_info')
       execute 'GitDiffOff'
+    elseif winnr('$') > 1 && &diff
+      execute 'wincmd t'
+      call SafeDiffOff()
+      only
     endif
   endif
 endfunction
@@ -2677,6 +2726,13 @@ function! s:ref_quit()
   if &filetype =~ 'ref-\w'
     execute "quit"
   endif
+endfunction
+
+function! s:gblame_window_off()
+  let win_count = winnr('$')
+  silent windo if &filetype == 'fugitiveblame' | execute "normal gq" | endif
+  execute 'wincmd t'
+  return win_count > winnr('$')
 endfunction
 
 function! s:ref_window_off()

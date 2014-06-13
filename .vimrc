@@ -780,8 +780,10 @@ function! s:passenger_touch_restart() "{{{
   endif
 endfunction "}}}
 
-" Ref: tsukkee - https://github.com/tsukkee/config
+" Ref: http://vim-users.jp/2009/05/hack17/
 command! -nargs=1 -bang -complete=file Rename saveas<bang> <args> | call delete(expand('#'))
+
+command! -nargs=1 -complete=file Touch !touch <args>
 
 " Ref: kana - https://github.com/kana/config
 command! -bar -complete=file -nargs=+ Grep call s:grep('grep', [<f-args>])
@@ -1662,7 +1664,8 @@ function! bundle.hooks.on_source(bundle)
   AlterCommand '<,'>p '<,'>Echo
   AlterCommand g GitDiff
   AlterCommand d[iff] Diff
-  AlterCommand r[ename] Rename
+  AlterCommand r[ename] Rename <C-R>%<C-R>=EatChar('\s')<CR>
+  AlterCommand to[uch] Touch %<C-R>=EatChar('\s')<CR>
   AlterCommand pp PP
   AlterCommand u[nite] Unite
   AlterCommand f VimFilerSplit -buffer-name=
@@ -1677,6 +1680,13 @@ function! bundle.hooks.on_source(bundle)
   AlterCommand bu NeoBundleUpdate
   AlterCommand bl TabMessage NeoBundleUpdatesLog
 endfunction
+
+" Ref helpgrep Eatchar
+function! EatChar(pattern)
+  let c = nr2char(getchar(0))
+  return (c =~ a:pattern) ? '' : c
+endfunction
+
 " TODO unlet bundle
 
 " }}}2    qfreplace    {{{2

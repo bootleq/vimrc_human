@@ -304,6 +304,9 @@ set history=666
 set viewoptions=folds,cursor
 set updatetime=10000
 set noswapfile
+set directory-=.
+set backupdir-=.
+set nowritebackup
 set updatecount=0
 
 " }}}2    term 相關調整     {{{2

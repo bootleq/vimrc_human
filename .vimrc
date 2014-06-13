@@ -1423,11 +1423,13 @@ endif
 " }}}2    tComment    {{{2
 
 let g:tcommentMaps = 0
-let g:tcommentBlankLines = 0
+let g:tcomment#blank_lines = 0
+let g:tcommentGuessFileType_haml = 1
 " let g:tcommentOptions = {'col': 1}
-" let g:tcomment_types = {
-"       \   'vim': {"commentstring": '" %s',  "col": 0}
-"       \ }
+let g:tcomment_types = {
+      \   'c': {"commentstring": '// %s'},
+      \   'c_inline': {"commentstring": '// %s'}
+      \ }
 nnoremap <silent> <LocalLeader>cc :TComment<CR>
 vnoremap <silent> <LocalLeader>cc :TCommentMaybeInline<CR>
 nnoremap <silent> <LocalLeader>cb :TCommentBlock<CR>

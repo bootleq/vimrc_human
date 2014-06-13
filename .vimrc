@@ -126,6 +126,7 @@ let s:bundles += [
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
       \   ['Lokaltog/vim-easymotion'],
+      \   ['t9md/vim-choosewin'],
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
       \   ['bootleq/LargeFile', {":prefer_local": 1}],
@@ -1519,6 +1520,17 @@ let g:undo_tree_help = 0
 let g:undo_tree_dtl = 0
 let g:undo_tree_width = 40
 " let g:undo_tree_nomod = 0
+
+" }}}2    ChooseWin    {{{2
+
+" nmap - <Plug>(choosewin)
+nmap <C-W>/ <Plug>(choosewin)
+nmap <C-W>; <Plug>(choosewin)
+let g:choosewin_overlay_enable = 0
+" let g:choosewin_overlay_clear_multibyte = 1
+" let g:choosewin_blink_on_land      = 0
+" let g:choosewin_statusline_replace = 0
+let g:choosewin_tabline_replace    = 0
 
 " }}}2    Cycle    {{{2
 

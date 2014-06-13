@@ -96,6 +96,7 @@ let s:bundles += [
       \   ['Raimondi/delimitMate'],
       \   ['kana/vim-surround'],
       \   ['kana/vim-repeat'],
+      \   ['kana/vim-fakeclip'],
       \   ['h1mesuke/vim-alignta'],
       \   ['Shougo/neosnippet'],
       \   ['Shougo/vimfiler'],
@@ -623,14 +624,6 @@ cnoremap <LocalLeader><CR> <C-E>
 inoremap <LocalLeader>. <C-X><C-O>
 inoremap <expr> <C-J> pumvisible() ? "\<C-N>" : "\<C-J>"
 inoremap <expr> <C-K> pumvisible() ? "\<C-P>" : "\<C-K>"
-
-" }}}2   跨 Vim 剪貼    {{{2
-
-" http://vim.wikia.com/wiki/Transfer_text_between_two_Vim_instances
-nmap <Leader>xp :r $HOME/.vimxfer<CR>
-nmap <Leader>xy V:w! $HOME/.vimxfer<CR>
-vmap <Leader>xy :w! $HOME/.vimxfer<CR>
-vmap <Leader>xa :w>> $HOME/.vimxfer<CR>
 
 " }}}2   Quickfix    {{{2
 

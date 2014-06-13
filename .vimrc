@@ -124,6 +124,7 @@ let s:bundles += [
       \   ['rking/ag.vim'],
       \   ['Indent-Guides'],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
+      \   ['justinmk/vim-sneak', {':skip': 0}],
       \   ['Lokaltog/vim-easymotion'],
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
@@ -1462,6 +1463,25 @@ let g:EasyMotion_smartcase = 1
 let g:EasyMotion_startofline = 0
 let g:EasyMotion_space_jump_first = 1
 let g:EasyMotion_enter_jump_first = 1
+
+" }}}2    Sneak    {{{2
+
+let g:sneak#use_ic_scs = 1
+let g:sneak#map_netrw = 0
+nmap <Leader>; <Plug>SneakBackward
+xmap <Leader>; <Plug>VSneakBackward
+nmap f <Plug>Sneak_f
+nmap F <Plug>Sneak_F
+xmap f <Plug>Sneak_f
+xmap F <Plug>Sneak_F
+omap f <Plug>Sneak_f
+omap F <Plug>Sneak_F
+
+" leave s to surround
+let bundle = neobundle#get('vim-sneak')
+function! bundle.hooks.on_source(bundle)
+  nmap s <plug>Ysurround
+endfunction
 
 " }}}2    histwin    {{{2
 

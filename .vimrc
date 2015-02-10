@@ -273,7 +273,7 @@ set noendofline
 " }}}2   GUI    {{{2
 
 if has("gui_running")
-  set antialias=true
+  set antialias
   source $VIMRUNTIME/delmenu.vim
   set langmenu=zh_TW.UTF-8
   source $VIMRUNTIME/menu.vim
@@ -291,8 +291,14 @@ if has("gui_running")
     set guifontwide=Consolas:h11
     " set guifontwide=Microsoft\ JhengHei,\ Meiryo,\ cwTeXMing
     set winaltkeys=no
+  elseif has("gui_macvim")
+    set guifont=Consolas:h14,\ Monaco:h14
+    set guifontwide=Consolas:h14
+    " set guifontwide=Microsoft\ JhengHei,\ Meiryo,\ cwTeXMing
+    set winaltkeys=no
   else
-    set guifont=Consolas\ 14
+    set guifont=Liberation\ Mono\ 12
+    " set guifont=Consolas\ 14
     " set guifont=Monospace\ 12
     " set guifontwide=文泉驛等寬微米黑\ 12
     set guifontwide=AR\ PL\ UMing\ TW\ MBE\ 12
@@ -312,6 +318,8 @@ set nowritebackup
 set updatecount=0
 
 " }}}2    term 相關調整     {{{2
+
+set ttyfast
 
 if &term =~ "xterm"
   set t_#4=[D   " C-Left   視環境調整
@@ -334,6 +342,11 @@ set shiftround
 set cinkeys-=:
 set cinoptions+=(0
 set textwidth=78
+try
+  set breakindent
+catch /^Vim\%((\a\+)\)\=:E518/
+endtry
+
 try
   setlocal formatoptions=roql2mj
 catch /^Vim\%((\a\+)\)\=:E539/
@@ -372,6 +385,11 @@ nohlsearch
 set ruler
 set showcmd
 set shortmess+=I
+
+if v:version >= 704 || (v:version == 703 && has('patch314'))
+  set shortmess+=c
+endif
+
 set nolinebreak
 set display=lastline
 set listchars=tab:>-,eol:¬,trail:*,extends:»,precedes:«
@@ -443,7 +461,7 @@ set splitright
 set noequalalways
 set previewheight=9
 set switchbuf=useopen,usetab,newtab
-set tabpagemax=80
+set tabpagemax=400
 set diffopt+=vertical,context:4,foldcolumn:1
 
 " }}}2   Vim 7.3 / 7.4    {{{2

@@ -1969,6 +1969,21 @@ function! MyDiffOff()
   endif
 endfunction
 
+" }}}2   Re-diff with iwhite diffopt toggled     {{{2
+
+function! s:diffupdate_toggle_w()
+  if &diff
+    if index(split(&diffopt, ','), 'iwhite') >= 0
+      set diffopt-=iwhite
+      echomsg 'iwhite off'
+    else
+      set diffopt+=iwhite
+      echomsg 'iwhite on'
+    endif
+    diffupdate
+  endif
+endfunction
+
 " }}}2   Context sensitive H,L.     {{{2
 
 " Ref: tyru - https://github.com/tyru/dotfiles
@@ -2099,7 +2114,21 @@ function! SmartEnd(mode)
   return ""
 endfunction
 
-"}}}
+" }}}2   Config in diff mode     {{{2
+
+function! s:config_in_diff_mode()
+  " Ref: https://github.com/haya14busa/dotfiles
+  if !&diff
+    return
+  endif
+
+  setlocal nocursorline
+
+  nnoremap <buffer> <LocalLeader>dh :diffget :2 <Bar> diffupdate<CR>
+  nnoremap <buffer> <LocalLeader>dl :diffget :3 <Bar> diffupdate<CR>
+  nnoremap <buffer> <LocalLeader>du :<C-U>diffupdate<CR>
+  nnoremap <buffer> <silent> <LocalLeader>dU :call <SID>diffupdate_toggle_w()<CR>
+endfunction
 
 " }}}2   clipboard 存取    {{{2
 
@@ -3145,6 +3174,8 @@ augroup my_vimrc
           \ setlocal omnifunc=syntaxcomplete#Complete |
           \ endif
   endif
+
+  autocmd FilterWritePre * call s:config_in_diff_mode()
 
   " Modified from http://nanabit.net/blog/2007/11/03/vim-cursorline/
   " Note: not recover when canceling FuzzyFinder.

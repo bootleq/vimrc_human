@@ -74,20 +74,19 @@ if has('vim_starting')
   endif
 
   execute "set runtimepath+=" . fnamemodify(s:rtp, ':p') . "bundle/neobundle.vim"
-  try
-    call neobundle#rc(fnamemodify(s:rtp, ':p') . "bundle")
-  catch /^Vim\%((\a\+)\)\=:E117/
-    echoerr "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
-          \ "\n\nNo 'Bundle plugin' installed for this vimrc. Skipped sourcing plugins." .
-          \ "\n\nTo install one:\n  " .
-          \ "git clone http://github.com/Shougo/neobundle.vim.git " . fnamemodify(s:rtp, ":p") . "bundle/neobundle.vim\n"
-    finish
-  endtry
 endif
 
-filetype off
-
 set runtimepath-=~/.vim
+
+try
+  call neobundle#begin(fnamemodify(s:rtp, ':p') . "bundle")
+catch /^Vim\%((\a\+)\)\=:E117/
+  echoerr "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
+        \ "\n\nNo 'Bundle plugin' installed for this vimrc. Skipped sourcing plugins." .
+        \ "\n\nTo install one:\n  " .
+        \ "git clone http://github.com/Shougo/neobundle.vim.git " . fnamemodify(s:rtp, ":p") . "bundle/neobundle.vim\n"
+  finish
+endtry
 
 " }}}2    Bundles   {{{2
 let s:bundles = []
@@ -256,6 +255,7 @@ unlet! s:bundles s:tmp_options
 
 " }}}2    Finish   {{{2
 
+call neobundle#end()
 filetype plugin indent on
 
 " }}}2

@@ -577,7 +577,11 @@ inoremap <C-Z> <C-O>u
 inoremap <C-W> <C-G>u<C-W>
 inoremap <expr> <C-U> (pumvisible() ? "\<C-E>" : '') . "\<C-G>u\<C-U>"
 
+nnoremap <LocalLeader>u <C-R>
+
 inoremap <LocalLeader>o <C-O>
+inoremap <LocalLeader>r <C-R>
+cnoremap <LocalLeader>r <C-R>
 
 noremap <silent> <C-S> :update<CR>
 inoremap <silent> <C-S> <C-\><C-N>:update<CR>

@@ -530,8 +530,8 @@ imap <silent><End> <C-R>=SmartEnd("i")<CR>
 vmap <silent><Home> <Esc>:call SmartHome("v")<CR>
 vmap <silent><End> <Esc>:call SmartEnd("v")<CR>
 
-nnoremap <LocalLeader>I ^
-nnoremap <LocalLeader>A $
+nnoremap <silent> <LocalLeader>I :call SmartHome("n")<CR>
+nnoremap <silent> <LocalLeader>A :call SmartEnd("n")<CR>
 
 map  <kHome> <Home>
 map! <kHome> <Home>

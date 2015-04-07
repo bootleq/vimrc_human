@@ -603,6 +603,11 @@ cnoremap <LocalLeader>d <C-\>e getcmdpos() == 1 ? '' : getcmdline()[:getcmdpos()
 cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
 cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 
+" Switch between /\<keyword\> and /keyword
+nnoremap <expr> <LocalLeader>/ getreg('/') =~ '^\\<.*\\>$' ?
+      \   '/' . matchstr(getreg('/'), '^\\<\zs.*\ze\\>$') :
+      \   '/\<' . getreg('/') . '\>'
+
 " }}}2   功能鍵    {{{2
 
 noremap  <F1> :help <C-R>=expand('<cword>')<CR><CR>

@@ -616,7 +616,7 @@ xnoremap <F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()
 xnoremap <LocalLeader><F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>:tab help <C-R>=b:tempReg<CR><CR>
 
 nnoremap <F2> :%s/<C-R><C-W>
-xnoremap <F2> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>gv:<C-U>%s/\V<C-R>=b:tempReg<CR>/
+xnoremap <F2> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>gv:<C-U>%s/\V<C-R>=escape(b:tempReg, '/')<CR>/
 
 noremap <silent> <F3> :nohlsearch<CR>
 inoremap <silent> <F3> <C-O>:nohlsearch<CR>

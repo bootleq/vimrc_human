@@ -1462,7 +1462,7 @@ autocmd User WokmarksChange :ShowMarksOn
 
 let bundle = neobundle#get('vim-anzu')
 if !empty(bundle)
-  function! bundle.hooks.on_source(bundle)
+  function! bundle.hooks.on_post_source(bundle)
     let g:anzu_status_format = "/%#Type#%p%#None#  %i/%l %#WarningMsg#%w"
     let g:airline#extensions#anzu#enabled = 0
     nmap n <Plug>(anzu-n-with-echo)

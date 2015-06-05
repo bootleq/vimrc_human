@@ -96,7 +96,7 @@ let s:bundles += [
       \   ['kana/vim-surround'],
       \   ['kana/vim-repeat'],
       \   ['kana/vim-fakeclip'],
-      \   ['h1mesuke/vim-alignta'],
+      \   ['junegunn/vim-easy-align'],
       \   ['Shougo/neosnippet'],
       \   ['Shougo/vimfiler'],
       \   ['thinca/vim-prettyprint'],
@@ -198,6 +198,7 @@ endif
 " let s:bundles += [
 "       \   ['L9', {"stay_same": 1}],
 "       \   ['FuzzyFinder'],
+"       \   ['h1mesuke/vim-alignta'],
 "       \   ['gregsexton/gitv'],
 "       \   ['mrkn256.vim'],
 "       \   ['chrisbra/histwin.vim'],
@@ -1208,19 +1209,25 @@ endfunction
 
 " }}}2   alignta    {{{2
 
-let g:alignta_default_arguments = '! \S\+'
-xnoremap <silent> <LocalLeader>= :Alignta! \S\+<CR>
-xnoremap <silent> <LocalLeader>A :Alignta! \S\+<CR>
-let g:unite_source_alignta_preset_arguments = [
-      \   ["對齊 : (key: val)",            '01 :'],
-      \   ["對齊 , (ruby array #comment)", ',\zs 0:1 #'],
-      \   ["對齊 =",                       '='],
-      \   ["對齊 =>",                      '=>'],
-      \   ["對齊 |",                       '|' ],
-      \   ["對齊 ,",                       '01 ,' ],
-      \   ["對齊 , （一次）",              '01 ,/1' ],
-      \   ["對齊空白",                     '\S\+'],
-      \ ]
+" let g:alignta_default_arguments = '! \S\+'
+" xnoremap <silent> <LocalLeader>A :Alignta! \S\+<CR>
+" let g:unite_source_alignta_preset_arguments = [
+"       \   ["對齊 : (key: val)",            '01 :'],
+"       \   ["對齊 , (ruby array #comment)", ',\zs 0:1 #'],
+"       \   ["對齊 =",                       '='],
+"       \   ["對齊 =>",                      '=>'],
+"       \   ["對齊 |",                       '|' ],
+"       \   ["對齊 ,",                       '01 ,' ],
+"       \   ["對齊 , （一次）",              '01 ,/1' ],
+"       \   ["對齊空白",                     '\S\+'],
+"       \ ]
+
+" }}}2   Easy Align    {{{2
+
+xmap <CR> <Plug>(EasyAlign)
+xmap <LocalLeader>A <Plug>(EasyAlign)
+let g:easy_align_interactive_modes = ['l', 'a']
+" nmap <LocalLeader>= <Plug>(EasyAlign)
 
 " }}}2   Indent Guide    {{{2
 

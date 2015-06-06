@@ -3128,6 +3128,9 @@ augroup my_vimrc
   autocmd FileType vim setlocal tabstop=2 softtabstop=2 shiftwidth=2 foldmethod=marker
   autocmd FileType rake,ruby,eruby,yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
+  autocmd BufRead *.thor setfiletype ruby
+  autocmd BufRead *.jbuilder setfiletype ruby
+
   " autocmd BufNewFile *.html  :0r ~/.vim/templates/html5.html
   autocmd BufNewFile *.html  :0r ~/.vim/templates/html.html
   " autocmd BufNewFile *.css  :0r ~/.vim/templates/style.css

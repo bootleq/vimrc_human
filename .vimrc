@@ -551,7 +551,7 @@ nnoremap <expr> <BS> &modifiable ? "i<C-W><C-\><C-N>" : "<C-O>"
 nnoremap gr gT
 nnoremap <silent> gT :tablast<CR>
 nnoremap <silent> gR :tabfirst<CR>
-nnoremap <silent> <expr> <LocalLeader>gt printf(":tabmove %s<CR>", tabpagenr() == tabpagenr('$') ? 0 : tabpagenr())
+nnoremap <silent> <expr> <LocalLeader>gt printf(":tabmove %s<CR>", tabpagenr() == tabpagenr('$') ? 0 : tabpagenr() + 1)
 nnoremap <silent> <expr> <LocalLeader>gr printf(":tabmove %s<CR>", tabpagenr() == 1 ? '' : tabpagenr() - 2)
 nnoremap <silent> <LocalLeader>gT :tabmove<CR>
 nnoremap <silent> <LocalLeader>gR :tabmove 0<CR>

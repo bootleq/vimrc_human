@@ -387,7 +387,7 @@ set ruler
 set showcmd
 set shortmess+=I
 
-if v:version >= 704 || (v:version == 703 && has('patch314'))
+if v:version > 704 || (v:version == 704 && has('patch314'))
   set shortmess+=c
 endif
 

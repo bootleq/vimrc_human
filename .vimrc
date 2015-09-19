@@ -503,7 +503,6 @@ noremap  <Leader><LocalLeader> <LocalLeader>
 noremap! <Leader><LocalLeader> <LocalLeader>
 noremap  <LocalLeader>, <C-\><C-N>
 noremap! <LocalLeader>, <C-\><C-N>
-snoremap <LocalLeader>, <C-\><C-N>
 
 "   各種移動    {{{2
 

@@ -532,6 +532,8 @@ vmap <silent><End> <Esc>:call SmartEnd("v")<CR>
 
 nnoremap <silent> <LocalLeader>I :call SmartHome("n")<CR>
 nnoremap <silent> <LocalLeader>A :call SmartEnd("n")<CR>
+vnoremap <silent> <LocalLeader>I <Esc>:call SmartHome("v")<CR>
+vnoremap <silent> <LocalLeader>A <Esc>:call SmartEnd("v")<CR>
 
 map  <kHome> <Home>
 map! <kHome> <Home>

@@ -122,7 +122,7 @@ let s:bundles += [
       \   ['bootleq/vim-gitdiffall', {":prefer_local": 1}],
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
       \   ['rking/ag.vim'],
-      \   ['Indent-Guides'],
+      \   ['bootleq/vim-wordword', {":prefer_local": 1}],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
       \   ['Lokaltog/vim-easymotion'],
@@ -1594,6 +1594,14 @@ nnoremap <silent> <LocalLeader>c :let w:tcommentPos = getpos(".") \| set opfunc=
 " }}}2    CamelCaseMotion    {{{2
 
 let g:camelcasemotion_leader = 'g'
+
+" }}}2    Word Word    {{{2
+
+if neobundle#tap('vim-wordword')
+  let g:wordword_break_on_punctuation = 1
+  map gs <Plug>(operator-wordword)
+  call neobundle#untap()
+endif
 
 " }}}2    EasyMotion    {{{2
 

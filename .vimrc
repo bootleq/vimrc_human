@@ -350,7 +350,7 @@ catch /^Vim\%((\a\+)\)\=:E518/
 endtry
 
 try
-  setlocal formatoptions=roql2mj
+  setlocal formatoptions=roql2mBj
 catch /^Vim\%((\a\+)\)\=:E539/
   setlocal formatoptions=roql2m
 endtry
@@ -3270,7 +3270,7 @@ endfunction
 augroup my_vimrc
 
   autocmd FileType * try |
-        \   setlocal formatoptions=roql2mj |
+        \   setlocal formatoptions=roql2mBj |
         \ catch /^Vim\%((\a\+)\)\=:E539/ |
         \   setlocal formatoptions=roql2m |
         \ endtry

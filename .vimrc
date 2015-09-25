@@ -629,7 +629,7 @@ inoremap <silent> <F4> <C-O>:set hlsearch<CR>
 
 nnoremap <F5> :call SynStackInfo()<CR>
 nnoremap <Leader><F5> :tabdo e!<CR>
-nnoremap <F6> :QuickOff<CR>
+nnoremap <silent> <F6> :QuickOff<CR>
 nnoremap <LocalLeader><F6> :tabclose<CR>
 
 if v:version > 704 || (v:version == 704 && has('patch88'))
@@ -763,6 +763,8 @@ nmap ZZ <Nop>
 nmap ZQ <Nop>
 nnoremap <LocalLeader>md :<C-U>delmarks!<CR>
 nnoremap m<LocalLeader>d :<C-U>delmarks!<CR>
+
+nnoremap <LocalLeader>G <C-G>
 
 " }}}2
 

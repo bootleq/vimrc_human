@@ -1352,15 +1352,20 @@ endfunction "}}}
 
 " }}}2   fugitive  {{{2
 
-command! -nargs=0 GBlameA Gblame | call <SID>fugitiveblame_after()
+command! -nargs=* -complete=customlist,<SID>fugitiveblame_complete GBlameA Gblame <args> | call <SID>fugitiveblame_after()
 function! s:fugitiveblame_after() "{{{
   call feedkeys('A')
 endfunction "}}}
+
+function! s:fugitiveblame_complete(A, L, P) "{{{
+  return ['--root', '--show-name'] + split('ltfnsew', '\zs') + ['M1', 'C1']
+endfunction
 
 function! s:fugitiveblame_gitdiffall(all) "{{{
   let rev = matchstr(getline('.'), '\v^\w{7}')
   let buffer = fugitive#buffer(bufname(b:fugitive_blamed_bufnr))
   if a:all
+    " ⎇    
     call TmuxNewWindow({
           \   "text": "gitdiffall @" . rev,
           \   "title": '⎇',

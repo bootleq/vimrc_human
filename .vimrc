@@ -1638,14 +1638,16 @@ let g:EasyMotion_enter_jump_first = 1
 
 let g:sneak#use_ic_scs = 1
 let g:sneak#map_netrw = 0
+let g:sneak#prompt = 'Sneak: '
 nmap <Leader>; <Plug>SneakBackward
 xmap <Leader>; <Plug>VSneakBackward
-nmap f <Plug>Sneak_f
-nmap F <Plug>Sneak_F
-xmap f <Plug>Sneak_f
-xmap F <Plug>Sneak_F
-omap f <Plug>Sneak_f
-omap F <Plug>Sneak_F
+
+for s:i.map_mode in ['n', 'o', 'x']
+  execute s:i.map_mode . "map f <Plug>Sneak_f"
+  execute s:i.map_mode . "map F <Plug>Sneak_F"
+  execute s:i.map_mode . "map t <Plug>Sneak_t"
+  execute s:i.map_mode . "map T <Plug>Sneak_T"
+endfor
 
 " leave s to surround
 let bundle = neobundle#get('vim-sneak')

@@ -777,7 +777,7 @@ command! -bang EmptyFile call <SID>empty_file(<bang>0)
 function! s:empty_file(with_sudo) "{{{
   if executable('cat')
     let result = system(printf(
-          \   "!cat /dev/null | %s tee %s",
+          \   "cat /dev/null | %s tee %s",
           \   a:with_sudo ? 'sudo' : '',
           \   shellescape(expand('%:p'))
           \ ))

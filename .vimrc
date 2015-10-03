@@ -1481,11 +1481,17 @@ function! MakeSessionWithSafety()
       echomsg 'Aborted.' | redraw
     else
       silent call StashSessionBackup(1)
+      let save_rtp = &runtimepath
+      set runtimepath&
       GSessionMake
+      execute "set runtimepath=" . save_rtp
     end
   else
     silent call StashSessionBackup(1)
+    let save_rtp = &runtimepath
+    set runtimepath&
     GSessionMake
+    execute "set runtimepath=" . save_rtp
   endif
 endfunction
 

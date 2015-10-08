@@ -1140,8 +1140,7 @@ unlet! s:neco_settings s:neco_prefix s:neco_settings_key
 
 execute 'inoremap <expr><LocalLeader><C-H> ' . bundle.name . '#smart_close_popup()."\<BS>"'
 execute 'inoremap <expr><LocalLeader><BS>  ' . bundle.name . '#smart_close_popup()."\<BS>"'
-execute 'inoremap <expr> <C-Y> pumvisible() ? ' . bundle.name . '#close_popup() : "\<C-Y>"'
-execute 'inoremap <expr> <C-E> pumvisible() ? ' . bundle.name . '#cancel_popup() : "\<C-E>"'
+inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
 
 " }}}2    neosnippet    {{{2
 

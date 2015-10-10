@@ -131,7 +131,6 @@ let s:bundles += [
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
       \   ['bootleq/LargeFile', {":prefer_local": 1}],
-      \   ['VisIncr'],
       \   ['majutsushi/tagbar'],
       \ ]
 " filetype {{{3
@@ -217,6 +216,7 @@ endif
 "       \   ['taglist.vim', {'lazy': 1}],
 "       \   ['kana/vim-smartword'],
 "       \   ['PAntoine/vimgitlog'],
+"       \   ['VisIncr'],
 "       \ ]
 " }}}3
 
@@ -1419,15 +1419,6 @@ let Tlist_Use_Right_Window = 1
 let Tlist_WinWidth = 40
 let Tlist_Enable_Fold_Column = 0
 "let Tlist_Show_Menu = 1
-
-" }}}2   VisIncr  {{{2
-
-call neobundle#config('VisIncr', {
-      \   'lazy': 1,
-      \   'autoload': {
-      \     'commands': ['I', 'II', 'IA']
-      \   }
-      \ })
 
 " }}}2   TagBar   {{{2
 

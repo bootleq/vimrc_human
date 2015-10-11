@@ -621,11 +621,15 @@ xnoremap <LocalLeader><F1> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call
 nnoremap <F2> :%s/<C-R><C-W>
 xnoremap <F2> :<C-U>call SaveReg()<CR>gvy:let b:tempReg=@"<CR>:call RestoreReg()<CR>gv:<C-U>%s/\V<C-R>=escape(b:tempReg, '/')<CR>/
 
-noremap <silent> <F3> :nohlsearch<CR>
-inoremap <silent> <F3> <C-O>:nohlsearch<CR>
-" TODO use Vim 7.4.079 v:hlsearch to eliminate <F4> mapping
-noremap <silent> <F4> :set hlsearch<CR>
-inoremap <silent> <F4> <C-O>:set hlsearch<CR>
+if exists('v:hlsearch') " require Vim 7.4.079
+  noremap <silent><expr> <F3> v:hlsearch ? ':nohlsearch<CR>' : ':set hlsearch<CR>'
+  inoremap <silent><expr> <F3> v:hlsearch ? '<C-\><C-O>:nohlsearch<CR>' : '<C-\><C-O>:set hlsearch<CR>'
+else
+  noremap <silent> <F3> :nohlsearch<CR>
+  inoremap <silent> <F3> <C-\><C-O>:nohlsearch<CR>
+  noremap <silent> <F4> :set hlsearch<CR>
+  inoremap <silent> <F4> <C-\><C-O>:set hlsearch<CR>
+endif
 
 nnoremap <F5> :call SynStackInfo()<CR>
 nnoremap <Leader><F5> :tabdo e!<CR>
@@ -2032,24 +2036,6 @@ function! SudoWrite()
   silent! execute 'write !sudo tee % >/dev/null'
   let &l:modified = v:shell_error ? modified : 0
 endfunction
-
-" }}}2   清除／復原 search pattern   {{{2
-
-" 問題：let @/ = '' 後再按 n，不知為什麼又會改變 @/ 的值
-" 替代作法為使用 :nohlsearch，但無法確認目前是否已有 highlight，
-" 故用掉 <F3> <F4> 兩個鍵作 mapping。
-"
-" let g:lastSearchPattern = @/
-" function! ToggleSearchPattern()
-"   if @/ != ''
-"     let g:lastSearchPattern = @/
-"     let @/ = ''
-"   else
-"     let @/ = g:lastSearchPattern
-"   endif
-" endfunction
-" nmap <silent> <F3> :call ToggleSearchPattern()<CR>
-" imap <silent> <F3> <C-O>:call ToggleSearchPattern()<CR>
 
 " }}}2   暫存／復原 position    {{{2
 

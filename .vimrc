@@ -2135,8 +2135,11 @@ function! MoveCursor(key)
   let l:lnum = line('.')
   let l:wline = winline()
 
-  execute "normal! " . v:count . a:key
-  let l:moved =  l:cnum != col('.') || l:lnum != line('.') || l:wline != winline()
+  execute "normal! " . v:count1 . a:key
+  let l:moved =
+        \ l:cnum  != col('.')  ||
+        \ l:lnum  != line('.') ||
+        \ l:wline != winline()
 
   return l:moved
 endfunction

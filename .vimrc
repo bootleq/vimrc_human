@@ -1786,8 +1786,7 @@ let g:cycle_default_groups_for_ruby = [
 
 " }}}2    HardMotion    {{{2
 
-nmap <silent> <LocalLeader><Space> <Plug>HardMotion
-
+" nmap <silent> <LocalLeader><Space> <Plug>HardMotion
 
 " }}}2    ambicmd    {{{2
 

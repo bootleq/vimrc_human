@@ -544,9 +544,9 @@ map! <kEnd>  <End>
 nnoremap ' `
 
 nmap <LocalLeader>w <C-W>
-nnoremap <C-W>gf :tab wincmd f<CR>
 nnoremap <C-W>V :wincmd K <Bar> wincmd =<CR>
-nnoremap <LocalLeader>gf :tab wincmd f<CR>
+nmap <localleader>gf <C-W>gf
+vmap <localleader>gf <C-W>gf
 nnoremap <expr> <CR> &modifiable ? "i<CR><C-\><C-N>" : "<C-]>"
 nnoremap <expr> <BS> &modifiable ? "i<C-W><C-\><C-N>" : "<C-O>"
 

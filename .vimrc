@@ -926,15 +926,63 @@ let g:loaded_getscriptPlugin = 1
 
 " NeoBundle    {{{2
 
-let g:neobundle#log_filename = expand(printf('~/.vim/%s.neobundlelog', strftime('%m%d-%H%M%S')))
+let g:neobundle#log_filename = expand(printf('~/.vim/neobundle-logs/%s.neobundlelog', strftime('%m%d-%H%M%S')))
+if !isdirectory(fnamemodify(g:neobundle#log_filename, ':p:h'))
+  call mkdir(fnamemodify(g:neobundle#log_filename, ':p:h'), "p")
+endif
 
-noremap <Leader>gf :call BundleLogDiff("<C-R>=expand('<cword>')<CR>")<CR>
-function! BundleLogDiff(rev)
+" TODO apply to :Unite neobundle/log
+function! s:view_NeoBundleUpdatesLog() "{{{
+  TabMessage NeoBundleUpdatesLog
+  setfiletype neobundlelog
+endfunction "}}}
+command! -nargs=0 ViewNeoBundleUpdatesLog call <SID>view_NeoBundleUpdatesLog()
+
+function! s:neobundlelog_rc()
+  setlocal conceallevel=2 concealcursor=nvc foldmethod=syntax nowrap
+  nnoremap <buffer> <CR> :call <SID>do_NeoBundleLog_diff()<CR>
+  call <SID>NeoBundleUpdatesLog_syntax()
+endfunction
+
+autocmd FileType neobundlelog call s:neobundlelog_rc()
+
+function! s:NeoBundleUpdatesLog_syntax() "{{{
+  setlocal conceallevel=2 concealcursor=nvc foldmethod=syntax
+  " Example commit format:
+  "   [neobundle] |neobundle.vim| * 1a69619 [5 days ago] Fix example
+  "     Prefix      HeaderName        Rev
+  syntax match NeoBundleLog_Fatal %\v^fatal\ze: %
+  syntax match NeoBundleLog_Prefix %\v^\[neobundle] % conceal display nextgroup=NeoBundleLog_ResultHeader
+  syntax match NeoBundleLog_HeaderName %|\zs.\+\ze|% contained
+  syntax match NeoBundleLog_HeaderSkipped %\v.+Skipped$% contained
+  syntax match NeoBundleLog_HeaderError %\v.+Error$% contained
+  syntax match NeoBundleLog_Header %\v\([^)]+\): .+$% contains=NeoBundleLog_Header.*
+  syntax match NeoBundleLog_Ignore %\v(Same revision\.|has "stay_same" attribute\.)$%
+  syntax match NeoBundleLog_Tree _\%13c|\S\+|.\+_
+  syntax match NeoBundleLog_TreeName _\%13c|\S\+|_ contained containedin=NeoBundleLog_Tree conceal nextgroup=NeoBundleLog_GraphLink skipwhite
+  syntax match NeoBundleLog_GraphLink % \zs\v[_\_\|/\\\* ]+\ze % contained nextgroup=NeoBundleLog_Commit
+  syntax match NeoBundleLog_Commit %\v [a-z0-9]{7} \[[^\]]+]% contained
+  syntax match NeoBundleLog_Rev %\v[a-z0-9]{7}\ze \[% contained containedin=NeoBundleLog_Commit
+  syntax match NeoBundleLog_ResultHeader %\v(Installed/Updated|Errored) bundles:$% contained
+  highlight link NeoBundleLog_Fatal Error
+  highlight link NeoBundleLog_Prefix Conceal
+  highlight link NeoBundleLog_Header Constant
+  highlight link NeoBundleLog_HeaderName String
+  highlight link NeoBundleLog_HeaderSkipped Conceal
+  highlight link NeoBundleLog_HeaderError Error
+  highlight link NeoBundleLog_Ignore Conceal
+  highlight link NeoBundleLog_Commit Comment
+  highlight link NeoBundleLog_Rev Identifier
+  highlight link NeoBundleLog_GraphLink Comment
+  highlight link NeoBundleLog_ResultHeader Todo
+endfunction "}}}
+
+function! s:do_NeoBundleLog_diff()
+  let rev = matchstr(getline('.'), '\v \zs[a-z0-9]{7}\ze ')
   let patterns = {
-        \   'name': '\[neobundle\/install] (.\+): |\(.\+\)|'
+        \   'name': '^(.\+): |\(.\+\)|'
         \ }
   let bundle_name = ''
-  let rev = a:rev
   let line = search(patterns.name, 'bnW')
   if line == 0
     echoerr printf("Can't find bundle name for rev %s.", rev)
@@ -946,17 +994,11 @@ function! BundleLogDiff(rev)
     echoerr printf("Can't get bundle with name %s.", bundle_name)
     return
   endif
-  tabnew `=path . printf('/.bundle-gitdiffall-%s.vim', rev)`
-  set nomodified
-  setlocal buftype=nofile
-  setlocal bufhidden=hide
-  setlocal noswapfile
-  setlocal nobuflisted
-  execute 'Git diff-tree --no-commit-id --name-only -r ' . rev
-
-  " TODO gitdiffall#get_diff_files(rev)
-  " (git diff-tree --no-commit-id --name-only -r rev)
-  " and export to unite.vim
+  call TmuxNewWindow({
+        \   "text": "gitdiffall @" . rev,
+        \   "title": '⎇',
+        \   "directory": path
+        \ })
 endfunction
 
 " Netrw    {{{2
@@ -1865,7 +1907,7 @@ function! bundle.hooks.on_source(bundle)
   AlterCommand jsl JSLint
   AlterCommand jsh JSHint
   AlterCommand bu NeoBundleUpdate
-  AlterCommand bl TabMessage NeoBundleUpdatesLog
+  AlterCommand bl ViewNeoBundleUpdatesLog
 endfunction
 
 " Ref helpgrep Eatchar

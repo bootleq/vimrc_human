@@ -142,7 +142,8 @@ let s:bundles += [
       \   ['httplog', {':filetypes': ['httplog']}],
       \   ['nginx.vim', {':filetypes': ['nginx']}],
       \   ['othree/html5.vim', {':filetypes': ['html']}],
-      \   ['plasticboy/vim-markdown', {':filetypes': ['markdown']}],
+      \   ['plasticboy/vim-markdown', {':filetypes': ['mkd', 'markdown']}],
+      \   ['jtratner/vim-flavored-markdown', {':filetypes': ['ghmarkdown']}],
       \   ['timcharper/textile.vim', {':filetypes': ['textile']}],
       \   ['tpope/vim-haml', {':filetypes': ['haml']}],
       \   ['vim-ruby/vim-ruby', {':filetypes': ['ruby']}],
@@ -3153,7 +3154,7 @@ endfunction
 
 function! s:html_rc()
   setlocal path+=./;/
-  inoremap <LocalLeader>br <br><CR>
+  inoremap <buffer> <LocalLeader>br <br><CR>
   inoremap <buffer> ;; <C-\><C-N>:call <SID>html_make_tag()<CR>
   inoremap <buffer> >> <C-\><C-N>:call <SID>html_close_tag()<CR>
   let html_no_rendering = 1
@@ -3320,7 +3321,7 @@ augroup my_vimrc
 
   autocmd FileType ruby call s:ruby_rc()
   autocmd FileType xml call s:xml_rc()
-  autocmd FileType html,xhtml,haml,eruby,phtml call s:html_rc()
+  autocmd FileType html,xhtml,haml,slim,eruby,phtml,markdown call s:html_rc()
   autocmd FileType haml call s:haml_rc()
   autocmd FileType php call s:php_rc()
   autocmd FileType javascript call s:js_rc()
@@ -3329,7 +3330,7 @@ augroup my_vimrc
   autocmd FileType help call s:help_rc()
   autocmd FileType vim call s:vim_rc()
   autocmd FileType zsh call s:zsh_rc()
-  autocmd FileType gitcommit call s:gitcommit_rc()
+  autocmd FileType gitcommit call s:gitcommit_rc(expand('<afile>:p'))
   autocmd FileType gitconfig call s:gitconfig_rc()
   autocmd FileType nginx call s:nginx_rc()
   autocmd FileType yaml call s:yaml_rc()
@@ -3342,21 +3343,33 @@ augroup my_vimrc
   autocmd BufRead *.thor setfiletype ruby
   autocmd BufRead *.jbuilder setfiletype ruby
 
-  " autocmd BufNewFile *.html  :0r ~/.vim/templates/html5.html
-  autocmd BufNewFile *.html  :0r ~/.vim/templates/html.html
-  " autocmd BufNewFile *.css  :0r ~/.vim/templates/style.css
-  autocmd BufNewFile *.css  :0r ~/.vim/templates/css.css
+  autocmd BufRead *.adoc setfiletype asciidoc
+
   autocmd BufNewFile,BufRead /bootleq/notes/*.txt set modeline
 
-  " Firefox It's all text
-  autocmd BufRead www*.blogger.com*.txt setfiletype html
-  autocmd BufRead redmine.*.com*.txt setfiletype textile
-  autocmd BufRead pma.*com.*.txt setfiletype sql
+  autocmd BufRead *.jsm setfiletype javascript
+  autocmd BufRead */etc/hosts setfiletype hostconf
 
-  autocmd BufRead,BufNewFile /opt/nginx*/conf/*.conf,/opt/nginx*/conf/*.default setfiletype nginx
-  autocmd BufRead /home/www/logs/*.log setfiletype httplog
-  autocmd BufRead /home/www/logs/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
-  autocmd BufRead /home/www/fc/log/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
+  " Firefox It's all text add-on
+  " also see https://github.com/docwhat/itsalltext/issues/44
+  autocmd BufRead www*.blogger.com*.itsalltext setfiletype html
+  autocmd BufRead addons.mozilla.org.*.itsalltext setfiletype html
+  autocmd BufRead github.com.*.itsalltext setfiletype markdown
+  autocmd BufRead redmine.*.com*.itsalltext setfiletype textile
+  autocmd BufRead pma.*com.*.itsalltext setfiletype sql
+  autocmd BufRead redmine.*.com*.itsalltext setfiletype textile
+  autocmd BufRead gitlab.*.itsalltext setfiletype markdown
+
+  " Moztw
+  autocmd BufRead firefox/download/downloadurl.txt setlocal binary
+  autocmd BufRead *.shtml setlocal expandtab
+
+  autocmd BufRead,BufNewFile *.md,*.markdown,*.mkd set filetype=ghmarkdown
+  autocmd BufRead,BufNewFile /opt/nginx*/conf/*.conf,/opt/nginx*/conf/*.default set filetype=nginx
+  autocmd BufRead,BufNewFile /etc/nginx*/*.conf,/etc/nginx*/*.default,/etc/nginx/sites-*/* set filetype=nginx
+  autocmd BufRead /home/www/logs/*.log,/var/log/nginx/*.log setfiletype httplog
+  autocmd BufRead /home/www/logs/*.log,/var/log/nginx/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
+  autocmd BufRead /home/nerv/log/*.log,/home/*/nerv/log/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
 
   " let apache_version = "2.0"
   " let dosbatch_cmdextversion = 2

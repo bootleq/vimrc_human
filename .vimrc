@@ -2066,6 +2066,8 @@ command! -bang -bar -complete=file -nargs=? Utf8
       \ edit<bang> ++enc=utf-8 <args>
 command! -bang -bar -complete=file -nargs=? Big5
       \ edit<bang> ++enc=big5 <args>
+command! -bang -bar -complete=file -nargs=? Gbk
+      \ edit<bang> ++enc=gbk <args>
 
 "     sudo write    {{{2
 

@@ -1776,13 +1776,14 @@ let g:cycle_default_groups = [
 " ruby, rails       {{{3
 let g:cycle_default_groups += [
       \   [["if", "unless"]],
-      \   [["blank", "present"]],
-      \   [["any", "empty"]],
+      \   [["blank?", "present?"]],
+      \   [["any?", "empty?"]],
       \   [["while", "until"]],
       \   [["begin", "end"]],
       \   [['assert', 'refute']],
       \   [['must', 'wont']],
       \   [["foreign_key", "primary_key"]],
+      \   [["new_record?", "persisted?"]],
       \   [["inspect", "to_yaml"]],
       \   [["do:end", "{:}"], 'sub_pairs'],
       \ ]

@@ -934,46 +934,69 @@ endif
 
 " TODO apply to :Unite neobundle/log
 function! s:view_NeoBundleUpdatesLog() "{{{
-  TabMessage NeoBundleUpdatesLog
+  " workaround of https://github.com/Shougo/neobundle.vim/issues/433#issuecomment-150748288
+  " TabMessage NeoBundleUpdatesLog
+  TabMessage NeoBundleLog
   setfiletype neobundlelog
 endfunction "}}}
 command! -nargs=0 ViewNeoBundleUpdatesLog call <SID>view_NeoBundleUpdatesLog()
 
 function! s:neobundlelog_rc()
-  setlocal conceallevel=2 concealcursor=nvc foldmethod=syntax nowrap
+  setlocal conceallevel=2 concealcursor=nvc foldmethod=syntax foldlevel=1 nowrap
   nnoremap <buffer> <CR> :call <SID>do_NeoBundleLog_diff()<CR>
   call <SID>NeoBundleUpdatesLog_syntax()
 endfunction
 
 autocmd FileType neobundlelog call s:neobundlelog_rc()
+autocmd BufRead ~/.vim/neobundle-logs/*.neobundlelog setfiletype neobundlelog 
 
 function! s:NeoBundleUpdatesLog_syntax() "{{{
-  setlocal conceallevel=2 concealcursor=nvc foldmethod=syntax
-  " Example commit format:
-  "   |neobundle.vim| * 1a69619 [5 days ago] Fix example
-  "     HeaderName        Rev
-  syntax match NeoBundleLog_Fatal %\v^fatal\ze: %
+  " Example Changes format:
+  " ( 45/102): |neocomplete| Updated
+  " |neocomplete| * a3b87cc [2 hours ago] Fix indent problem
+  syntax region NeoBundleLog_Changes start=_^(.\+): |.\+| \+Updated\n|_ end=_^|\@!_ fold
+  syntax match NeoBundleLog_TreeName _^|\S\+|_ contained containedin=NeoBundleLog_Changes conceal nextgroup=NeoBundleLog_GraphLink skipwhite
   syntax match NeoBundleLog_HeaderName %|\zs.\+\ze|% contained
-  syntax match NeoBundleLog_HeaderSkipped %\v.+Skipped$% contained
   syntax match NeoBundleLog_HeaderError %\v.+Error$% contained
-  syntax match NeoBundleLog_Header %\v\([^)]+\): .+$% contains=NeoBundleLog_Header.*
-  syntax match NeoBundleLog_Ignore %\v(Same revision\.|has "stay_same" attribute\.)$%
-  syntax match NeoBundleLog_Tree _^|\S\+|.\+_
-  syntax match NeoBundleLog_TreeName _^|\S\+|_ contained containedin=NeoBundleLog_Tree conceal nextgroup=NeoBundleLog_GraphLink skipwhite
+  syntax match NeoBundleLog_Header _^(.*$_ contained contains=NeoBundleLog_Header.* containedin=NeoBundleLog_Changes 
+
   syntax match NeoBundleLog_GraphLink % \zs\v[_\_\|/\\\* ]+\ze % contained nextgroup=NeoBundleLog_Commit
   syntax match NeoBundleLog_Commit %\v [a-z0-9]{7} \[[^\]]+]% contained
   syntax match NeoBundleLog_Rev %\v[a-z0-9]{7}\ze \[% contained containedin=NeoBundleLog_Commit
-  syntax match NeoBundleLog_ResultHeader %\v^(Installed/Updated|Errored) bundles:$% contained
+
+  syntax match NeoBundleLog_SectionH _^Update started: .*$_
+  syntax match NeoBundleLog_Fatal %\v^fatal\ze: %
+  syntax match NeoBundleLog_Skipped %^(.\+): .*Skipped$%
+  syntax match NeoBundleLog_Locked %^(.\+): .*Locked$%
+  syntax match NeoBundleLog_PullName %|\zs.\+\ze|% contained
+  syntax match NeoBundleLog_Pull %^(.\+): |\S\+| git pull --ff.*$% contains=NeoBundleLog_Pull.*
+  syntax match NeoBundleLog_Ignore %\v^(Same revision\.|Outdated plugin\.)$%
+  syntax match NeoBundleLog_Ignoring %\v^(has "stay_same" attribute\.)$%
+
+  syntax region NeoBundleLog_Summary start=_^Updated bundles:$_ end=_^Completed._
+  syntax match NeoBundleLog_SummaryTitle _\v(Updated bundles:|Completed\.)$_ contained containedin=NeoBundleLog_Summary
+  syntax match NeoBundleLog_SummaryBundle _  \zs.\+\ze\s*(\d\+ changes)_ contained containedin=NeoBundleLog_Summary
+  syntax match NeoBundleLog_SummaryURL _^\s\+https\?://.*$_ contained containedin=NeoBundleLog_Summary
+
   highlight link NeoBundleLog_Fatal Error
   highlight link NeoBundleLog_Header Constant
-  highlight link NeoBundleLog_HeaderName String
-  highlight link NeoBundleLog_HeaderSkipped Conceal
+  highlight link NeoBundleLog_SectionH Statement
+  highlight link NeoBundleLog_HeaderName SignColumn
   highlight link NeoBundleLog_HeaderError Error
+ 
+  highlight link NeoBundleLog_Pull Conceal
+  highlight link NeoBundleLog_PullName Conceal
+  highlight link NeoBundleLog_Skipped Conceal
+  highlight link NeoBundleLog_Locked Comment
   highlight link NeoBundleLog_Ignore Conceal
+  highlight link NeoBundleLog_Ignoring Comment
   highlight link NeoBundleLog_Commit Comment
   highlight link NeoBundleLog_Rev Identifier
   highlight link NeoBundleLog_GraphLink Comment
-  highlight link NeoBundleLog_ResultHeader Todo
+
+  highlight link NeoBundleLog_SummaryTitle Normal
+  highlight link NeoBundleLog_SummaryBundle Include
+  highlight link NeoBundleLog_SummaryURL Comment
 endfunction "}}}
 
 function! s:do_NeoBundleLog_diff()

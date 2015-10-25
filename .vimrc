@@ -179,16 +179,22 @@ let s:bundles += [
       \ ]
 " }}}3 unite {{{3
 let s:bundles += [
-      \   ['Shougo/unite.vim'],
+      \   ['Shougo/unite.vim', {"rev": 'ver.6.1', ":prefer_local": 0}],
       \   ['Shougo/unite-session'],
       \   ['Shougo/unite-outline'],
-      \   ['Shougo/neomru.vim'],
+      \   ['Shougo/neomru.vim', {":skip": 0}],
       \   ['tacroe/unite-mark'],
       \   ['thinca/vim-unite-history'],
-      \   ['tsukkee/unite-help', {"rev": 'tags-caching'}],
+      \   ['Shougo/unite-help'],
       \   ['ujihisa/unite-gem'],
-      \   ['kmnk/vim-unite-giti', {":skip": 1}],
+      \   ['basyura/unite-rails'],
+      \   ['moznion/unite-git-conflict.vim'],
       \ ]
+" }}}3 unite unused {{{3
+" let s:bundles += [
+"       \   ['zepto/unite-tmux', {":skip": 1}],
+"       \   ['tsukkee/unite-help', {"rev": 'tags-caching'}],
+"       \   ['kmnk/vim-unite-giti', {":skip": 1, 'lazy': 1}],
 " }}}3 neocomplete {{{3
 if has('lua') && (v:version > 703 || (v:version == 703 && has('patch885')))
   let s:bundles += [['Shougo/neocomplete']]
@@ -1046,53 +1052,80 @@ function! bundle.hooks.on_source(bundle)
   nmap <leader>e :Vexplore<CR>
 endfunction
 
-" }}}2    Unite    {{{2
+" }}}2    Unite.vim    {{{2
 
+" TODO unite scriptnames
+" TODO secondary default action
+" TODO bookmark should convert slashes for different OSes
+" TODO use vim-tabline for tabs
+" TODO switch between ,ff and ,F buffer
+
+" Launcher mappings {{{
 nnoremap [unite] <Nop>
 xnoremap [unite] <Nop>
 nmap <LocalLeader>f [unite]
 xmap <LocalLeader>f [unite]
 imap <LocalLeader>f <C-\><C-N>[unite]
 
-nnoremap [unite]S :<C-U>Unite source<CR>
-nnoremap <silent> [unite]f :<C-U>UniteWithBufferDir -buffer-name=files file<CR>
-nnoremap <silent> [unite]F :<C-U>UniteWithBufferDir -buffer-name=files file_rec<CR>
-nnoremap <silent> [unite]r :<C-U>Unite -profile-name=mru file_mru<CR>
-nnoremap <silent> [unite]d :<C-U>Unite -profile-name=mru directory_mru<CR>
-nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search -start-insert line/fast<CR>
-nnoremap <silent> [unite]p :<C-U>Unite -buffer-name=registers -start-insert register<CR>
-xnoremap <silent> [unite]p "_d:<C-U>Unite -buffer-name=register register<CR>
-nnoremap <silent> [unite]b :<C-U>Unite bookmark<CR>
+nnoremap <silent> [unite]f :<C-U>Unite
+      \ -input=<C-R>=fnamemodify(unite#helper#get_buffer_directory(bufnr('%')), ':p:.')<CR>
+      \ -buffer-name=files file file/new<CR>
+nnoremap <silent> [unite]F :<C-U>Unite
+      \ -input=<C-R>=fnamemodify(unite#helper#get_buffer_directory(bufnr('%')), ':p:.')<CR>
+      \ -buffer-name=files file file/new file_rec<CR>
+nnoremap <silent> <LocalLeader>F :<C-U>Unite -buffer-name=file_rec file_rec<CR>
+
+nnoremap <silent> [unite]d :<C-U>Unite -buffer-name=mru directory_mru<CR>
+nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search line<CR>
+nnoremap <silent> [unite]p :<C-U>Unite -buffer-name=registers -unique register<CR>
+xnoremap <silent> [unite]p "_d:<C-U>Unite -buffer-name=register -unique register<CR>
+nnoremap <silent> [unite]b :<C-U>Unite -no-start-insert bookmark<CR>
 nnoremap <silent> [unite]m :<C-U>Unite mark<CR>
-nnoremap <silent> [unite]h :<C-U>Unite -update-time=600 -start-insert help<CR>
-nnoremap <silent> [unite]o :<C-U>Unite outline<CR>
-nnoremap <silent> [unite]s :<C-U>Unite -start-insert session<CR>
-" TODO use vim-tabline
-nnoremap <silent> [unite]g :<C-U>Unite -start-insert tab<CR>
+nnoremap <silent> [unite]h :<C-U>Unite -update-time=600 help<CR>
+nnoremap <silent> [unite]o :<C-U>Unite -no-start-insert outline<CR>
+nnoremap <silent> [unite]g :<C-U>Unite tab:no-current<CR>
 nnoremap <silent> [unite]j :<C-U>Unite jump<CR>
 nnoremap <silent> [unite]c :<C-U>Unite change<CR>
-nnoremap <silent> [unite]: :<C-U>Unite history/command<CR>
-nnoremap <silent> [unite]y :<C-U>Unite history/yank<CR>
-nnoremap <silent> [unite]a :<C-u>Unite alignta:options<CR>
-xnoremap <silent> [unite]a :<C-u>Unite alignta:arguments<CR>
-nnoremap <silent> [unite]G :<C-u>Unite giti<CR>
+nnoremap <silent> [unite]y :<C-U>Unite -unique history/yank<CR>
+nnoremap <silent> [unite]R :<C-U>Unite -input=rails/ source<CR>
+nnoremap <silent> [unite]M :<C-U>Unite rails/model<CR>
+nnoremap <silent> [unite]V :<C-U>Unite rails/view<CR>
+nnoremap <silent> [unite]C :<C-U>Unite rails/controller<CR>
+" }}}
 
-let g:unite_update_time = 240
-let g:unite_enable_split_vertically = 1
-let g:unite_source_file_mru_limit = 140
-let g:unite_source_file_mru_time_format = "%m/%d %T "
-let g:unite_source_directory_mru_limit = 80
-let g:unite_source_directory_mru_time_format = "%m/%d %T "
-let g:unite_source_file_rec_max_depth = 5
+" Configuration variables {{{
+let g:unite_data_directory = expand(s:rtp . '/.unite/')
+let g:unite_quick_match_table = {
+      \   'a': 0,  'b': 1,  'c': 2,  'd': 3,  'e': 4,  'f': 5,  'g': 6,  'h': 7,  'i': 8,  'j': 9,
+      \   'k': 10, 'l': 11, 'm': 12, 'n': 13, 'o': 14, 'p': 15, 'q': 16, 'r': 17, 's': 18, 't': 19,
+      \   'u': 20, 'v': 21, 'w': 22, 'x': 23, 'y': 24, 'z': 25, ';': 26, '.': 27, '/': 28, 'A': 29, 'B': 30
+      \ }
+let g:unite_ignore_source_files = [
+      \   'window.vim',
+      \   'window_gui.vim',
+      \   'output.vim',
+      \   'command.vim',
+      \   'function.vim',
+      \   'mapping.vim',
+      \   'grep.vim',
+      \   'vimgrep.vim',
+      \   'launcher.vim',
+      \   'menu.vim',
+      \   'process.vim',
+      \   'runtimepath.vim',
+      \ ]
 
-let g:unite_enable_ignore_case = 1
-let g:unite_enable_smart_case = 1
 let g:unite_source_history_yank_enable = 1
 let g:unite_source_history_yank_limit = 40
-
-let g:unite_data_directory = expand(s:rtp . '/.unite/')
+let g:unite_source_history_yank_save_clipboard = 1
 let g:unite_source_session_path = expand('~/.vim/session/')
 
+let g:neomru#file_mru_limit = 800
+let g:neomru#time_format = "%m/%d %T "
+let g:neomru#directory_mru_limit = 80
+" }}}
+
+" In unite buffer setting {{{
 function! s:unite_settings()
   nmap <buffer> <C-J> <Plug>(unite_loop_cursor_down)
   nmap <buffer> <C-K> <Plug>(unite_loop_cursor_up)
@@ -1105,14 +1138,22 @@ function! s:unite_settings()
   imap <buffer> <LocalLeader>q <Plug>(unite_exit)
   nmap <buffer> <LocalLeader>Q <Plug>(unite_all_exit)
   imap <buffer> <LocalLeader>Q <C-\><C-N><Plug>(unite_all_exit)
-  imap <buffer> <LocalLeader>; <C-\><C-N><Plug>(unite_all_exit)
 
-  imap <buffer> <LocalLeader><BS> <Plug>(unite_delete_backward_path)
   imap <buffer> ; <Plug>(unite_delete_backward_word)
+  imap <buffer> <LocalLeader>; <Plug>(unite_delete_backward_path)
+  imap <buffer> <LocalLeader>u <Plug>(unite_delete_backward_line)
   inoremap <buffer><expr> <LocalLeader>/ unite#do_action('narrow')
 
+  nmap <buffer> <LocalLeader>: <Plug>(unite_narrowing_input_history)
+  imap <buffer> <LocalLeader>e <Plug>(unite_quick_match_default_action)
+
+  nmap <buffer> <LocalLeader><C-K> <Plug>(unite_print_candidate)
+  nmap <buffer> <LocalLeader><C-A> <Plug>(unite_print_message_log)
+
   let unite = unite#get_current_unite()
-  if index(unite.source_names, 'file') > -1 || index(unite.source_names, 'file_mru') > -1
+  if index(unite.source_names, 'file') > -1 ||
+        \   index(unite.source_names, 'file_mru') > -1 ||
+        \   index(unite.source_names, 'file_rec') > -1
     nnoremap <silent><buffer><expr> <LocalLeader><CR> unite#do_action('open')
     inoremap <silent><buffer><expr> <LocalLeader><CR> unite#do_action('open')
   endif
@@ -1123,35 +1164,54 @@ function! s:unite_settings()
   endif
 endfunction
 autocmd! my_vimrc FileType unite call s:unite_settings()
+" }}}
 
-" TODO secondary default action
-" TODO bookmark should convert slashes for different OSes
-call unite#custom_default_action('file', 'tabdrop')
-call unite#custom_default_action('directory', 'narrow')
-call unite#custom_default_action('source/bookmark/jump_list', 'tabdrop')
-call unite#custom_default_action('source/help/common', 'tabopen')
-call unite#custom_source('file,buffer,file_rec', 'matchers', 'matcher_fuzzy')
+" Sources customization {{{
+call unite#custom#default_action('file, source/bookmark/jump_list', 'tabswitch')
+call unite#custom#default_action('source/help/common', 'tabopen')
 
-call unite#set_profile('files', 'context', {
+" File related
+call unite#custom#source(
+      \ 'file, file_rec, buffer, file_mru',
+      \ 'matchers',
+      \ ['matcher_hide_hidden_files', 'matcher_fuzzy'])
+let s:i.unite_sorter = has('ruby') ? 'sorter_selecta' : 'sorter_rank'
+call unite#custom#source(
+      \ 'file, file_rec, buffer, file_mru',
+      \ 'sorters',
+      \ ['sorter_word', s:i.unite_sorter])
+call unite#custom#source(
+      \ 'file, file_rec, buffer',
+      \ 'converters',
+      \ ['converter_relative_abbr'])
+
+call unite#custom#source('tab, outline', 'matchers', ['matcher_fuzzy'])
+call unite#custom_source('help', 'sorters', 'sorter_word')
+" }}}
+
+" Profile customization {{{
+call unite#custom#profile('default', 'context', {
       \   'start_insert': 1,
+      \   'vertical': 1,
       \   'hide_source_names': 1
       \ })
 
-for s:i.unite_pattern in values(unite#get_substitute_pattern('files'))
-  call unite#set_substitute_pattern('source/file',
-        \   s:i.unite_pattern.pattern,
-        \   s:i.unite_pattern.subst,
-        \   s:i.unite_pattern.priority
-        \ )
+" Preserve built-in substitute_patterns
+for s:i.unite_pattern in values(unite#get_profile('files', 'substitute_patterns'))
+  call unite#custom#profile('source/files', 'substitute_patterns', {
+        \   'pattern': s:i.unite_pattern.pattern,
+        \   'subst': s:i.unite_pattern.subst,
+        \   'priority': s:i.unite_pattern.priority
+        \ })
 endfor
 
 " Ref: thinca - http://d.hatena.ne.jp/thinca/20101027/1288190498
-call unite#set_substitute_pattern('source/file', '\$\w\+', '\=eval(submatch(0))', 200)
-
-call unite#set_profile('mru', 'context', {
-      \   'start_insert': 1,
-      \   'hide_source_names': 1
+call unite#custom#profile('files', 'substitute_patterns', {
+      \   'pattern': '^@',
+      \   'subst': '\=expand("#:p:h")."/*"',
+      \   'priority': 1
       \ })
+" }}}
 
 command! -bar -nargs=? EditBookmarks call s:edit_bookmarks()
 function! s:edit_bookmarks() "{{{
@@ -1205,6 +1265,8 @@ for s:i.type in ['number', 'list', 'string']
   unlet s:i.value
 endfor
 unlet! s:neco_settings s:neco_prefix s:neco_settings_key
+
+let g:neocomplete#sources#buffer#disabled_pattern = '*.log'
 
 execute 'inoremap <expr><LocalLeader><C-H> ' . bundle.name . '#smart_close_popup()."\<BS>"'
 execute 'inoremap <expr><LocalLeader><BS>  ' . bundle.name . '#smart_close_popup()."\<BS>"'
@@ -1446,6 +1508,20 @@ endfunction "}}}
 autocmd! my_vimrc FileType fugitiveblame
       \ nnoremap <buffer> gf :call <SID>fugitiveblame_gitdiffall(0)<CR> |
       \ nnoremap <buffer> <LocalLeader>gf :call <SID>fugitiveblame_gitdiffall(1)<CR>
+
+" }}}2   giti    {{{2
+
+if neobundle#tap('vim-unite-giti')
+  call neobundle#config({
+  \   'autoload' : {
+  \     'unite_sources' : [
+  \       'giti',
+  \       'giti/status'
+  \     ],
+  \   }
+  \ })
+  call neobundle#untap()
+endif
 
 " }}}2   gitdiffall    {{{2
 

@@ -1075,6 +1075,7 @@ nnoremap <silent> [unite]F :<C-U>Unite
       \ -buffer-name=files file file/new file_rec<CR>
 nnoremap <silent> <LocalLeader>F :<C-U>Unite -buffer-name=file_rec file_rec<CR>
 
+nnoremap <silent> [unite]r :<C-U>Unite -profile-name=mru file_mru<CR>
 nnoremap <silent> [unite]d :<C-U>Unite -buffer-name=mru directory_mru<CR>
 nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search line<CR>
 nnoremap <silent> [unite]p :<C-U>Unite -buffer-name=registers -unique register<CR>

@@ -802,18 +802,76 @@ function! s:empty_file(with_sudo) "{{{
   endif
 endfunction "}}}
 
-command! Rtouch call <SID>passenger_touch_restart()
+command! Rtouch call <SID>restart_passenger_or_unicorn()
+command! Rpuma call <SID>restart_puma()
 command! Rnginx execute "!sudo\ service nginx restart"
-function! s:passenger_touch_restart() "{{{
+
+function! s:restart_puma() "{{{
   if isdirectory('tmp')
-    let result = system("touch tmp/restart.txt")
-    if v:shell_error
-      echohl WarningMsg | echomsg printf("Error: %s", result) | echohl None
+    let pid = ''
+    if executable('puma') && filereadable('config/puma.rb')
+      if filereadable('tmp/pids/puma.pid') && system('ps h -o pid -p `cat tmp/pids/puma.pid`') =~ '^\d'
+        let pid = readfile('tmp/pids/puma.pid')[0]
+      end
+
+      if !empty(pid)
+        let result = system('kill ' . pid)
+        if v:shell_error
+          echohl WarningMsg | echomsg printf("Failed to kill process: %s", result) | echohl None
+        endif
+      end
+
+      if !v:shell_error
+        let result = system(printf(
+              \   'RAILS_RELATIVE_URL_ROOT=%s bundle exec puma -d -C config/puma.rb config.ru',
+              \   '/' . fnamemodify(getcwd(), ':t')
+              \ ))
+        if v:shell_error
+          echohl WarningMsg | echomsg printf("Error: %s", result) | echohl None
+        else
+          echomsg "Puma restarted."
+        endif
+      endif
     else
-      echomsg "Touched."
+      echohl WarningMsg | echomsg 'ERROR: "puma" not available or config/puma.rb not found.' | echohl None
     endif
   else
-    echohl WarningMsg | echomsg "tmp directory not found." | echohl None
+    echohl WarningMsg | echomsg '"tmp" directory not found.' | echohl None
+  endif
+endfunction "}}}
+
+function! s:restart_passenger_or_unicorn() "{{{
+  if isdirectory('tmp')
+    if executable('passenger')
+      let result = system("touch tmp/restart.txt")
+      if v:shell_error
+        echohl WarningMsg | echomsg printf("Error: %s", result) | echohl None
+      else
+        echomsg '"tmp/restart.txt" touched.'
+      endif
+    elseif executable('unicorn_rails')
+      if filereadable('tmp/pids/unicorn.pid')
+        let result = system('kill -USR2 $(cat tmp/pids/unicorn.pid)')
+        if v:shell_error
+          echohl WarningMsg | echomsg printf("Error: %s", result) | echohl None
+        else
+          echomsg "unicorn process killed."
+        endif
+      elseif filereadable('config/unicorn.rb') && !empty($RAILS_ENV)
+        let result = system('bundle exec unicorn_rails -D -E $RAILS_ENV -c config/unicorn.rb')
+        if v:shell_error
+          echohl WarningMsg | echomsg printf("Error: %s", result) | echohl None
+        else
+          echomsg "unicorn process started."
+        endif
+      else
+        echohl WarningMsg | echomsg 'ERROR: no config for unicorn_rails.' | echohl None
+      endif
+    else
+      echohl WarningMsg | echomsg 'ERROR: no "passenger" or "unicorn_rails" available.' | echohl None
+    endif
+  else
+    echohl WarningMsg | echomsg '"tmp" directory not found.' | echohl None
   endif
 endfunction "}}}
 
@@ -1995,6 +2053,7 @@ function! bundle.hooks.on_source(bundle)
   AlterCommand gb[lame] GBlameA
   AlterCommand r[ename] Rename <C-R>%<C-R>=EatChar('\s')<CR>
   AlterCommand to[uch] Touch %<C-R>=EatChar('\s')<CR>
+  AlterCommand rpu[ma] Rpuma
   AlterCommand pp PP
   AlterCommand u[nite] Unite
   AlterCommand f VimFilerSplit -buffer-name=

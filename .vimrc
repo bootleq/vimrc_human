@@ -998,9 +998,7 @@ endif
 
 " TODO apply to :Unite neobundle/log
 function! s:view_NeoBundleUpdatesLog() "{{{
-  " workaround of https://github.com/Shougo/neobundle.vim/issues/433#issuecomment-150748288
-  " TabMessage NeoBundleUpdatesLog
-  TabMessage NeoBundleLog
+  TabMessage NeoBundleUpdatesLog
   setfiletype neobundlelog
 endfunction "}}}
 command! -nargs=0 ViewNeoBundleUpdatesLog call <SID>view_NeoBundleUpdatesLog()
@@ -1018,8 +1016,10 @@ function! s:NeoBundleUpdatesLog_syntax() "{{{
   " Example Changes format:
   " ( 45/102): |neocomplete| Updated
   " |neocomplete| * a3b87cc [2 hours ago] Fix indent problem
-  syntax region NeoBundleLog_Changes start=_^(.\+): |.\+| \+Updated\n|_ end=_^|\@!_ fold
-  syntax match NeoBundleLog_TreeName _^|\S\+|_ contained containedin=NeoBundleLog_Changes conceal nextgroup=NeoBundleLog_GraphLink skipwhite
+  " or old style:
+  " [neobundle] |html5.vim| * 54f8c09 [3 days ago] Reference vim-polyglot language pack
+  syntax region NeoBundleLog_Changes start=_\v^\(.+\): \|.+\| +Updated\n(\[neobundle\] )?\|_ end=_^\(\(\[neobundle\] \)\?|\)\@!_ fold
+  syntax match NeoBundleLog_TreeName _\v^(\[neobundle\] )?\|\S+\|_ contained containedin=NeoBundleLog_Changes conceal nextgroup=NeoBundleLog_GraphLink skipwhite
   syntax match NeoBundleLog_HeaderName %|\zs.\+\ze|% contained
   syntax match NeoBundleLog_HeaderError %\v.+Error$% contained
   syntax match NeoBundleLog_Header _^(.*$_ contained contains=NeoBundleLog_Header.* containedin=NeoBundleLog_Changes 
@@ -1032,25 +1032,33 @@ function! s:NeoBundleUpdatesLog_syntax() "{{{
   syntax match NeoBundleLog_Fatal %\v^fatal\ze: %
   syntax match NeoBundleLog_Skipped %^(.\+): .*Skipped$%
   syntax match NeoBundleLog_Locked %^(.\+): .*Locked$%
+  syntax match NeoBundleLog_Failed %^(.\+): .*Error$%
+  syntax keyword NeoBundleLog_FailedLabel Error containedin=NeoBundleLog_Failed
   syntax match NeoBundleLog_PullName %|\zs.\+\ze|% contained
+  syntax match NeoBundleLog_CloneName %|\zs.\+\ze|% contained
   syntax match NeoBundleLog_Pull %^(.\+): |\S\+| git pull --ff.*$% contains=NeoBundleLog_Pull.*
+  syntax match NeoBundleLog_Clone %^(.\+): |\S\+| git clone --recursive.*$% contains=NeoBundleLog_Clone.*
   syntax match NeoBundleLog_Ignore %\v^(Same revision\.|Outdated plugin\.)$%
   syntax match NeoBundleLog_Ignoring %\v^(has "stay_same" attribute\.)$%
 
   syntax region NeoBundleLog_Summary start=_^Updated bundles:$_ end=_^Completed._
   syntax match NeoBundleLog_SummaryTitle _\v(Updated bundles:|Completed\.)$_ contained containedin=NeoBundleLog_Summary
-  syntax match NeoBundleLog_SummaryBundle _  \zs.\+\ze\s*(\d\+ changes)_ contained containedin=NeoBundleLog_Summary
+  syntax match NeoBundleLog_SummaryBundle _  \zs.\+\ze\s*(\d\+ changes\?)_ contained containedin=NeoBundleLog_Summary
   syntax match NeoBundleLog_SummaryURL _^\s\+https\?://.*$_ contained containedin=NeoBundleLog_Summary
 
   highlight link NeoBundleLog_Fatal Error
   highlight link NeoBundleLog_Header Constant
   highlight link NeoBundleLog_SectionH Statement
-  highlight link NeoBundleLog_HeaderName SignColumn
+  highlight link NeoBundleLog_HeaderName Define
   highlight link NeoBundleLog_HeaderError Error
  
   highlight link NeoBundleLog_Pull Conceal
   highlight link NeoBundleLog_PullName Conceal
+  highlight link NeoBundleLog_Clone NeoBundleLog_Header 
+  highlight link NeoBundleLog_CloneName NeoBundleLog_HeaderName
   highlight link NeoBundleLog_Skipped Conceal
+  highlight link NeoBundleLog_Failed WarningMsg
+  highlight link NeoBundleLog_FailedLabel Error
   highlight link NeoBundleLog_Locked Comment
   highlight link NeoBundleLog_Ignore Conceal
   highlight link NeoBundleLog_Ignoring Comment

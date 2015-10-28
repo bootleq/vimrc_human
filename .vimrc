@@ -514,8 +514,6 @@ noremap! <LocalLeader>, <C-\><C-N>
 
 "   各種移動    {{{2
 
-" noremap <expr> <Space>  repeat('<ScrollWheelDown>', 2)
-" nnoremap <expr> <LocalLeader><Space> repeat('<ScrollWheelUp>', 2)
 nnoremap <expr> <Space>  <SID>scroll_down()
 nnoremap <expr> <LocalLeader><Space> <SID>scroll_up()
 xnoremap <expr> <Space>  <SID>scroll_down('v')
@@ -2360,8 +2358,8 @@ function! s:scroll_down(...)
   let mode = a:0 ? a:1 : 'n'
   let l:count = a:0 > 1 ? a:2 : 2
 
-  if has("gui_running")
-    return '5j'
+  if has("gui_running") || winnr('$') > 1
+    return '7j'
   else
     return repeat("\<ScrollWheelDown>", l:count)
   endif
@@ -2372,8 +2370,8 @@ function! s:scroll_up(...)
   let mode = a:0 ? a:1 : 'n'
   let l:count = a:0 > 1 ? a:2 : 2
 
-  if has("gui_running")
-    return '5k'
+  if has("gui_running") || winnr('$') > 1
+    return '7k'
   else
     return repeat("\<ScrollWheelUp>", l:count)
   endif

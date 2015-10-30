@@ -128,6 +128,7 @@ let s:bundles += [
       \   ['justinmk/vim-sneak', {':skip': 0}],
       \   ['Lokaltog/vim-easymotion'],
       \   ['t9md/vim-choosewin'],
+      \   ['AndrewRadev/splitjoin.vim', {":prefer_local": 0}],
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
       \   ['bootleq/LargeFile', {":prefer_local": 1}],
@@ -218,7 +219,6 @@ endif
 "       \   ['kana/vim-grex'],
 "       \   ['tyru/vim-capture'],
 "       \   ['CountJump'],
-"       \   ['AndrewRadev/splitjoin.vim'],
 "       \   ['Shougo/vimshell'],
 "       \   ['taglist.vim', {'lazy': 1}],
 "       \   ['kana/vim-smartword'],
@@ -2019,6 +2019,15 @@ let delimitMate_expand_cr = 1
 " let delimitMate_smart_quotes = 0
 " let delimitMate_smart_matchpairs = ''
 let delimitMate_balance_matchpairs = 1
+
+" }}}2    splitjoin    {{{2
+
+let g:splitjoin_split_mapping = ''
+let g:splitjoin_join_mapping = ''
+nmap g<CR> :SplitjoinSplit<CR>
+nmap gJ :SplitjoinJoin<CR>
+let g:splitjoin_normalize_whitespace = 1
+let g:splitjoin_align = 1
 
 " }}}2    smartword.vim    {{{2
 

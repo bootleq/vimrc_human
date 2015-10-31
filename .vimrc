@@ -1444,6 +1444,7 @@ nnoremap <Leader>ig :IndentGuidesToggle<CR>
 " }}}2   Rails    {{{2
 
 autocmd User Rails call s:rails_test_helpers()
+autocmd User Rails if rails#buffer().relative() =~ '^config/locales/.\+.yml$' | call s:html_rc() | endif
 
 function! s:rails_test_helpers() "{{{
   let type = rails#buffer().type_name()

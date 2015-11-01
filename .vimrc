@@ -1545,6 +1545,14 @@ function! s:rails_test_tmux(method) "{{{
         \ })
 endfunction "}}}
 
+let g:rails_projections = {
+      \   "app/stylesheets/*.css.scss": {"command": "css"},
+      \   "app/assets/stylesheets/*.css.scss": {"command": "css"},
+      \   "app/assets/javascripts/*.js": {"command": "js"},
+      \   "app/assets/javascripts/*.coffee": {"command": "js"},
+      \   "log/*.log": {"command": "log"}
+      \ }
+
 " }}}2   fugitive  {{{2
 
 command! -nargs=* -complete=customlist,<SID>fugitiveblame_complete GBlameA Gblame <args> | call <SID>fugitiveblame_after()
@@ -2051,7 +2059,7 @@ let g:prettyprint_strin = ['split']
 " }}}2    altercmd    {{{2
 
 let bundle = neobundle#get('vim-altercmd')
-function! bundle.hooks.on_source(bundle)
+function! bundle.hooks.on_post_source(bundle)
   call altercmd#load()
 
   AlterCommand h help
@@ -2081,6 +2089,10 @@ function! bundle.hooks.on_source(bundle)
   AlterCommand k Ref bingzh
   AlterCommand jsl JSLint
   AlterCommand jsh JSHint
+  AlterCommand a A
+  AlterCommand at AT
+  AlterCommand tjs Tjs
+  AlterCommand tcss Tcss
   AlterCommand bu NeoBundleUpdate
   AlterCommand bl ViewNeoBundleUpdatesLog
 endfunction

@@ -1614,6 +1614,10 @@ function! s:gitdiff_next()
   endif
 endfunction
 nnoremap <silent><S-F6> :call <SID>gitdiff_next()<CR>
+nnoremap <silent><C-F6> :call <SID>gitdiff_next()<CR>
+
+autocmd my_vimrc FileType gitdiffallinfo nnoremap <buffer> q :silent quit<CR>
+autocmd my_vimrc FileType gitdiffallinfo nnoremap <buffer> <LocalLeader>q :silent quit<CR>
 
 " }}}2   SimpleJavascriptIndenter    {{{2
 
@@ -2073,6 +2077,7 @@ function! bundle.hooks.on_post_source(bundle)
   AlterCommand '<,'>p '<,'>Echo
   AlterCommand g GitDiff
   AlterCommand d[iff] Diff
+  AlterCommand diffoff SafeDiffOff
   AlterCommand gits Gstatus
   AlterCommand gb[lame] GBlameA
   AlterCommand r[ename] Rename <C-R>%<C-R>=EatChar('\s')<CR>
@@ -2308,12 +2313,16 @@ endfunction
 
 " }}}2   Custom diffoff     {{{2
 
-command! MyDiffOff call MyDiffOff()
-function! MyDiffOff()
+command! SafeDiffOff call SafeDiffOff()
+function! SafeDiffOff()
   if &diff
-    setlocal diff& scrollbind& cursorbind& wrap& foldcolumn&
-    set scrollopt=ver,hor,jump
-    let &l:foldmethod = exists('b:save_foldmethod') ? b:save_foldmethod : 'marker'
+    if version >= 704 && 0  " won't happen, since diffoff broken sometimes
+      normal! diffoff
+    else
+      setlocal diff& scrollbind& cursorbind& wrap& foldcolumn&
+      set scrollopt=ver,hor,jump
+      let &l:foldmethod = exists('b:save_foldmethod') ? b:save_foldmethod : 'marker'
+    endif
   else
     echomsg 'Not in diff mode.'
   endif
@@ -2323,12 +2332,13 @@ endfunction
 
 function! s:diffupdate_toggle_w()
   if &diff
-    if index(split(&diffopt, ','), 'iwhite') >= 0
-      set diffopt-=iwhite
-      echomsg 'iwhite off'
-    else
+    let iwhite = index(split(&diffopt, ','), 'iwhite') < 0
+    if iwhite
       set diffopt+=iwhite
       echomsg 'iwhite on'
+    else
+      set diffopt-=iwhite
+      echomsg 'iwhite off'
     endif
     diffupdate
   endif
@@ -3180,7 +3190,7 @@ function! s:quick_off()
   if winnr('$') > 1
     if <SID>gblame_window_off()
       return
-    elseif <SID>ref_window_off()
+    elseif <SID>quit_winodws_by_filetype('^ref-\w', '^quickrun')
       return
     elseif exists('t:gitdiffall_info')
       execute 'GitDiffOff'
@@ -3189,14 +3199,19 @@ function! s:quick_off()
       call SafeDiffOff()
       only
     endif
+  else
+    echohl WarningMsg | echomsg "No other window to close" | echohl None
   endif
 endfunction
 
-function! s:ref_quit()
-  if &filetype =~ 'ref-\w'
-    execute "quit"
-  endif
-endfunction
+function! s:quit_winodws_by_filetype(...) "{{{
+  let win_count = winnr('$')
+  for filetype_pattern in a:000
+    silent windo if &filetype =~ filetype_pattern | execute "quit" | endif
+  endfor
+  execute 'wincmd t'
+  return win_count > winnr('$')
+endfunction "}}}
 
 function! s:gblame_window_off()
   let win_count = winnr('$')

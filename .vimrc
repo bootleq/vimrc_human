@@ -3170,15 +3170,13 @@ vnoremap # :<C-U>set hlsearch<CR>:call <SID>search_selected_text_literaly('N')<C
 function! s:search_selected_text_literaly(search_command)
   call SaveReg('0')
   call SaveReg('"')
-
   normal! gvy
   let pattern = escape(@0, '\')
   let pattern = substitute(pattern, '\V\n', '\\n', 'g')
-  let @/ = pattern
+  let @/ = '\V' . pattern
   call histadd('/', '\V' . pattern)
   execute 'normal!' a:search_command
   let v:searchforward = a:search_command ==# 'n'
-
   call RestoreReg('0')
   call RestoreReg('"')
 endfunction

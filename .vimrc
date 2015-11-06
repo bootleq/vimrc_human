@@ -944,8 +944,8 @@ if has("cscope") && filereadable("/usr/bin/cscope")
     silent cscope add $CSCOPE_DB
   endif
   let s:outFiles = [
-      \   '/home/www/cscope.out',
-      \   '/home/www/include/cscope.out',
+      \   expand('~/cscope.out'),
+      \   expand('~/include/cscope.out'),
       \ ]
   for s:i.outFile in s:outFiles
     if filereadable(s:i.outFile)

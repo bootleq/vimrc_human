@@ -3475,6 +3475,8 @@ endfunction
 
 function! s:zsh_rc()
   setlocal iskeyword-=-
+  " VimEnter should come before `-c`, I don't know why this works
+  autocmd VimEnter <buffer> normal! 0
 endfunction
 
 " }}}2   git commit   {{{2

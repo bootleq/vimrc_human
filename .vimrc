@@ -102,13 +102,13 @@ let s:bundles += [
       \   ['thinca/vim-prettyprint'],
       \   ['thinca/vim-qfreplace'],
       \   ['mojako/ref-sources.vim'],
-      \   ['bootleq/vim-ref-bingzh', {":prefer_local": 1}],
+      \   ['bootleq/vim-ref-bingzh', {":prefer_local": 0}],
       \   ['tpope/vim-rails'],
       \   ['tpope/vim-tbone', {":skip": 1}],
       \   ['tpope/vim-fugitive'],
       \   ['mattn/webapi-vim'],
       \   ['mattn/wwwrenderer-vim'],
-      \   ['thinca/vim-ref'],
+      \   ['thinca/vim-ref', {"lazy": 1}],
       \   ['tyru/open-browser.vim'],
       \   ['tyru/vim-altercmd'],
       \   ['wokmarks.vim'],
@@ -2124,12 +2124,19 @@ autocmd my_vimrc FileType qf nnoremap <buffer> r :<C-U>Qfreplace tabnew<CR>
 
 let g:ref_cache_dir = expand('~/.vim/ref-cache')
 
-call neobundle#config('vim-ref', {
-      \   'lazy': 1,
-      \   'autoload': {
-      \     'commands': 'Ref'
-      \   }
-      \ })
+" call neobundle#config('vim-ref', {
+"       \   'lazy': 1,
+"       \   'autoload': {
+"       \     'commands': 'Ref'
+"       \   }
+"       \ })
+
+if neobundle#tap('vim-ref')
+  if $OSTYPE == 'darwin14.0'  " Mac man has no `-T` option
+    let g:ref_man_cmd = 'man -P cat'
+  endif
+  call neobundle#untap()
+endif
 
 call neobundle#config('vim-ref-bingzh', {
       \   'lazy': 0,
@@ -2166,7 +2173,6 @@ endfunction
 
 nnoremap <silent> K :call ref#jump('normal', 'bingzh')<CR>
 xnoremap <silent> K :call ref#jump('visual', 'bingzh')<CR>
-cnoreabbrev <expr> k ((getcmdtype() == ':' && getcmdpos() <= 2) ? 'Ref bingzh' : 'k')
 
 nnoremap <silent> <LocalLeader>K :normal! K<CR>
 xnoremap <silent> <LocalLeader>K :normal! K<CR>

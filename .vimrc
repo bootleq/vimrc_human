@@ -98,9 +98,9 @@ let s:bundles += [
       \   ['kana/vim-fakeclip'],
       \   ['junegunn/vim-easy-align'],
       \   ['Shougo/neosnippet'],
-      \   ['Shougo/vimfiler'],
+      \   ['Shougo/vimfiler', {'lazy': 1}],
       \   ['thinca/vim-prettyprint'],
-      \   ['thinca/vim-qfreplace'],
+      \   ['thinca/vim-qfreplace', {'lazy': 1}],
       \   ['mojako/ref-sources.vim'],
       \   ['bootleq/vim-ref-bingzh', {":prefer_local": 0}],
       \   ['tpope/vim-rails'],
@@ -122,8 +122,8 @@ let s:bundles += [
       \   ['bootleq/vim-gitdiffall', {":prefer_local": 1}],
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
       \   ['bootleq/vim-wordword', {":prefer_local": 1}],
-      \   ['rking/ag.vim'],
-      \   ['Indent-Guides'],
+      \   ['rking/ag.vim', {'lazy': 1}],
+      \   ['Indent-Guides', {':skip': 0, 'lazy': 1}],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
       \   ['Lokaltog/vim-easymotion'],
@@ -1101,20 +1101,21 @@ call neobundle#config('netrw.vim', {
       \     'commands': 'Explore'
       \   }
       \ })
-let bundle = neobundle#get('netrw.vim')
-function! bundle.hooks.on_source(bundle)
+if neobundle#tap('netrw.vim')
   " let g:netrw_ftp = 1
   " let g:netrw_preview = 1
   " let g:netrw_ignorenetrc = 0
   " let g:netrw_ftpextracmd = 'passive'
-
   let g:netrw_liststyle = 3
   let g:netrw_winsize = 20
   " let g:netrw_browsex_viewer = '-'
   let g:netrw_timefmt = '%Y-%m-%d %T'
   " if exists("g:qfix_win") && a:forced == 0
-  nmap <leader>e :Vexplore<CR>
-endfunction
+  function! neobundle#tapped.hooks.on_source(bundle) "{{{
+    nmap <leader>e :Vexplore<CR>
+  endfunction "}}}
+  call neobundle#untap()
+endif
 
 " }}}2    Unite.vim    {{{2
 
@@ -1369,17 +1370,17 @@ endfunction "}}}
 
 " }}}2    vimfiler    {{{2
 
-call neobundle#config('vimfiler', {
-      \   'lazy': 1,
-      \   'depends': 'Shougo/unite.vim',
-      \   'autoload': {
-      \     'commands': [
-      \       {'name': 'VimFiler', 'complete': 'customlist,vimfiler#complete'},
-      \       'VimFilerExplorer', 'VimFilerSplit', 'Edit', 'Read', 'Source', 'Write'
-      \     ],
-      \     'mappings': ['<Plug>(vimfiler_switch)']
-      \   }
-      \ })
+" call neobundle#config('vimfiler', {
+"       \   'lazy': 1,
+"       \   'depends': 'Shougo/unite.vim',
+"       \   'autoload': {
+"       \     'commands': [
+"       \       {'name': 'VimFiler', 'complete': 'customlist,vimfiler#complete'},
+"       \       'VimFilerExplorer', 'VimFilerSplit', 'Edit', 'Read', 'Source', 'Write'
+"       \     ],
+"       \     'mappings': ['<Plug>(vimfiler_switch)']
+"       \   }
+"       \ })
 
 let bundle = neobundle#get('vimfiler')
 function! bundle.hooks.on_source(bundle)
@@ -1429,12 +1430,12 @@ let g:easy_align_interactive_modes = ['l', 'a']
 
 " }}}2   Indent Guide    {{{2
 
-call neobundle#config('Indent-Guides', {
-      \   'lazy': 1,
-      \   'autoload': {
-      \     'commands': 'IndentGuidesToggle'
-      \   }
-      \ })
+" call neobundle#config('Indent-Guides', {
+"       \   'lazy': 1,
+"       \   'autoload': {
+"       \     'commands': 'IndentGuidesToggle'
+"       \   }
+"       \ })
 let g:indent_guides_enable_on_vim_startup = 0
 let g:indent_guides_auto_colors = 0
 let g:indent_guides_guide_size = 1
@@ -1774,8 +1775,8 @@ endif
 cnoremap <LocalLeader>> >
 
 " Overwrite default mapping ys, because y is for yank.
-nmap s  <plug>Ysurround
-nmap ss <plug>Yssurround
+nmap s  <Plug>Ysurround
+nmap ss <Plug>Yssurround
 nmap sss <Nop>
 
 " }}}2   wokmarks   {{{2
@@ -1854,24 +1855,27 @@ let g:EasyMotion_enter_jump_first = 1
 
 " }}}2    Sneak    {{{2
 
-let g:sneak#use_ic_scs = 1
-let g:sneak#map_netrw = 0
-let g:sneak#prompt = 'Sneak: '
-nmap <Leader>; <Plug>SneakBackward
-xmap <Leader>; <Plug>VSneakBackward
+if neobundle#tap('vim-sneak')
+  let g:sneak#textobject_z = 0
+  let g:sneak#use_ic_scs = 1
+  let g:sneak#map_netrw = 0
+  let g:sneak#prompt = 'Sneak: '
+  nmap <Leader>; <Plug>SneakBackward
+  xmap <Leader>; <Plug>VSneakBackward
 
-for s:i.map_mode in ['n', 'o', 'x']
-  execute s:i.map_mode . "map f <Plug>Sneak_f"
-  execute s:i.map_mode . "map F <Plug>Sneak_F"
-  execute s:i.map_mode . "map t <Plug>Sneak_t"
-  execute s:i.map_mode . "map T <Plug>Sneak_T"
-endfor
+  " workaround to disable `s` mappings
+  nmap [nop] <Plug>Sneak_s
+  nmap [nop] <Plug>Sneak_s
 
-" leave s to surround
-let bundle = neobundle#get('vim-sneak')
-function! bundle.hooks.on_source(bundle)
-  nmap s <plug>Ysurround
-endfunction
+  for s:i.map_mode in ['n', 'o', 'x']
+    execute s:i.map_mode . "map f <Plug>Sneak_f"
+    execute s:i.map_mode . "map F <Plug>Sneak_F"
+    execute s:i.map_mode . "map t <Plug>Sneak_t"
+    execute s:i.map_mode . "map T <Plug>Sneak_T"
+  endfor
+
+  call neobundle#untap()
+endif
 
 " }}}2    histwin    {{{2
 

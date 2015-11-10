@@ -1581,8 +1581,8 @@ function! s:fugitiveblame_gitdiffall(all) "{{{
 endfunction "}}}
 
 autocmd! my_vimrc FileType fugitiveblame
-      \ nnoremap <buffer> gf :call <SID>fugitiveblame_gitdiffall(0)<CR> |
-      \ nnoremap <buffer> <LocalLeader>gf :call <SID>fugitiveblame_gitdiffall(1)<CR>
+      \ nnoremap <silent> <buffer> gf :call <SID>fugitiveblame_gitdiffall(0)<CR> |
+      \ nnoremap <silent> <buffer> <LocalLeader>gf :call <SID>fugitiveblame_gitdiffall(1)<CR>
 
 " }}}2   giti    {{{2
 

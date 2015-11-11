@@ -3335,7 +3335,6 @@ endfunction
 function! s:css_rc()
   set foldmethod=marker
   setlocal iskeyword-=58
-  setlocal path+=./;/home/www/
 endfunction
 
 " }}}2   SCSS   {{{2
@@ -3347,7 +3346,6 @@ function! s:scss_rc()
     setlocal formatoptions+=j
   catch /^Vim\%((\a\+)\)\=:E539/
   endtry
-  setlocal path+=./;/home/www/
   " TODO load hail2u/vim-css3-syntax plugin
 endfunction
 

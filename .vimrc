@@ -1600,6 +1600,8 @@ endif
 
 " }}}2   gitdiffall    {{{2
 
+let g:gitdiffall_log_format = "medium"
+
 function! s:gitdiff_next()
   if exists('t:gitdiffall_info')
     let revision = get(t:gitdiffall_info, 'args', '')

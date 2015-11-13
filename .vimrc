@@ -2018,7 +2018,7 @@ let g:cycle_default_groups_for_ruby = [
 " cnoremap <expr> <Space> ambicmd#expand("\<Space>")
 " cnoremap <expr> <CR> ambicmd#expand("\<CR>")
 
-" }}}2    ack/ag    {{{2
+" }}}2    Ag    {{{2
 
 call neobundle#config('ag.vim', {
       \   'lazy': 1,
@@ -2026,8 +2026,6 @@ call neobundle#config('ag.vim', {
       \     'commands': {'name': 'Ag', 'complete': 'dir'},
       \   }
       \ })
-" let g:ackprg = 'ag --nogroup --nocolor --column'
-" alias ag='noglob ag --nobreak --nogroup --noheading --smart-case --depth=27'
 
 " }}}2    delimitMate    {{{2
 

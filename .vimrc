@@ -2505,9 +2505,26 @@ endfunction
 
 " }}}2   clipboard 存取    {{{2
 
+let s:i.clipboard_pool = ''
+
+if has('clipboard')
+  if $OSTYPE == 'cygwin' || has("gui_win32")
+    let s:i.clipboard_pool = '*'
+  elseif $OSTYPE == 'linux-gnu' && exists('$DISPLAY')
+    let s:i.clipboard_pool = '+'
+  elseif $OSTYPE == 'darwin14.0'
+    let s:i.clipboard_pool = '+'
+  endif
+endif
+
 " http://vim.wikia.com/wiki/Using_the_Windows_clipboard_in_Cygwin_Vim
 " TODO 正確處理字元編碼
 function! Putclip(type, ...) range
+  if !executable('putclip') && !executable('tmux')
+    echohl WarningMsg | echomsg 'NOT SUPPORTED' | echohl None
+    return
+  endif
+
   let save_sel = &selection
   let &selection = "inclusive"
   let save_reg = @@
@@ -2518,46 +2535,49 @@ function! Putclip(type, ...) range
   else
     silent execute "normal! `<" . a:type . "`>y"
   endif
-  call system('putclip', @@)
+
+  if executable('putclip')
+    call system('putclip', @@)
+  else
+    call system(printf(
+          \   'tmux set-buffer "%s"',
+          \   escape(@@, '"')
+          \ ))
+  endif
+
   let &selection = save_sel
   let @@ = save_reg
 endfunction
 
-if has('clipboard')
-  if $OSTYPE == 'cygwin' || has("gui_win32")
-    noremap <silent> <LocalLeader>y "*y
-    inoremap <silent> <LocalLeader>y <C-O>"*y
-    if has("gui_win32")
-      noremap! <S-Insert> <C-R>*
-    endif
-  elseif $OSTYPE == 'linux-gnu'
-    noremap <silent> <LocalLeader>y "+y
-    inoremap <silent> <LocalLeader>y <C-O>"+y
-  endif
-else
-  vnoremap <silent> <LocalLeader>y :call Putclip(visualmode(), 1)<CR>
-  nnoremap <silent> <LocalLeader>y :call Putclip('n', 1)<CR>
-  inoremap <silent> <LocalLeader>y <C-O>:call Putclip('n', 1)<CR>
-endif
-
 function! Getclip()
   let save_reg = @@
-  let @@ = system('getclip')
+  if executable('getclip')
+    let @@ = system('getclip')
+  elseif executable('tmux')
+    let @@ = system('tmux show-buffer')
+  else
+    let @@ = 'NOT SUPPORTED'
+  endif
   setlocal paste
   execute 'normal! p'
   setlocal nopaste
   let @@ = save_reg
 endfunction
 
-if has('clipboard')
-  if $OSTYPE == 'cygwin' || has("gui_win32")
-    nnoremap <silent> <LocalLeader>p "*p
-    inoremap <silent> <LocalLeader>p <C-O>"*p
-  elseif $OSTYPE == 'linux-gnu'
-    nnoremap <silent> <LocalLeader>p "+p
-    inoremap <silent> <LocalLeader>p <C-O>"+p
+if !empty(s:i.clipboard_pool)
+  execute printf('noremap <silent> <LocalLeader>y "%sy', s:i.clipboard_pool)
+  execute printf('inoremap <silent> <LocalLeader>y <C-O>"%sy', s:i.clipboard_pool)
+  if has("gui_win32") && s:i.clipboard_pool == '*'
+    noremap! <S-Insert> <C-R>*
   endif
+
+  execute printf('nnoremap <silent> <LocalLeader>p "%sp', s:i.clipboard_pool)
+  execute printf('inoremap <silent> <LocalLeader>p <C-O>"%sp', s:i.clipboard_pool)
 else
+  vnoremap <silent> <LocalLeader>y :call Putclip(visualmode(), 1)<CR>
+  nnoremap <silent> <LocalLeader>y :call Putclip('n', 1)<CR>
+  inoremap <silent> <LocalLeader>y <C-O>:call Putclip('n', 1)<CR>
+
   nnoremap <silent> <LocalLeader>p :call Getclip()<CR>
   inoremap <silent> <LocalLeader>p <C-O>:call Getclip()<CR>
 endif

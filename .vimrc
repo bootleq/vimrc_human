@@ -2233,12 +2233,12 @@ endfunction
 
 function! s:large_file_read()
   let dir_name = expand('%:p:h')
-  if dir_name =~ '/home/www/fc/\(\w\+/\)\?log'
+  if dir_name =~ '/home/\w+/fc/\(\w\+/\)\?log' || dir_name =~ '/home/\w\+/nerv/log'
     if &fileencoding != 'utf-8'
       edit! ++enc=utf-8
     endif
     syntax match railslogEscape '\e\[[0-9;]*m' conceal
-  elseif dir_name == '/home/www/logs'
+  elseif dir_name =~ '/home/\w+/logs$'
     " set syntax=httplog
   endif
 endfunction

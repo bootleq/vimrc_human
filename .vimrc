@@ -3601,8 +3601,11 @@ augroup my_vimrc
   autocmd BufRead,BufNewFile /opt/nginx*/conf/*.conf,/opt/nginx*/conf/*.default set filetype=nginx
   autocmd BufRead,BufNewFile /etc/nginx*/*.conf,/etc/nginx*/*.default,/etc/nginx/sites-*/* set filetype=nginx
   autocmd BufRead /home/www/logs/*.log,/var/log/nginx/*.log setfiletype httplog
-  autocmd BufRead /home/www/logs/*.log,/var/log/nginx/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
+
+  autocmd BufRead /home/www/logs/*.log,/var/log/nginx/*.log   nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
+  autocmd BufRead /home/*/fc/log/*.log                        nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
   autocmd BufRead /home/nerv/log/*.log,/home/*/nerv/log/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
+  autocmd BufRead /home/perv/log/*.log,/home/*/perv/log/*.log nnoremap <buffer> <LocalLeader>ddd :EmptyFile<CR>
 
   " let apache_version = "2.0"
   " let dosbatch_cmdextversion = 2

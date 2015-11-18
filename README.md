@@ -22,7 +22,7 @@ Usage
 
 2. Update submodule (will install NeoBundle):
 
-    ```
+    ```sh
     cd /tmp/vimrc_human/bootleq
     git submodule init
     git submodule update

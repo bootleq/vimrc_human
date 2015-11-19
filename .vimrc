@@ -2085,8 +2085,10 @@ function! bundle.hooks.on_post_source(bundle)
   AlterCommand gits Gstatus
   AlterCommand gb[lame] GBlameA
   AlterCommand r[ename] Rename <C-R>%<C-R>=EatChar('\s')<CR>
-  AlterCommand to[uch] Touch %<C-R>=EatChar('\s')<CR>
   AlterCommand rpu[ma] Rpuma
+  AlterCommand to[uch] Touch %<C-R>=EatChar('\s')<CR>
+  AlterCommand qu[ickrun] QuickRun
+  " AlterCommand '<,'>r[un] '<,'>QuickRun
   AlterCommand pp PP
   AlterCommand u[nite] Unite
   AlterCommand f VimFilerSplit -buffer-name=
@@ -2103,6 +2105,7 @@ function! bundle.hooks.on_post_source(bundle)
   AlterCommand tjs Tjs
   AlterCommand tcss Tcss
   AlterCommand bu NeoBundleUpdate
+  AlterCommand bi NeoBundleInstall
   AlterCommand bl ViewNeoBundleUpdatesLog
 endfunction
 

@@ -2082,6 +2082,10 @@ function! bundle.hooks.on_post_source(bundle)
   AlterCommand g GitDiff
   AlterCommand d[iff] Diff
   AlterCommand diffoff SafeDiffOff
+  AlterCommand do diffget
+  AlterCommand dp diffput
+  AlterCommand '<,'>d '<,'>diffget
+  " AlterCommand '<,'>dp '<,'>diffput
   AlterCommand gits Gstatus
   AlterCommand gb[lame] GBlameA
   AlterCommand r[ename] Rename <C-R>%<C-R>=EatChar('\s')<CR>

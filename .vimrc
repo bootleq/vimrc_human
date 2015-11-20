@@ -139,6 +139,8 @@ let s:bundles += [
       \   ['leshill/vim-json', {':filetypes': ['json']}],
       \   ['depuracao/vim-rdoc', {':filetypes': ['rdoc']}],
       \   ['jiangmiao/simple-javascript-indenter', {':filetypes': ['javascript']}],
+      \   ['kchmck/vim-coffee-script', {':filetypes': ['coffee']}],
+      \   ['groenewege/vim-less', {':filetypes': ['less']}],
       \   ['hail2u/vim-css3-syntax', {':filetypes': ['css']}],
       \   ['httplog', {':filetypes': ['httplog']}],
       \   ['nginx.vim', {':filetypes': ['nginx']}],

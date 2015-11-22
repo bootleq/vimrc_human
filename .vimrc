@@ -2022,12 +2022,12 @@ let g:cycle_default_groups_for_ruby = [
 
 " }}}2    Ag    {{{2
 
-call neobundle#config('ag.vim', {
-      \   'lazy': 1,
-      \   'autoload': {
-      \     'commands': {'name': 'Ag', 'complete': 'dir'},
-      \   }
-      \ })
+" call neobundle#config('ag.vim', {
+"       \   'lazy': 1,
+"       \   'autoload': {
+"       \     'commands': {'name': 'Ag', 'complete': 'dir'},
+"       \   }
+"       \ })
 
 " }}}2    delimitMate    {{{2
 
@@ -2125,12 +2125,12 @@ endfunction
 
 " }}}2    qfreplace    {{{2
 
-call neobundle#config('vim-qfreplace', {
-      \   'lazy': 1,
-      \   'autoload': {
-      \     'filetypes': ['unite', 'qf']
-      \   }
-      \ })
+" call neobundle#config('vim-qfreplace', {
+"       \   'lazy': 1,
+"       \   'autoload': {
+"       \     'filetypes': ['unite', 'qf']
+"       \   }
+"       \ })
 autocmd my_vimrc FileType qf nnoremap <buffer> r :<C-U>Qfreplace tabnew<CR>
 
 " }}}2    Ref    {{{2

@@ -3665,11 +3665,6 @@ augroup my_vimrc
 
   autocmd FilterWritePre * call s:config_in_diff_mode()
 
-  " Modified from http://nanabit.net/blog/2007/11/03/vim-cursorline/
-  " Note: not recover when canceling FuzzyFinder.
-  " autocmd WinLeave * setlocal nocursorline
-  " autocmd WinEnter,BufRead * setlocal cursorline
-
 augroup END
 
 " }}}1    Autocommands             ===========================================

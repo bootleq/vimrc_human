@@ -198,6 +198,15 @@ let s:bundles += [
 "       \   ['zepto/unite-tmux', {":skip": 1}],
 "       \   ['tsukkee/unite-help', {"rev": 'tags-caching'}],
 "       \   ['kmnk/vim-unite-giti', {":skip": 1, 'lazy': 1}],
+" }}}3 colorschemes {{{3
+let s:bundles += [
+      \   ['itchyny/landscape.vim'],
+      \   ['tomasr/molokai'],
+      \   ['sk1418/last256'],
+      \   ['chriskempson/tomorrow-theme'],
+      \   ['altercation/vim-colors-solarized'],
+      \   ['wombat256.vim'],
+      \ ]
 " }}}3 neocomplete {{{3
 if has('lua') && (v:version > 703 || (v:version == 703 && has('patch885')))
   let s:bundles += [['Shougo/neocomplete']]

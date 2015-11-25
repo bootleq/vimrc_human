@@ -1943,6 +1943,7 @@ let g:cycle_default_groups = [
       \   [['exclude', 'include']],
       \   [['width', 'height']],
       \   [['asc', 'desc']],
+      \   [['open', 'close']],
       \   [['start', 'end']],
       \   [['是', '否']],
       \   [['有', '無']],

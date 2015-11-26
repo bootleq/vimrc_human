@@ -615,6 +615,8 @@ map <kDel> <Del>
 
 cnoremap <LocalLeader>; <C-W>
 
+cmap <LocalLeader>v <C-F>
+
 " Delete to end, from @tyru https://github.com/tyru/dotfiles
 cnoremap <LocalLeader>d <C-\>e getcmdpos() == 1 ? '' : getcmdline()[:getcmdpos()-2]<CR>
 

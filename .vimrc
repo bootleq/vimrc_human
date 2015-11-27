@@ -188,7 +188,7 @@ let s:bundles += [
       \   ['Shougo/neomru.vim', {":skip": 0}],
       \   ['tacroe/unite-mark'],
       \   ['thinca/vim-unite-history'],
-      \   ['Shougo/unite-help'],
+      \   ['tsukkee/unite-help', {"rev": 'tags-caching'}],
       \   ['ujihisa/unite-gem'],
       \   ['basyura/unite-rails'],
       \   ['moznion/unite-git-conflict.vim'],
@@ -196,7 +196,7 @@ let s:bundles += [
 " }}}3 unite unused {{{3
 " let s:bundles += [
 "       \   ['zepto/unite-tmux', {":skip": 1}],
-"       \   ['tsukkee/unite-help', {"rev": 'tags-caching'}],
+"       \   ['Shougo/unite-help'],
 "       \   ['kmnk/vim-unite-giti', {":skip": 1, 'lazy': 1}],
 " }}}3 colorschemes {{{3
 let s:bundles += [

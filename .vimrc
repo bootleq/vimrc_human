@@ -608,6 +608,7 @@ xnoremap <silent> <C-S> <C-\><C-N>:update<CR>
 
 noremap <C-Del> :quit<CR>
 noremap <C-kDel> :quit<CR>
+noremap <C-BS> :quit<CR>
 map <kDel> <Del>
 
 " TODO command mode text-object delete

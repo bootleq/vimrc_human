@@ -1440,6 +1440,7 @@ endfunction
 xmap <CR> <Plug>(EasyAlign)
 xmap <LocalLeader>A <Plug>(EasyAlign)
 let g:easy_align_interactive_modes = ['l', 'a']
+let g:easy_align_ignore_unmatched  = 0
 " nmap <LocalLeader>= <Plug>(EasyAlign)
 
 " }}}2   Indent Guide    {{{2

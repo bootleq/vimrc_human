@@ -1671,6 +1671,7 @@ if has("gui_running")
   noremap <silent> <M-z> :TagbarToggle<CR>
 else
   noremap <silent> z :TagbarToggle<CR>
+  noremap <silent> Ω :TagbarToggle<CR> " For mac option-z
 endif
 
 " }}}2   GSession   {{{2

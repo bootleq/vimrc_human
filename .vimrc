@@ -150,7 +150,6 @@ let s:bundles += [
       \   ['timcharper/textile.vim', {':filetypes': ['textile']}],
       \   ['tpope/vim-haml', {':filetypes': ['haml']}],
       \   ['vim-ruby/vim-ruby', {':filetypes': ['ruby']}],
-      \   ['bootleq/vim-ruby-enccomment', {':filetypes': ['ruby'], ":prefer_local": 1}],
       \ ]
 " }}}3 text-objs {{{3
 let s:bundles += [
@@ -217,6 +216,8 @@ endif
 " let s:bundles += [
 "       \   ['L9', {"stay_same": 1}],
 "       \   ['FuzzyFinder'],
+"       \   ['ctrlpvim/ctrlp.vim', {":prefer_local": 1, ":skip": 1}],
+"       \   ['bootleq/vim-ruby-enccomment', {':filetypes': ['ruby'], ":prefer_local": 1}],
 "       \   ['h1mesuke/vim-alignta'],
 "       \   ['gregsexton/gitv'],
 "       \   ['mrkn256.vim'],

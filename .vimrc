@@ -138,6 +138,10 @@ let s:bundles += [
 let s:bundles += [
       \   ['leshill/vim-json', {':filetypes': ['json']}],
       \   ['depuracao/vim-rdoc', {':filetypes': ['rdoc']}],
+      \   ['bootleq/JavaScript-syntax', {':filetypes': ['javascript'], ":skip": 1}],
+      \   ['othree/yajs', {':filetypes': ['javascript'], ":skip": 0}],
+      \   ['jelera/vim-javascript-syntax', {':filetypes': ['javascript'], ":skip": 1}],
+      \   ['othree/vim-javascript-syntax', {':filetypes': ['javascript'], ":skip": 1}],
       \   ['jiangmiao/simple-javascript-indenter', {':filetypes': ['javascript']}],
       \   ['kchmck/vim-coffee-script', {':filetypes': ['coffee']}],
       \   ['groenewege/vim-less', {':filetypes': ['less']}],

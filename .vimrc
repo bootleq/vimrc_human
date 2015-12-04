@@ -149,7 +149,7 @@ let s:bundles += [
       \   ['jtratner/vim-flavored-markdown', {':filetypes': ['ghmarkdown']}],
       \   ['timcharper/textile.vim', {':filetypes': ['textile']}],
       \   ['tpope/vim-haml', {':filetypes': ['haml']}],
-      \   ['vim-ruby/vim-ruby', {':filetypes': ['ruby']}],
+      \   ['vim-ruby/vim-ruby', {':filetypes': ['ruby'], ':prefer_local': 1, ':skip': 0}],
       \ ]
 " }}}3 text-objs {{{3
 let s:bundles += [
@@ -3490,8 +3490,17 @@ function! s:ruby_rc()
 
   let g:ruby_operators = 0
   let g:ruby_space_errors = 1
-  let g:ruby_no_expensive = 0
-  let ruby_minlines = 70
+
+  " Oh, these boolean were tested by exists()...
+  " let g:ruby_fold = 1
+  let g:ruby_no_expensive = 1
+  let g:ruby_no_comment_fold = 1
+
+  let g:ruby_minlines = 70
+
+  let ruby_spellcheck_strings = 1
+
+  let g:ruby_foldable_groups = 'NONE'
 endfunction
 
 " }}}2   PHP   {{{2

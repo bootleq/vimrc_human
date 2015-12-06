@@ -3547,8 +3547,12 @@ endfunction
 
 " }}}2   git commit   {{{2
 
-function! s:gitcommit_rc()
+function! s:gitcommit_rc(filename)
   setlocal textwidth=72
+  if a:filename =~ "/nerv/.git/"
+    syntax match gitcommitOverflowABAgile "\%>78c.*" contained contains=@Spell containedin=gitcommitOverflow
+    highlight default link gitcommitOverflowABAgile Error
+  endif
 endfunction
 
 " }}}2   git config   {{{2

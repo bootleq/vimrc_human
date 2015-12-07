@@ -445,14 +445,6 @@ set showtabline=2
 
 " }}}2    尋找、搜尋    {{{2
 
-if $OSTYPE == 'cygwin'
-  " set cdpath+=/cygdrive/g/web/
-  " set path+=/home/www/
-elseif $OSTYPE == 'linux-gnu'
-  set cdpath+=/home/www/
-  set path+=/home/www/
-endif
-
 " set autochdir
 set ignorecase
 set smartcase

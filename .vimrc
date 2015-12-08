@@ -154,6 +154,8 @@ let s:bundles += [
       \   ['timcharper/textile.vim', {':filetypes': ['textile']}],
       \   ['tpope/vim-haml', {':filetypes': ['haml']}],
       \   ['vim-ruby/vim-ruby', {':filetypes': ['ruby'], ':prefer_local': 1, ':skip': 0}],
+      \   ['sunaku/vim-ruby-minitest', {':filetypes': ['ruby'], ':prefer_local': 1, ':skip': 0}],
+      \   ['bruno-/vim-ruby-fold', {':filetypes': ['ruby'], ':prefer_local': 0, ':skip': 1}],
       \ ]
 " }}}3 text-objs {{{3
 let s:bundles += [
@@ -3497,6 +3499,17 @@ function! s:ruby_rc()
   let ruby_spellcheck_strings = 1
 
   let g:ruby_foldable_groups = 'NONE'
+  let g:ruby_minitest_fold = 1
+
+  if !exists('b:rails_root')
+    call RailsDetect()
+  endif
+  if exists('b:rails_root')
+    let type = rails#buffer().type_name()
+    if type =~ '^test'
+      setlocal foldmethod=syntax foldlevel=4
+    endif
+  endif
 endfunction
 
 " }}}2   PHP   {{{2

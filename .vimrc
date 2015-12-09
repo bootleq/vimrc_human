@@ -153,6 +153,7 @@ let s:bundles += [
       \   ['jtratner/vim-flavored-markdown', {':filetypes': ['ghmarkdown']}],
       \   ['timcharper/textile.vim', {':filetypes': ['textile']}],
       \   ['tpope/vim-haml', {':filetypes': ['haml']}],
+      \   ['slim-template/vim-slim', {':filetypes': ['slim'], ':prefer_local': 0}],
       \   ['vim-ruby/vim-ruby', {':filetypes': ['ruby'], ':prefer_local': 1, ':skip': 0}],
       \   ['sunaku/vim-ruby-minitest', {':filetypes': ['ruby'], ':prefer_local': 1, ':skip': 0}],
       \   ['bruno-/vim-ruby-fold', {':filetypes': ['ruby'], ':prefer_local': 0, ':skip': 1}],

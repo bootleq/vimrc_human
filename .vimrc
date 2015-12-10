@@ -157,6 +157,7 @@ let s:bundles += [
       \   ['vim-ruby/vim-ruby', {':filetypes': ['ruby'], ':prefer_local': 1, ':skip': 0}],
       \   ['sunaku/vim-ruby-minitest', {':filetypes': ['ruby'], ':prefer_local': 1, ':skip': 0}],
       \   ['bruno-/vim-ruby-fold', {':filetypes': ['ruby'], ':prefer_local': 0, ':skip': 1}],
+      \   ['cespare/vim-toml', {':filetypes': ['toml']}],
       \ ]
 " }}}3 text-objs {{{3
 let s:bundles += [

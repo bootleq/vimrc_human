@@ -185,7 +185,7 @@ let s:bundles += [
       \ ]
 " }}}3 gf-user {{{3
 let s:bundles += [
-      \   ['kana/vim-gf-user', {":skip": 0}],
+      \   ['kana/vim-gf-user', {":skip": 1}],
       \ ]
 " }}}3 unite {{{3
 let s:bundles += [

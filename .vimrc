@@ -562,6 +562,8 @@ nnoremap ' `
 
 nmap <LocalLeader>w <C-W>
 nnoremap <C-W>V :wincmd K <Bar> wincmd =<CR>
+nnoremap <silent> <C-W>m :MoveIntoTabpage<CR>
+nnoremap <silent> <C-W>M :MoveIntoTabpage <count> <C-R>=tabpagenr()-1<CR><CR>
 nmap <localleader>gf <C-W>gF
 vmap <localleader>gf <C-W>gF
 nnoremap <expr> <CR> &modifiable ? "i<CR><C-\><C-N>" : "<C-]>"
@@ -2808,20 +2810,40 @@ command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 " }}}2   Move window into tabpage   {{{2
 
 " Modified from kana's useful tab function {{{
-function! s:move_window_into_tab_page(...)
+function! s:move_window_into_tab_page(_, ...)
   " Move the current window into target_tabpagenr.
   " a:1 - target_tabpagenr : if not set, move into new tab page.
   " a:2 - open_relative : open new tab aside current tab (default 1).
-  let target_tabpagenr = a:0 > 0 ? a:1 : 0
-  let open_relative = a:0 > 1 ? a:2 : 1
+  " a:3 - split_command : command to split buffer (default empty).
+  " can also specify target_tabpagenr by v:count
 
-  if target_tabpagenr > tabpagenr('$')
-    let target_tabpagenr = tabpagenr('$')
-  endif
+  let target_tabpagenr = a:0 > 1 ? a:2 : 0
+  let open_relative    = a:0 > 2 ? a:3 : 1
+  let split_command    = a:0 > 3 ? a:4 : ''
 
   let original_tabnr = tabpagenr()
   let target_bufnr = bufnr('')
   let window_view = winsaveview()
+
+  if v:count > 0
+    let target_tabpagenr = v:count
+  endif
+
+  if target_tabpagenr > tabpagenr('$')
+    let target_tabpagenr = tabpagenr('$')
+    if original_tabnr == target_tabpagenr
+      echohl WarningMsg | echomsg "Already in last tab." | echohl None
+      return
+    endif
+  endif
+
+  if target_tabpagenr == original_tabnr
+    echohl WarningMsg | echomsg "Already in tab " . target_tabpagenr . "." | echohl None
+    return
+  elseif target_tabpagenr == 0 && winnr('$') == 1
+    echohl WarningMsg | echomsg "Nothing to split out." | echohl None
+    return
+  endif
 
   if target_tabpagenr == 0
     tabnew
@@ -2832,22 +2854,21 @@ function! s:move_window_into_tab_page(...)
     let target_tabpagenr = tabpagenr()
   else
     execute target_tabpagenr 'tabnext'
-    topleft new  " FIXME: be customizable?
+    execute split_command 'new'
     execute target_bufnr 'buffer'
   endif
   call winrestview(window_view)
 
   execute original_tabnr 'tabnext'
-  if 1 < winnr('$')
-    close
-  else
-    enew
+  if winnr('$') == 1 && original_tabnr < target_tabpagenr
+    let target_tabpagenr = target_tabpagenr - 1
   endif
+  close
 
   execute target_tabpagenr 'tabnext'
 endfunction " }}}
 
-command! -nargs=* MoveIntoTabpage call <SID>move_window_into_tab_page(<f-args>)
+command! -nargs=* -count=0 MoveIntoTabpage call <SID>move_window_into_tab_page(<count>, <f-args>)
 
 " }}}2   EvalVimScriptRegion    {{{2
 

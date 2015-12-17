@@ -101,6 +101,8 @@ let s:bundles += [
       \   ['Shougo/vimfiler', {'lazy': 1}],
       \   ['thinca/vim-prettyprint'],
       \   ['thinca/vim-qfreplace', {'lazy': 1}],
+      \   ['thinca/vim-quickrun', {'lazy': 1}],
+      \   ['bootleq/vim-qrpsqlpq', {":prefer_local": 1}],
       \   ['mojako/ref-sources.vim'],
       \   ['bootleq/vim-ref-bingzh', {":prefer_local": 0}],
       \   ['tpope/vim-rails'],
@@ -1576,6 +1578,51 @@ let g:rails_projections = {
       \   "app/assets/javascripts/*.coffee": {"command": "js"},
       \   "log/*.log": {"command": "log"}
       \ }
+
+" }}}2   QuickRun    {{{2
+
+function! s:init_quickrun()
+  let g:quickrun_config = {
+        \   '_': {
+        \     'outputter/buffer/name': '[QuickRun]',
+        \     'outputter/buffer/into': 1,
+        \     'outputter/buffer/split': 'botright 8'
+        \   }
+        \ }
+
+  " TODO hook output data, 0,2delete_ the output
+  " TODO ehcomsg when success normally
+  " TODO highlight catched errors
+  let g:quickrun_config.vim = {
+        \   'outputter': 'error',
+        \   'outputter/error/success': 'message',
+        \   'outputter/error/error': 'buffer',
+        \   'outputter/buffer/name': '[QuickRun Vim]',
+        \   'outputter/buffer/close_on_empty': 1
+        \ }
+endfunction
+call s:init_quickrun()
+
+" }}}2   qrpsqlpq    {{{2
+
+function! s:init_qrpsqlpq()
+  nmap <buffer> <Leader>r [qrpsqlpq]
+  nnoremap <silent> <buffer> [qrpsqlpq]j :call qrpsqlpq#run('split')<CR>
+  nnoremap <silent> <buffer> [qrpsqlpq]l :call qrpsqlpq#run('vsplit')<CR>
+  nnoremap <silent> <buffer> [qrpsqlpq]r :call qrpsqlpq#run()<CR>
+
+  if !exists('b:rails_root')
+    call RailsDetect()
+  endif
+  if !exists('b:rails_root')
+    let b:qrpsqlpq_db_name = 'postgres'
+  endif
+endfunction
+
+if executable('psql')
+  let g:qrpsqlpq_expanded_format_max_lines = -1
+  autocmd FileType sql call s:init_qrpsqlpq()
+endif
 
 " }}}2   fugitive  {{{2
 

@@ -133,7 +133,7 @@ let s:bundles += [
       \   ['AndrewRadev/splitjoin.vim', {":prefer_local": 0}],
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
-      \   ['bootleq/LargeFile', {":prefer_local": 1}],
+      \   ['bootleq/LargeFile', {":prefer_local": 0}],
       \   ['majutsushi/tagbar'],
       \ ]
 " filetype {{{3
@@ -2294,12 +2294,12 @@ vmap <Leader>s<CR> <Plug>(openbrowser-search)
 " }}}2    LargeFile    {{{2
 
 " TODO delcommand Large
-let g:LargeFile           = 40
-let g:LargeFile_size_unit = 1024    " KB
-let g:LargeFile_patterns  = '*.log,*.log.1,*.sql'
+" let g:LargeFile           = 40
+" let g:LargeFile_size_unit = 1024    " KB
+" let g:LargeFile_patterns  = '*.log,*.log.1,*.sql'
 let g:LargeFile_verbose   = 0
-autocmd User LargeFileRead call s:large_file_read()
-autocmd User LargeFile call s:large_file_detected()
+" autocmd User LargeFileRead call s:large_file_read()
+" autocmd User LargeFile call s:large_file_detected()
 
 function! s:large_file_detected()
   let ext_name = expand('%:e')

@@ -2215,7 +2215,7 @@ let g:ref_cache_dir = expand('~/.vim/ref-cache')
 "       \ })
 
 if neobundle#tap('vim-ref')
-  if $OSTYPE == 'darwin14.0'  " Mac man has no `-T` option
+  if $OSTYPE =~ '^darwin'  " Mac man has no `-T` option
     let g:ref_man_cmd = 'man -P cat'
   endif
   call neobundle#untap()

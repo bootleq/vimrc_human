@@ -33,9 +33,9 @@ let s:i = {}
 " }}}1   Startup                ==============================================
 
 
-" Plugin Bundles:                 {{{1 =======================================
+" Bundles:                        {{{1 =======================================
 
-" Setup {{{2
+" Bundler {{{2
 
 if has('vim_starting')
   if has("gui_win32")
@@ -88,7 +88,7 @@ catch /^Vim\%((\a\+)\)\=:E117/
   finish
 endtry
 
-" }}}2    Bundles   {{{2
+" }}}2    Listing    {{{2
 let s:bundles = []
 let s:bundles += [
       \   ['kana/vim-smartinput', {":skip": 1}],
@@ -98,7 +98,7 @@ let s:bundles += [
       \   ['kana/vim-fakeclip'],
       \   ['junegunn/vim-easy-align'],
       \   ['Shougo/neosnippet'],
-      \   ['Shougo/vimfiler', {'lazy': 1}],
+      \   ['Shougo/vimfiler'],
       \   ['thinca/vim-prettyprint'],
       \   ['thinca/vim-qfreplace', {'lazy': 1}],
       \   ['thinca/vim-quickrun', {'lazy': 1}],
@@ -285,14 +285,69 @@ for s:i.bundle in s:bundles
 endfor
 unlet! s:bundles s:tmp_options
 
-" }}}2    Finish   {{{2
+" }}}2    Listing
+
+" }}}1   Bundles                       =======================================
+
+
+" Plugin Config:             {{{1 ============================================
+
+runtime! ftplugin/man.vim    " 啟用 |:Man| 指令
+runtime! macros/matchit.vim
+
+let g:loaded_getscriptPlugin = 1
+
+" vimfiler {{{2
+
+call neobundle#config('vimfiler', {
+      \   'lazy': 1,
+      \   'depends': 'Shougo/unite.vim',
+      \   'autoload': {
+      \     'commands': [
+      \       {'name': 'VimFiler', 'complete': 'customlist,vimfiler#complete'},
+      \       'VimFilerExplorer', 'VimFilerSplit', 'Edit', 'Read', 'Source', 'Write'
+      \     ],
+      \     'mappings': ['<Plug>(vimfiler_switch)']
+      \   }
+      \ })
+
+let bundle = neobundle#get('vimfiler')
+function! bundle.hooks.on_source(bundle)
+  let g:loaded_netrwPlugin = 1
+
+  let g:vimfiler_as_default_explorer = 1
+  let g:vimfiler_edit_action = 'tabopen'
+  let g:vimfiler_enable_clipboard = 0
+  let g:vimfiler_safe_mode_by_default = 0
+  let g:vimfiler_time_format = '%y-%m-%d %H:%M'
+
+  if $OSTYPE == 'cygwin' || has("gui_win32")
+    let g:unite_kind_file_use_trashbox = 1
+    let g:vimfiler_detect_drives = [
+          \ 'C:/', 'D:/', 'E:/', 'F:/', 'G:/', 'H:/', 'I:/',
+          \ 'J:/', 'K:/', 'L:/', 'M:/', 'N:/']
+  elseif $OSTYPE == 'linux-gnu'
+    let g:vimfiler_detect_drives =
+          \ split(glob('/mnt/*'), '\n') + split(glob('/media/*'), '\n')
+  endif
+
+  autocmd my_vimrc FileType vimfiler call s:vimfiler_my_settings()
+  function! s:vimfiler_my_settings()
+    nnoremap <silent><buffer> H <Nop>
+  endfunction
+endfunction
+
+" }}}2 vimfiler
+
+" }}}1    Plugin Config            ===========================================
+
+
+" Bundle Finish:                 {{{1 ========================================
 
 call neobundle#end()
 filetype plugin indent on
 
-" }}}2
-
-" }}}1   Plugin Bundles                =======================================
+" }}}1   Bundle Finish                 =======================================
 
 
 " Basic Options:               {{{1 ==========================================
@@ -1002,11 +1057,6 @@ set tags+=../tags,./*/tags
 
 " Plugins:             {{{1 ==================================================
 
-runtime! ftplugin/man.vim    " 啟用 |:Man| 指令
-runtime! macros/matchit.vim
-
-let g:loaded_getscriptPlugin = 1
-
 " NeoBundle    {{{2
 
 let g:neobundle#log_filename = expand(printf('~/.vim/neobundle-logs/%s.neobundlelog', strftime('%m%d-%H%M%S')))
@@ -1391,44 +1441,6 @@ function! s:edit_snippets(runtime_snippets, args) "{{{
     endif
   endif
 endfunction "}}}
-
-" }}}2    vimfiler    {{{2
-
-" call neobundle#config('vimfiler', {
-"       \   'lazy': 1,
-"       \   'depends': 'Shougo/unite.vim',
-"       \   'autoload': {
-"       \     'commands': [
-"       \       {'name': 'VimFiler', 'complete': 'customlist,vimfiler#complete'},
-"       \       'VimFilerExplorer', 'VimFilerSplit', 'Edit', 'Read', 'Source', 'Write'
-"       \     ],
-"       \     'mappings': ['<Plug>(vimfiler_switch)']
-"       \   }
-"       \ })
-
-let bundle = neobundle#get('vimfiler')
-function! bundle.hooks.on_source(bundle)
-  let g:vimfiler_as_default_explorer = 1
-  let g:vimfiler_edit_action = 'tabopen'
-  let g:vimfiler_enable_clipboard = 0
-  let g:vimfiler_safe_mode_by_default = 0
-  let g:vimfiler_time_format = '%y-%m-%d %H:%M'
-
-  if $OSTYPE == 'cygwin' || has("gui_win32")
-    let g:unite_kind_file_use_trashbox = 1
-    let g:vimfiler_detect_drives = [
-          \ 'C:/', 'D:/', 'E:/', 'F:/', 'G:/', 'H:/', 'I:/',
-          \ 'J:/', 'K:/', 'L:/', 'M:/', 'N:/']
-  elseif $OSTYPE == 'linux-gnu'
-    let g:vimfiler_detect_drives =
-          \ split(glob('/mnt/*'), '\n') + split(glob('/media/*'), '\n')
-  endif
-
-  autocmd my_vimrc FileType vimfiler call s:vimfiler_my_settings()
-  function! s:vimfiler_my_settings()
-    nnoremap <silent><buffer> H <Nop>
-  endfunction
-endfunction
 
 " }}}2   alignta    {{{2
 

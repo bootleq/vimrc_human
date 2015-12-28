@@ -2266,6 +2266,10 @@ function! bundle.hooks.on_source(bundle)
   endfunction
 endfunction
 
+if executable('opencc')
+  let g:ref_bingzh_opencc_config = 't2s.json'
+endif
+
 nnoremap <silent> K :call ref#jump('normal', 'bingzh')<CR>
 xnoremap <silent> K :call ref#jump('visual', 'bingzh')<CR>
 

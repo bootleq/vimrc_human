@@ -1075,6 +1075,7 @@ function! s:neobundlelog_rc()
   setlocal conceallevel=2 concealcursor=nvc foldmethod=syntax foldlevel=1 nowrap
   nnoremap <buffer> <CR> :call <SID>do_NeoBundleLog_diff()<CR>
   call <SID>NeoBundleUpdatesLog_syntax()
+  syntax sync fromstart
 endfunction
 
 autocmd FileType neobundlelog call s:neobundlelog_rc()

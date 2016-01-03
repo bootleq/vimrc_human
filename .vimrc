@@ -225,7 +225,7 @@ else
 endif
 " }}}3 unused {{{3
 " let s:bundles += [
-"       \   ['L9', {"stay_same": 1}],
+"       \   ['L9', {"frozen": 1}],
 "       \   ['FuzzyFinder'],
 "       \   ['ctrlpvim/ctrlp.vim', {":prefer_local": 1, ":skip": 1}],
 "       \   ['bootleq/vim-ruby-enccomment', {':filetypes': ['ruby'], ":prefer_local": 1}],
@@ -267,8 +267,8 @@ for s:i.bundle in s:bundles
     if isdirectory(fnamemodify(s:bundle_local_repo_dir . split(s:i.bundle[0], '/')[-1], ':p'))
       call extend(s:tmp_options, {
             \   "base": s:bundle_local_repo_dir,
-            \   "type": "nosync",
-            \   "stay_same": 1
+            \   "type": "none",
+            \   "frozen": 1
             \ })
     endif
   endif
@@ -1108,7 +1108,7 @@ function! s:NeoBundleUpdatesLog_syntax() "{{{
   syntax match NeoBundleLog_Pull %^(.\+): |\S\+| git pull --ff.*$% contains=NeoBundleLog_Pull.*
   syntax match NeoBundleLog_Clone %^(.\+): |\S\+| git clone --recursive.*$% contains=NeoBundleLog_Clone.*
   syntax match NeoBundleLog_Ignore %\v^(Same revision\.|Outdated plugin\.)$%
-  syntax match NeoBundleLog_Ignoring %\v^(has "stay_same" attribute\.)$%
+  syntax match NeoBundleLog_Ignoring %\v^(is frozen\.)$%
 
   syntax region NeoBundleLog_Summary start=_^Updated bundles:$_ end=_^Completed._
   syntax match NeoBundleLog_SummaryTitle _\v(Updated bundles:|Completed\.)$_ contained containedin=NeoBundleLog_Summary

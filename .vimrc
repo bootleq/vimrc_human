@@ -3363,13 +3363,6 @@ function! s:gblame_window_off()
   return win_count > winnr('$')
 endfunction
 
-function! s:ref_window_off()
-  let win_count = winnr('$')
-  silent windo call <SID>ref_quit()
-  execute 'wincmd t'
-  return win_count > winnr('$')
-endfunction
-
 
 " }}}2   text-object for continuous comment    {{{2
 

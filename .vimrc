@@ -102,6 +102,7 @@ let s:bundles += [
       \   ['thinca/vim-prettyprint'],
       \   ['thinca/vim-qfreplace', {'lazy': 1}],
       \   ['thinca/vim-quickrun', {'lazy': 1}],
+      \   ['thinca/vim-partedit', {'lazy': 1}],
       \   ['bootleq/vim-qrpsqlpq', {":prefer_local": 1}],
       \   ['mojako/ref-sources.vim'],
       \   ['bootleq/vim-ref-bingzh', {":prefer_local": 0}],
@@ -1635,6 +1636,15 @@ endfunction
 if executable('psql')
   let g:qrpsqlpq_expanded_format_max_lines = -1
   autocmd FileType sql call s:init_qrpsqlpq()
+endif
+
+" }}}2   PartEdit    {{{2
+
+if neobundle#tap('vim-partedit')
+  " FIXME: not support tab split
+  let g:partedit#opener = 'vsplit'
+  vnoremap <LocalLeader>v :Partedit<CR>
+  call neobundle#untap()
 endif
 
 " }}}2   fugitive  {{{2

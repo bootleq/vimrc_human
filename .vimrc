@@ -282,7 +282,7 @@ for s:i.bundle in s:bundles
   endif
 
   call filter(s:tmp_options, "v:key[0] != ':'")
-  execute "NeoBundle " . string(s:i.bundle[0]) . (empty(s:tmp_options) ? '' : ', ' . string(s:tmp_options))
+  call neobundle#add(s:i.bundle[0], s:tmp_options)
 endfor
 unlet! s:bundles s:tmp_options
 

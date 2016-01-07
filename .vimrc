@@ -162,6 +162,7 @@ let s:bundles += [
       \   ['sunaku/vim-ruby-minitest', {':filetypes': ['ruby'], ':prefer_local': 1, ':skip': 0}],
       \   ['bruno-/vim-ruby-fold', {':filetypes': ['ruby'], ':prefer_local': 0, ':skip': 1}],
       \   ['cespare/vim-toml', {':filetypes': ['toml']}],
+      \   ['tpope/vim-git', {'on_ft': ['gitcommit', 'gitconfig', 'gitrebase', 'gitsendemail', 'git']}],
       \ ]
 " }}}3 text-objs {{{3
 let s:bundles += [

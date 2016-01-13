@@ -125,7 +125,7 @@ let s:bundles += [
       \   ['bootleq/vim-gitdiffall', {":prefer_local": 1}],
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
       \   ['bootleq/vim-wordword', {":prefer_local": 1}],
-      \   ['rking/ag.vim', {'lazy': 1}],
+      \   ['rking/ag.vim'],
       \   ['Indent-Guides', {':skip': 0, 'lazy': 1}],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
@@ -299,7 +299,14 @@ runtime! macros/matchit.vim
 
 let g:loaded_getscriptPlugin = 1
 
-" vimfiler {{{2
+" Ag    {{{2
+
+call neobundle#config('ag.vim', {
+      \   'lazy': 1,
+      \   'on_cmd': {'name': 'Ag', 'complete': 'dir'}
+      \ })
+
+" }}}2    vimfiler    {{{2
 
 call neobundle#config('vimfiler', {
       \   'lazy': 1,
@@ -2114,15 +2121,6 @@ let g:cycle_default_groups_for_ruby = [
 
 " cnoremap <expr> <Space> ambicmd#expand("\<Space>")
 " cnoremap <expr> <CR> ambicmd#expand("\<CR>")
-
-" }}}2    Ag    {{{2
-
-" call neobundle#config('ag.vim', {
-"       \   'lazy': 1,
-"       \   'autoload': {
-"       \     'commands': {'name': 'Ag', 'complete': 'dir'},
-"       \   }
-"       \ })
 
 " }}}2    delimitMate    {{{2
 

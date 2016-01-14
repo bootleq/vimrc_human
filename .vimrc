@@ -100,7 +100,7 @@ let s:bundles += [
       \   ['Shougo/neosnippet'],
       \   ['Shougo/vimfiler'],
       \   ['thinca/vim-prettyprint'],
-      \   ['thinca/vim-qfreplace', {'lazy': 1}],
+      \   ['thinca/vim-qfreplace'],
       \   ['thinca/vim-quickrun', {'lazy': 1}],
       \   ['thinca/vim-partedit', {'lazy': 1}],
       \   ['bootleq/vim-qrpsqlpq', {":prefer_local": 1}],
@@ -305,6 +305,14 @@ call neobundle#config('ag.vim', {
       \   'lazy': 1,
       \   'on_cmd': {'name': 'Ag', 'complete': 'dir'}
       \ })
+
+" }}}2    qfreplace    {{{2
+
+call neobundle#config('vim-qfreplace', {
+      \   'lazy':  1,
+      \   'on_ft': ['qf']
+      \ })
+autocmd my_vimrc FileType qf nnoremap <buffer> r :<C-U>Qfreplace tabnew<CR>
 
 " }}}2    vimfiler    {{{2
 
@@ -2215,16 +2223,6 @@ function! EatChar(pattern)
 endfunction
 
 " TODO unlet bundle
-
-" }}}2    qfreplace    {{{2
-
-" call neobundle#config('vim-qfreplace', {
-"       \   'lazy': 1,
-"       \   'autoload': {
-"       \     'filetypes': ['unite', 'qf']
-"       \   }
-"       \ })
-autocmd my_vimrc FileType qf nnoremap <buffer> r :<C-U>Qfreplace tabnew<CR>
 
 " }}}2    Ref    {{{2
 

@@ -278,7 +278,7 @@ for s:i.bundle in s:bundles
   if type(get(s:tmp_options, ":filetypes")) == type([])
     call extend(s:tmp_options, {
           \   "lazy": 1,
-          \   "autoload": {'filetypes': get(s:tmp_options, ":filetypes")}
+          \   "on_ft": get(s:tmp_options, ":filetypes")
           \ })
   endif
 

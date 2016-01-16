@@ -314,6 +314,21 @@ call neobundle#config('vim-qfreplace', {
       \ })
 autocmd my_vimrc FileType qf nnoremap <buffer> r :<C-U>Qfreplace tabnew<CR>
 
+" }}}2   Indent Guide    {{{2
+
+call neobundle#config('Indent-Guides', {
+      \   'lazy':   1,
+      \   'on_cmd': 'IndentGuidesToggle'
+      \ })
+if neobundle#tap('Indent-Guides')
+  let g:indent_guides_enable_on_vim_startup = 0
+  let g:indent_guides_auto_colors = 0
+  let g:indent_guides_guide_size = 1
+  let g:indent_guides_indent_levels = 30
+  nnoremap <Leader>ig :IndentGuidesToggle<CR>
+  call neobundle#untap()
+endif
+
 " }}}2    vimfiler    {{{2
 
 call neobundle#config('vimfiler', {
@@ -1482,20 +1497,6 @@ xmap <LocalLeader>A <Plug>(EasyAlign)
 let g:easy_align_interactive_modes = ['l', 'a']
 let g:easy_align_ignore_unmatched  = 0
 " nmap <LocalLeader>= <Plug>(EasyAlign)
-
-" }}}2   Indent Guide    {{{2
-
-" call neobundle#config('Indent-Guides', {
-"       \   'lazy': 1,
-"       \   'autoload': {
-"       \     'commands': 'IndentGuidesToggle'
-"       \   }
-"       \ })
-let g:indent_guides_enable_on_vim_startup = 0
-let g:indent_guides_auto_colors = 0
-let g:indent_guides_guide_size = 1
-let g:indent_guides_indent_levels = 30
-nnoremap <Leader>ig :IndentGuidesToggle<CR>
 
 " }}}2   Rails    {{{2
 

@@ -105,13 +105,13 @@ let s:bundles += [
       \   ['thinca/vim-partedit', {'lazy': 1}],
       \   ['bootleq/vim-qrpsqlpq', {":prefer_local": 1}],
       \   ['mojako/ref-sources.vim'],
-      \   ['bootleq/vim-ref-bingzh', {":prefer_local": 0}],
+      \   ['bootleq/vim-ref-bingzh'],
       \   ['tpope/vim-rails'],
       \   ['tpope/vim-tbone', {":skip": 1}],
       \   ['tpope/vim-fugitive'],
       \   ['mattn/webapi-vim'],
       \   ['mattn/wwwrenderer-vim'],
-      \   ['thinca/vim-ref', {"lazy": 1}],
+      \   ['thinca/vim-ref'],
       \   ['tyru/open-browser.vim'],
       \   ['tyru/vim-altercmd'],
       \   ['wokmarks.vim'],
@@ -305,6 +305,70 @@ call neobundle#config('ag.vim', {
       \   'lazy': 1,
       \   'on_cmd': {'name': 'Ag', 'complete': 'dir'}
       \ })
+
+" }}}2    Ref    {{{2
+
+call neobundle#config('vim-ref', {
+      \   'lazy':   1,
+      \   'on_cmd': 'Ref'
+      \ })
+
+if neobundle#tap('vim-ref')
+  let g:ref_cache_dir = expand('~/.vim/ref-cache')
+  if $OSTYPE =~ '^darwin'  " Mac man has no `-T` option
+    let g:ref_man_cmd = 'man -P cat'
+  endif
+  call neobundle#untap()
+endif
+
+" FIXME: enable 'lazy'
+call neobundle#config('vim-ref-bingzh', {
+      \   'lazy': 0,
+      \   'depends': 'vim-ref',
+      \   'autoload': {
+      \     'commands': 'Ref',
+      \     'function_prefix': 'ref'
+      \   }
+      \ })
+
+if neobundle#tap('vim-ref-bingzh')
+  if executable('opencc')
+    let g:ref_bingzh_opencc_config = 't2s.json'
+  endif
+
+  function! neobundle#hooks.on_source(bundle)
+    autocmd FileType ref-bingzh call s:initialize_ref_viewer_bingzh()
+    function! s:initialize_ref_viewer_bingzh()
+      setlocal number nowrap
+      setlocal noreadonly
+      setlocal modifiable
+      setlocal foldmethod=expr foldlevel=1 foldexpr=RefBingZhFold(v:lnum)
+    endfunction
+
+    function! RefBingZhFold(line)
+      return <SID>ref_bingzh_fold(a:line)
+    endfunction
+
+    function! s:ref_bingzh_fold(line)
+      let splitter = '\v ##$'
+      if getline(a:line) =~ splitter
+        return '>1'
+      elseif getline(a:line+1) =~ splitter
+        return '<1'
+      else
+        return '='
+      endif
+    endfunction
+  endfunction
+
+  nnoremap <silent> K :call ref#jump('normal', 'bingzh')<CR>
+  xnoremap <silent> K :call ref#jump('visual', 'bingzh')<CR>
+
+  nnoremap <silent> <LocalLeader>K :normal! K<CR>
+  xnoremap <silent> <LocalLeader>K :normal! K<CR>
+
+  call neobundle#untap()
+endif
 
 " }}}2    qfreplace    {{{2
 
@@ -2224,67 +2288,6 @@ function! EatChar(pattern)
 endfunction
 
 " TODO unlet bundle
-
-" }}}2    Ref    {{{2
-
-let g:ref_cache_dir = expand('~/.vim/ref-cache')
-
-" call neobundle#config('vim-ref', {
-"       \   'lazy': 1,
-"       \   'autoload': {
-"       \     'commands': 'Ref'
-"       \   }
-"       \ })
-
-if neobundle#tap('vim-ref')
-  if $OSTYPE =~ '^darwin'  " Mac man has no `-T` option
-    let g:ref_man_cmd = 'man -P cat'
-  endif
-  call neobundle#untap()
-endif
-
-call neobundle#config('vim-ref-bingzh', {
-      \   'lazy': 0,
-      \   'autoload': {
-      \     'commands': 'Ref',
-      \     'function_prefix': 'ref'
-      \   }
-      \ })
-let bundle = neobundle#get('vim-ref-bingzh')
-function! bundle.hooks.on_source(bundle)
-  autocmd FileType ref-bingzh call s:initialize_ref_viewer_bingzh()
-  function! s:initialize_ref_viewer_bingzh()
-    setlocal number nowrap
-    setlocal noreadonly
-    setlocal modifiable
-    setlocal foldmethod=expr foldlevel=1 foldexpr=RefBingZhFold(v:lnum)
-  endfunction
-
-  function! RefBingZhFold(line)
-    return <SID>ref_bingzh_fold(a:line)
-  endfunction
-
-  function! s:ref_bingzh_fold(line)
-    let splitter = '\v ##$'
-    if getline(a:line) =~ splitter
-      return '>1'
-    elseif getline(a:line+1) =~ splitter
-      return '<1'
-    else
-      return '='
-    endif
-  endfunction
-endfunction
-
-if executable('opencc')
-  let g:ref_bingzh_opencc_config = 't2s.json'
-endif
-
-nnoremap <silent> K :call ref#jump('normal', 'bingzh')<CR>
-xnoremap <silent> K :call ref#jump('visual', 'bingzh')<CR>
-
-nnoremap <silent> <LocalLeader>K :normal! K<CR>
-xnoremap <silent> <LocalLeader>K :normal! K<CR>
 
 " }}}2    open-browser    {{{2
 

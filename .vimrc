@@ -3756,7 +3756,7 @@ augroup my_vimrc
 
   autocmd CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
   autocmd InsertLeave * if &paste | set nopaste | set paste? | endif
-  autocmd BufReadPost * if line("'\"") > 0 && line ("'\"") <= line("$") | execute "normal! g'\"" | endif
+  autocmd BufReadPost * if &ft != 'gitcommit' && line("'\"") > 0 && line ("'\"") <= line("$") | execute "normal! g'\"" | endif
   autocmd BufWinEnter * if exists('s:tabLineNeedRedraw') && s:tabLineNeedRedraw | redraw! | let s:tabLineNeedRedraw = 0 | endif
   autocmd QuickFixCmdPost * redraw!
   autocmd QuickFixCmdPost * if len(getqflist()) > 0 | :QFix!<CR> | endif

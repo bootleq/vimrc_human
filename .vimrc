@@ -126,7 +126,7 @@ let s:bundles += [
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
       \   ['bootleq/vim-wordword', {":prefer_local": 1}],
       \   ['rking/ag.vim'],
-      \   ['Indent-Guides', {':skip': 0, 'lazy': 1}],
+      \   ['Indent-Guides'],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
       \   ['Lokaltog/vim-easymotion'],

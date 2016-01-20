@@ -393,6 +393,28 @@ if neobundle#tap('Indent-Guides')
   call neobundle#untap()
 endif
 
+" }}}2    Netrw    {{{2
+
+call neobundle#config('netrw.vim', {
+      \   'lazy':   1,
+      \   'on_cmd': 'Explore'
+      \ })
+if neobundle#tap('netrw.vim')
+  " let g:netrw_ftp = 1
+  " let g:netrw_preview = 1
+  " let g:netrw_ignorenetrc = 0
+  " let g:netrw_ftpextracmd = 'passive'
+  let g:netrw_liststyle = 3
+  let g:netrw_winsize = 20
+  " let g:netrw_browsex_viewer = '-'
+  let g:netrw_timefmt = '%Y-%m-%d %T'
+  " if exists("g:qfix_win") && a:forced == 0
+  function! neobundle#tapped.hooks.on_source(bundle) "{{{
+    nmap <leader>e :Vexplore<CR>
+  endfunction "}}}
+  call neobundle#untap()
+endif
+
 " }}}2    vimfiler    {{{2
 
 call neobundle#config('vimfiler', {
@@ -1259,30 +1281,6 @@ function! s:do_NeoBundleLog_diff()
         \   "directory": path
         \ })
 endfunction
-
-" Netrw    {{{2
-
-call neobundle#config('netrw.vim', {
-      \   'lazy': 1,
-      \   'autoload': {
-      \     'commands': 'Explore'
-      \   }
-      \ })
-if neobundle#tap('netrw.vim')
-  " let g:netrw_ftp = 1
-  " let g:netrw_preview = 1
-  " let g:netrw_ignorenetrc = 0
-  " let g:netrw_ftpextracmd = 'passive'
-  let g:netrw_liststyle = 3
-  let g:netrw_winsize = 20
-  " let g:netrw_browsex_viewer = '-'
-  let g:netrw_timefmt = '%Y-%m-%d %T'
-  " if exists("g:qfix_win") && a:forced == 0
-  function! neobundle#tapped.hooks.on_source(bundle) "{{{
-    nmap <leader>e :Vexplore<CR>
-  endfunction "}}}
-  call neobundle#untap()
-endif
 
 " }}}2    Unite.vim    {{{2
 

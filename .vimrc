@@ -395,6 +395,46 @@ if neobundle#tap('Indent-Guides')
   call neobundle#untap()
 endif
 
+" }}}2    neosnippet    {{{2
+
+call neobundle#config('neosnippet', {
+      \   'lazy':  1,
+      \   'on_i':  1
+      \   'on_ft': 'snippet'
+      \ })
+
+if neobundle#tap('neosnippet')
+  let g:neosnippet#snippets_directory = expand('~/.vim/snippets')
+  imap <expr><Tab> neosnippet#expandable_or_jumpable() ?
+        \ "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-N>" : "\<Tab>"
+  " TODO jump back to previous placeholder
+  imap <expr><S-Tab> neosnippet#jumpable() ?
+        \ "\<Plug>(neosnippet_jump_or_expand)" : pumvisible() ? "\<C-P>" : "\<S-Tab>"
+  smap <Tab> <Plug>(neosnippet_expand_or_jump)
+
+  let g:neosnippet#disable_runtime_snippets = {
+        \ 'css': 1
+        \ }
+
+  " TODO migrate all my snipMate settings
+  " https://github.com/bootleq/snipmate.vim/tree/master/snippets
+  " ~/repository/snipmate.vim
+  command! -bang -bar -complete=filetype -nargs=? EditSnippets call s:edit_snippets(<bang>0, [<f-args>])
+  function! s:edit_snippets(runtime_snippets, args) "{{{
+    let l:filetype = get(a:args, 0, &l:filetype)
+    if !empty(l:filetype)
+      tab split
+      if a:runtime_snippets
+        execute "NeoSnippetEdit -runtime " . l:filetype
+      else
+        execute "NeoSnippetEdit " . l:filetype
+      endif
+    endif
+  endfunction "}}}
+
+  call neobundle#untap()
+endif
+
 " }}}2    Netrw    {{{2
 
 call neobundle#config('netrw.vim', {
@@ -1509,35 +1549,7 @@ execute 'inoremap <expr><LocalLeader><C-H> ' . bundle.name . '#smart_close_popup
 execute 'inoremap <expr><LocalLeader><BS>  ' . bundle.name . '#smart_close_popup()."\<BS>"'
 inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
 
-" }}}2    neosnippet    {{{2
 
-let g:neosnippet#snippets_directory = expand('~/.vim/snippets')
-imap <expr><Tab> neosnippet#expandable_or_jumpable() ?
-      \ "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-N>" : "\<Tab>"
-" TODO jump back to previous placeholder
-imap <expr><S-Tab> neosnippet#jumpable() ?
-      \ "\<Plug>(neosnippet_jump_or_expand)" : pumvisible() ? "\<C-P>" : "\<S-Tab>"
-smap <Tab> <Plug>(neosnippet_expand_or_jump)
-
-let g:neosnippet#disable_runtime_snippets = {
-      \ 'css': 1
-      \ }
-
-" TODO migrate all my snipMate settings
-" https://github.com/bootleq/snipmate.vim/tree/master/snippets
-" ~/repository/snipmate.vim
-command! -bang -bar -complete=filetype -nargs=? EditSnippets call s:edit_snippets(<bang>0, [<f-args>])
-function! s:edit_snippets(runtime_snippets, args) "{{{
-  let l:filetype = get(a:args, 0, &l:filetype)
-  if !empty(l:filetype)
-    tab split
-    if a:runtime_snippets
-      execute "NeoSnippetEdit -runtime " . l:filetype
-    else
-      execute "NeoSnippetEdit " . l:filetype
-    endif
-  endif
-endfunction "}}}
 
 " }}}2   alignta    {{{2
 

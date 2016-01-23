@@ -399,8 +399,8 @@ endif
 
 call neobundle#config('neosnippet', {
       \   'lazy':  1,
-      \   'on_i':  1
-      \   'on_ft': 'snippet'
+      \   'on_i':  1,
+      \   'on_ft': 'snippet',
       \ })
 
 if neobundle#tap('neosnippet')

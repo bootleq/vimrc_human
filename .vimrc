@@ -129,7 +129,7 @@ let s:bundles += [
       \   ['Indent-Guides'],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
-      \   ['Lokaltog/vim-easymotion'],
+      \   ['easymotion/vim-easymotion'],
       \   ['t9md/vim-choosewin'],
       \   ['AndrewRadev/splitjoin.vim'],
       \   ['Valloric/YouCompleteMe', {':skip': 1}],
@@ -2022,7 +2022,9 @@ endif
 " }}}2    EasyMotion    {{{2
 
 map <LocalLeader>e <Plug>(easymotion-w)
-map <LocalLeader>E <Plug>(easymotion-bd-w)
+nmap <LocalLeader>E <Plug>(easymotion-overwin-w)
+xmap <LocalLeader>E <Plug>(easymotion-bd-w)
+omap <LocalLeader>E <Plug>(easymotion-bd-w)
 map <LocalLeader>L <Plug>(easymotion-j)
 map <LocalLeader>H <Plug>(easymotion-k)
 map <LocalLeader>n <Plug>(easymotion-n)

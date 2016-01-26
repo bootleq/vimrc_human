@@ -1683,7 +1683,8 @@ let g:rails_projections = {
       \   "app/assets/stylesheets/*.css.scss": {"command": "css"},
       \   "app/assets/javascripts/*.js": {"command": "js"},
       \   "app/assets/javascripts/*.coffee": {"command": "js"},
-      \   "log/*.log": {"command": "log"}
+      \   "log/*.log": {"command": "log"},
+      \   "test/*_test.rb": {"command":  "test"},
       \ }
 
 " }}}2   QuickRun    {{{2

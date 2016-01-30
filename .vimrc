@@ -3291,6 +3291,28 @@ function! DoJsCompress(cmd, file, save)
   endif
 endfunction
 
+" }}}2   SQL 格式化   {{{2
+
+function! SQLFormatter()
+  if executable('anbt-sql-formatter')
+    let endline = v:lnum + v:count - 1
+    let text = join(getline(v:lnum, endline), '\n')
+
+    execute printf('%s,%sdelete _', v:lnum, endline)
+
+    let cmd = printf(
+          \   'echo %s | anbt-sql-formatter',
+          \   shellescape(text)
+          \ )
+    let result = split(system(cmd), '\n')
+
+    call append(v:lnum - 1, result)
+    return 0
+  endif
+
+  return 1
+endfunction
+
 " }}}2   bookmarklet 壓縮    {{{2
 
 command! -nargs=* Bookmarklet call Bookmarklet(<f-args>)
@@ -3637,6 +3659,14 @@ function! s:php_rc()
   set errorformat=%m\ in\ %f\ on\ line\ %l
 endfunction
 
+" }}}2   SQL {{{2
+
+function! s:sql_rc()
+  if executable('anbt-sql-formatter')
+    setlocal formatexpr=SQLFormatter()
+  endif
+endfunction
+
 " }}}2   help   {{{2
 
 function! s:help_rc()
@@ -3718,6 +3748,7 @@ augroup my_vimrc
   autocmd FileType html,xhtml,haml,slim,eruby,phtml,markdown call s:html_rc()
   autocmd FileType haml call s:haml_rc()
   autocmd FileType php call s:php_rc()
+  autocmd FileType sql call s:sql_rc()
   autocmd FileType javascript call s:js_rc()
   autocmd FileType css call s:css_rc()
   autocmd FileType scss call s:scss_rc()

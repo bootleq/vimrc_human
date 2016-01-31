@@ -574,7 +574,7 @@ if &term =~ "xterm"
   set t_Co=256
 
   " MinTTy 游標形狀
-  if $OSTYPE == 'cygwin'
+  if $OSTYPE == 'cygwin' || $VM_HOST_OS == 'cygwin'
     let &t_ti.="\e[1 q"
     let &t_SI.="\e[5 q"
     let &t_EI.="\e[1 q"

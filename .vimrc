@@ -3206,7 +3206,6 @@ function! JsCompress(save, ...)
   endif
   let jar      = expand('~/') . 'bin/closure-compiler.jar'
   let defaults = ' --compilation_level=SIMPLE_OPTIMIZATIONS'
-              \ . ' --create_source_map ~/closure-compiler-map'
               \ . ' --warning_level=QUIET'
   let input    = expand('%')
 

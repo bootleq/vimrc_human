@@ -207,9 +207,9 @@ let s:bundles += [
       \ ]
 " }}}3 unite unused {{{3
 " let s:bundles += [
-"       \   ['zepto/unite-tmux', {":skip": 1}],
+"       \   ['zepto/unite-tmux'],
 "       \   ['Shougo/unite-help'],
-"       \   ['kmnk/vim-unite-giti', {":skip": 1, 'lazy': 1}],
+"       \   ['kmnk/vim-unite-giti'],
 " }}}3 colorschemes {{{3
 let s:bundles += [
       \   ['itchyny/landscape.vim'],

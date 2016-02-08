@@ -782,6 +782,7 @@ nmap <LocalLeader>w <C-W>
 nnoremap <C-W>V :wincmd K <Bar> wincmd =<CR>
 nnoremap <silent> <C-W>m :MoveIntoTabpage<CR>
 nnoremap <silent> <C-W>M :MoveIntoTabpage <count> <C-R>=tabpagenr()-1<CR><CR>
+nnoremap <silent> <localleader>z :wincmd z<CR>
 nmap <localleader>gf <C-W>gF
 vmap <localleader>gf <C-W>gF
 nnoremap <expr> <CR> &modifiable ? "i<CR><C-\><C-N>" : "<C-]>"

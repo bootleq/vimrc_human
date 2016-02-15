@@ -126,6 +126,7 @@ let s:bundles += [
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
       \   ['bootleq/vim-wordword', {":prefer_local": 1}],
       \   ['rking/ag.vim'],
+      \   ['thinca/vim-zenspace'],
       \   ['Indent-Guides'],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
@@ -395,6 +396,13 @@ if neobundle#tap('Indent-Guides')
   call neobundle#untap()
 endif
 
+" }}}2   Zenkaku Space    {{{2
+
+if neobundle#tap('vim-zenspace')
+  let g:zenspace#default_mode = 'on'
+  call neobundle#untap()
+endif
+
 " }}}2    neosnippet    {{{2
 
 call neobundle#config('neosnippet', {
@@ -650,9 +658,6 @@ else
   " http://blogger.godfat.org/2011/07/spellcheck-only-for-english-in-vim.html
   syntax match Normal /[^!-~]/ contains=@NoSpell
 endif
-
-autocmd Syntax * syntax match FullWidthSpace /\%d12288/ containedin=ALL
-autocmd Syntax * highlight FullWidthSpace gui=NONE guibg=blue cterm=bold ctermbg=blue
 
 if !exists('g:colors_name')
   set background=dark

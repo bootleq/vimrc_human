@@ -2037,19 +2037,28 @@ map <LocalLeader>H <Plug>(easymotion-k)
 map <LocalLeader>n <Plug>(easymotion-n)
 map <LocalLeader>N <Plug>(easymotion-N)
 map <LocalLeader>s <Plug>(easymotion-overwin-f2)
-" map <LocalLeader>J <Plug>(easymotion-jumptoanywhere)
+map <LocalLeader>ge <Plug>(easymotion-jumptoanywhere)
 " omap <LocalLeader>l <Plug>(easymotion-special-l)
 " omap <LocalLeader>p <Plug>(easymotion-special-p)
 " xmap <LocalLeader>l <Plug>(easymotion-special-l)
 " xmap <LocalLeader>p <Plug>(easymotion-special-p)
 nmap <LocalLeader>; <Plug>(easymotion-next)
 nmap <LocalLeader>: <Plug>(easymotion-prev)
-let g:EasyMotion_keys = tolower('asdghklqwertyuiopzxcvbnmfj;')
-let g:EasyMotion_use_upper = 0
-let g:EasyMotion_smartcase = 1
-let g:EasyMotion_startofline = 0
-let g:EasyMotion_space_jump_first = 1
-let g:EasyMotion_enter_jump_first = 1
+
+if neobundle#tap('vim-easymotion')
+  let g:EasyMotion_keys = tolower('asdghklqwertyuiopzxcvbnmfj;')
+  let g:EasyMotion_use_upper = 0
+  let g:EasyMotion_smartcase = 1
+  let g:EasyMotion_startofline = 0
+  let g:EasyMotion_space_jump_first = 1
+  let g:EasyMotion_enter_jump_first = 1
+  let g:EasyMotion_re_anywhere = '\v' .
+        \ '(\l)\zs(\u)' . '|' .
+        \ '(\l)\zs(\u)' . '|' .
+        \ '(_\zs.)' . '|' .
+        \ '(#\zs.)'
+  call neobundle#untap()
+endif
 
 " }}}2    Sneak    {{{2
 

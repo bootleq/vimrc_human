@@ -2169,6 +2169,7 @@ let g:cycle_default_groups += [
       \   [["if", "unless"]],
       \   [["blank?", "present?"]],
       \   [["any?", "empty?"]],
+      \   [["select", "reject"]],
       \   [["while", "until"]],
       \   [["begin", "end"]],
       \   [['assert', 'refute']],

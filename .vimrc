@@ -2057,6 +2057,7 @@ if neobundle#tap('vim-easymotion')
         \ '(\l)\zs(\u)' . '|' .
         \ '(_\zs.)' . '|' .
         \ '(#\zs.)'
+  let g:EasyMotion_re_anywhere .= '|' . '\s+\m\(\k\|\s\)\@!\zs.'
   call neobundle#untap()
 endif
 

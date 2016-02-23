@@ -2340,6 +2340,7 @@ function! bundle.hooks.on_source(bundle)
         \   'google': 'http://google.com/search?q={query}',
         \ }
   let g:openbrowser_default_search = 'google'
+  let g:openbrowser_force_foreground_after_open = 1
 
   " remove ["'"]
   let g:openbrowser_iskeyword = join(

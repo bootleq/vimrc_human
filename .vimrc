@@ -123,6 +123,7 @@ let s:bundles += [
       \   ['bootleq/vim-cycle', {":prefer_local": 1}],
       \   ['bootleq/vim-tabline', {":prefer_local": 1}],
       \   ['bootleq/vim-gitdiffall', {":prefer_local": 1}],
+      \   ['chrisbra/vim-diff-enhanced'],
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
       \   ['bootleq/vim-wordword', {":prefer_local": 1}],
       \   ['rking/ag.vim'],
@@ -2640,6 +2641,10 @@ function! s:config_in_diff_mode()
   endif
 
   setlocal nocursorline
+
+  " Ref https://github.com/haya14busa/dotfiles/commit/10e6a24
+  " started In Diff-Mode set diffexpr (plugin not loaded yet)
+  let &diffexpr = 'EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
 
   nnoremap <buffer> <LocalLeader>dh :diffget :2 <Bar> diffupdate<CR>
   nnoremap <buffer> <LocalLeader>dl :diffget :3 <Bar> diffupdate<CR>

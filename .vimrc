@@ -1818,11 +1818,11 @@ autocmd my_vimrc FileType gitdiffallinfo nnoremap <buffer> <LocalLeader>q :silen
 
 " }}}2   SimpleJavascriptIndenter    {{{2
 
-let bundle = neobundle#get('simple-javascript-indenter')
-function! bundle.hooks.on_source(bundle)
+if neobundle#tap('simple-javascript-indenter')
   let g:SimpleJsIndenter_BriefMode = 1
   let g:SimpleJsIndenter_CaseIndentLevel = -1
-endfunction
+  call neobundle#untap()
+endif
 
 " }}}2   TagList   {{{2
 

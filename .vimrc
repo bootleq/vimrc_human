@@ -2333,8 +2333,8 @@ call neobundle#config('open-browser.vim', {
       \     'mappings': ['<Plug>(openbrowser-search)', '<Plug>(openbrowser-smart-search)']
       \   }
       \ })
-let bundle = neobundle#get('open-browser.vim')
-function! bundle.hooks.on_source(bundle)
+
+if neobundle#tap('open-browser.vim')
   let g:openbrowser_search_engines = {
         \   'morebile': 'http://www.google.com.tw/m/search?site=dictionary&gdm=1&wtr=1&q={query}',
         \   'dictionary': 'http://www.google.com/dictionary?q={query}',
@@ -2350,12 +2350,13 @@ function! bundle.hooks.on_source(bundle)
         \   + range(char2nr('0'), char2nr('9'))
         \   + ['_', ':', '/', '.', '-', '+', '%', '#', '?', '&', '=', ';', '@', '$', ',', '[', ']', '!', "(", ")", "*", "~", ],
         \ ',')
-endfunction
 
-nmap <Leader><CR> <Plug>(openbrowser-smart-search)
-vmap <Leader><CR> <Plug>(openbrowser-smart-search)
-nmap <Leader>s<CR> <Plug>(openbrowser-search)
-vmap <Leader>s<CR> <Plug>(openbrowser-search)
+  nmap <Leader><CR> <Plug>(openbrowser-smart-search)
+  vmap <Leader><CR> <Plug>(openbrowser-smart-search)
+  nmap <Leader>s<CR> <Plug>(openbrowser-search)
+  vmap <Leader>s<CR> <Plug>(openbrowser-search)
+  call neobundle#untap()
+endif
 
 " }}}2    LargeFile    {{{2
 

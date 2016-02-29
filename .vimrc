@@ -1987,16 +1987,14 @@ autocmd User WokmarksChange :ShowMarksOn
 
 " }}}2   anzu   {{{2
 
-let bundle = neobundle#get('vim-anzu')
-if !empty(bundle)
-  function! bundle.hooks.on_post_source(bundle)
-    let g:anzu_status_format = "/%#Type#%p%#None#  %i/%l %#WarningMsg#%w"
-    let g:airline#extensions#anzu#enabled = 0
-    nmap n <Plug>(anzu-n-with-echo)
-    nmap N <Plug>(anzu-N-with-echo)
-    nmap * <Plug>(anzu-star-with-echo)
-    nmap # <Plug>(anzu-sharp-with-echo)
-  endfunction
+if neobundle#tap('vim-anzu')
+  let g:anzu_status_format = "/%#Type#%p%#None#  %i/%l %#WarningMsg#%w"
+  let g:airline#extensions#anzu#enabled = 0
+  nmap n <Plug>(anzu-n-with-echo)
+  nmap N <Plug>(anzu-N-with-echo)
+  nmap * <Plug>(anzu-star-with-echo)
+  nmap # <Plug>(anzu-sharp-with-echo)
+  call neobundle#untap()
 endif
 
 " }}}2    tComment    {{{2

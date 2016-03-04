@@ -1966,11 +1966,11 @@ endif
 " }}}2   Surround (kana version)   {{{2
 
 if exists('g:loaded_surround') && exists('*SurroundRegister')
-    call SurroundRegister('g', '&', "&lt;\r&gt;")
-    call SurroundRegister('g', 'C', "<![CDATA[\r]]>")
-    call SurroundRegister('g', '（', "（\r）")
-    call SurroundRegister('g', '「', "「\r」")
-    call SurroundRegister('g', '『', "『\r』")
+  call SurroundRegister('g', '&', "&lt;\r&gt;")
+  call SurroundRegister('g', 'C', "<![CDATA[\r]]>")
+  call SurroundRegister('g', '（', "（\r）")
+  call SurroundRegister('g', '「', "「\r」")
+  call SurroundRegister('g', '『', "『\r』")
 endif
 
 cnoremap <LocalLeader>> >

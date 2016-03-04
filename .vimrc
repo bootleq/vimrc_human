@@ -1951,14 +1951,17 @@ endfunction
 
 " }}}2   ShowMarks   {{{2
 
-let g:showmarks_include = 'abcdefghijklmnopqrstuvwxyz' . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-let g:showmarks_ignore_type = ""
-let g:showmarks_textlower = "\t"
-let g:showmarks_textupper = "\t"
-let g:showmarks_textother = "\t"
-let g:showmarks_auto_toggle = 0
-let g:showmarks_no_mappings = 1
-nmap mt <Plug>ShowMarksToggle
+if neobundle#tap('ShowMarks')
+  let g:showmarks_include = 'abcdefghijklmnopqrstuvwxyz' . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  let g:showmarks_ignore_type = ""
+  let g:showmarks_textlower = "\t"
+  let g:showmarks_textupper = "\t"
+  let g:showmarks_textother = "\t"
+  let g:showmarks_auto_toggle = 0
+  let g:showmarks_no_mappings = 1
+  nmap mt <Plug>ShowMarksToggle
+  call neobundle#untap()
+endif
 
 " }}}2   Surround (kana version)   {{{2
 

@@ -2056,7 +2056,7 @@ if neobundle#tap('vim-airline')
 
   " let g:airline_theme = 'molokai'
   " let g:airline_theme = 'wombat'
-  let g:airline_theme = 'laederon'
+  " let g:airline_theme = 'laederon'
   let g:airline_powerline_fonts = 1
   let g:airline_section_a = ''  " mode
   let g:airline_section_x = ''  " filetype

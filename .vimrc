@@ -128,7 +128,8 @@ let s:bundles += [
       \   ['bootleq/vim-wordword', {":prefer_local": 1}],
       \   ['rking/ag.vim'],
       \   ['thinca/vim-zenspace'],
-      \   ['Indent-Guides'],
+      \   ['Yggdroot/indentLine', {':skip': 0}],
+      \   ['Indent-Guides', {':skip': 1}],
       \   ['bling/vim-airline', {':skip': 0}],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
@@ -385,11 +386,11 @@ autocmd my_vimrc FileType qf nnoremap <buffer> r :<C-U>Qfreplace tabnew<CR>
 
 " }}}2   Indent Guide    {{{2
 
-call neobundle#config('Indent-Guides', {
-      \   'lazy':   1,
-      \   'on_cmd': 'IndentGuidesToggle'
-      \ })
 if neobundle#tap('Indent-Guides')
+  call neobundle#config('Indent-Guides', {
+        \   'lazy':   1,
+        \   'on_cmd': 'IndentGuidesToggle'
+        \ })
   let g:indent_guides_enable_on_vim_startup = 0
   let g:indent_guides_auto_colors = 0
   let g:indent_guides_guide_size = 1
@@ -1581,6 +1582,16 @@ xmap <LocalLeader>A <Plug>(EasyAlign)
 let g:easy_align_interactive_modes = ['l', 'a']
 let g:easy_align_ignore_unmatched  = 0
 " nmap <LocalLeader>= <Plug>(EasyAlign)
+
+" }}}2   Indent Line    {{{2
+
+if neobundle#tap('indentLine')
+  let g:indentLine_color_term = 239
+  " let g:indentLine_char = '┊'
+  let g:indentLine_enabled = 0
+  nnoremap <Leader>ig :IndentLinesToggle<CR>
+  call neobundle#untap()
+endif
 
 " }}}2   Rails    {{{2
 

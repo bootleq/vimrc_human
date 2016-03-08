@@ -2289,7 +2289,6 @@ let g:cycle_default_groups += [
 
 " FileType ruby
 let g:cycle_default_groups_for_ruby = [
-      \   [['accessible', 'protected']],
       \   [['stylesheet_link_tag ', 'javascript_include_tag ']],
       \ ]
 

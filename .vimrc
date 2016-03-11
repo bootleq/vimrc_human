@@ -1130,7 +1130,7 @@ function! s:grep(command, args)
 endfunction
 
 " Split and diff (@Shougo)
-command! -nargs=1 -complete=file Diff vertical diffsplit <args>
+command! -nargs=1 -complete=file Diff execute 'vertical diffsplit ' . fnameescape(<q-args>)
 
 " Echo range text or register content, for tmux manual yank
 command! -nargs=? -range Echo <line1>,<line2>call s:echo(<f-args>)

@@ -130,7 +130,7 @@ let s:bundles += [
       \   ['thinca/vim-zenspace'],
       \   ['Yggdroot/indentLine', {':skip': 0}],
       \   ['Indent-Guides', {':skip': 1}],
-      \   ['bling/vim-airline', {':skip': 0}],
+      \   ['bling/vim-airline', {':skip': 1}],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
       \   ['easymotion/vim-easymotion'],

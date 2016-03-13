@@ -1993,12 +1993,15 @@ nmap sss <Nop>
 
 " }}}2   wokmarks   {{{2
 
-let g:wokmarks_do_maps = 0
-let g:wokmarks_pool = "abcdefghijklmnopqrstuvwxyz"
-nmap mm <Plug>ToggleMarkWok
-map mj <Plug>NextMarkWok
-map mk <Plug>PrevMarkWok
-autocmd User WokmarksChange :ShowMarksOn
+if neobundle#tap('wokmarks.vim')
+  let g:wokmarks_do_maps = 0
+  let g:wokmarks_pool = "abcdefghijklmnopqrstuvwxyz"
+  nmap mm <Plug>ToggleMarkWok
+  map mj <Plug>NextMarkWok
+  map mk <Plug>PrevMarkWok
+  autocmd User WokmarksChange :ShowMarksOn
+  call neobundle#untap()
+end
 
 " }}}2   anzu   {{{2
 

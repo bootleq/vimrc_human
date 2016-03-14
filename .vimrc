@@ -2103,23 +2103,6 @@ endif
 
 " }}}2    EasyMotion    {{{2
 
-map <LocalLeader>e <Plug>(easymotion-w)
-nmap <LocalLeader>E <Plug>(easymotion-overwin-w)
-xmap <LocalLeader>E <Plug>(easymotion-bd-w)
-omap <LocalLeader>E <Plug>(easymotion-bd-w)
-map <LocalLeader>L <Plug>(easymotion-j)
-map <LocalLeader>H <Plug>(easymotion-k)
-map <LocalLeader>n <Plug>(easymotion-n)
-map <LocalLeader>N <Plug>(easymotion-N)
-map <LocalLeader>s <Plug>(easymotion-overwin-f2)
-map <LocalLeader>ge <Plug>(easymotion-jumptoanywhere)
-" omap <LocalLeader>l <Plug>(easymotion-special-l)
-" omap <LocalLeader>p <Plug>(easymotion-special-p)
-" xmap <LocalLeader>l <Plug>(easymotion-special-l)
-" xmap <LocalLeader>p <Plug>(easymotion-special-p)
-nmap <LocalLeader>; <Plug>(easymotion-next)
-nmap <LocalLeader>: <Plug>(easymotion-prev)
-
 if neobundle#tap('vim-easymotion')
   let g:EasyMotion_keys = tolower('asdghklqwertyuiopzxcvbnmfj;')
   let g:EasyMotion_use_upper = 0
@@ -2133,6 +2116,24 @@ if neobundle#tap('vim-easymotion')
         \ '(_\zs.)' . '|' .
         \ '(#\zs.)'
   let g:EasyMotion_re_anywhere .= '|' . '\s+\m\(\k\|\s\)\@!\zs.'
+
+  map <LocalLeader>e <Plug>(easymotion-w)
+  nmap <LocalLeader>E <Plug>(easymotion-overwin-w)
+  xmap <LocalLeader>E <Plug>(easymotion-bd-w)
+  omap <LocalLeader>E <Plug>(easymotion-bd-w)
+  map <LocalLeader>L <Plug>(easymotion-j)
+  map <LocalLeader>H <Plug>(easymotion-k)
+  map <LocalLeader>n <Plug>(easymotion-n)
+  map <LocalLeader>N <Plug>(easymotion-N)
+  map <LocalLeader>s <Plug>(easymotion-overwin-f2)
+  map <LocalLeader>ge <Plug>(easymotion-jumptoanywhere)
+  " omap <LocalLeader>l <Plug>(easymotion-special-l)
+  " omap <LocalLeader>p <Plug>(easymotion-special-p)
+  " xmap <LocalLeader>l <Plug>(easymotion-special-l)
+  " xmap <LocalLeader>p <Plug>(easymotion-special-p)
+  nmap <LocalLeader>; <Plug>(easymotion-next)
+  nmap <LocalLeader>: <Plug>(easymotion-prev)
+
   call neobundle#untap()
 endif
 

@@ -99,6 +99,7 @@ let s:bundles += [
       \   ['junegunn/vim-easy-align'],
       \   ['Shougo/neosnippet'],
       \   ['Shougo/vimfiler'],
+      \   ['Konfekt/FastFold'],
       \   ['thinca/vim-prettyprint'],
       \   ['thinca/vim-qfreplace'],
       \   ['thinca/vim-quickrun', {'lazy': 1}],

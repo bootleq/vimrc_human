@@ -469,6 +469,12 @@ if neobundle#tap('netrw.vim')
   call neobundle#untap()
 endif
 
+" }}}2   FastFold    {{{2
+
+if neobundle#tap('FastFold')
+  nmap <SID>(DisableFastFoldUpdate) <Plug>(FastFoldUpdate)
+  call neobundle#untap()
+endif
 " }}}2    vimfiler    {{{2
 
 call neobundle#config('vimfiler', {

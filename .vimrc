@@ -1211,26 +1211,6 @@ endif
 " }}}1    Cscope            ==================================================
 
 
-" Ctags:                  {{{1 ===============================================
-
-" from hotoo http://gist.github.com/476387
-let tlist_html_settings   = 'html;h:Headers;o:IDs;c:Classes'
-let tlist_xhtml_settings   = 'html;h:Headers;o:IDs;c:Classes'
-" let tlist_php_settings   = 'html;h:Headers;o:IDs;c:Classes'
-" let tlist_javascript_settings = 'js;f:Functions;c:Classes;o:Objects'
-let tlist_javascript_settings = 'javascript;f:Functions;c:Classes;o:Objects'
-let tlist_css_settings = 'css;c:Classes;o:Objects(ID);t:Tags(Elements)'
-
-set tags+=../tags,./*/tags
-" if has("gui_running")
-"   noremap <silent> <M-z> :TlistToggle<CR>
-" else
-"   noremap <silent> z :TlistToggle<CR>
-" endif
-
-" }}}1    Ctags            ===================================================
-
-
 " Plugins:             {{{1 ==================================================
 
 " NeoBundle    {{{2
@@ -1842,21 +1822,6 @@ if neobundle#tap('simple-javascript-indenter')
   let g:SimpleJsIndenter_CaseIndentLevel = -1
   call neobundle#untap()
 endif
-
-" }}}2   TagList   {{{2
-
-if !executable('ctags')
-  let loaded_taglist = 1
-endif
-let Tlist_GainFocus_On_ToggleOpen = 1
-let Tlist_Auto_Highlight_Tag = 0
-let Tlist_Show_One_File = 1
-let Tlist_File_Fold_Auto_Close = 1
-" let Tlist_Sort_Type = 'name'
-let Tlist_Use_Right_Window = 1
-let Tlist_WinWidth = 40
-let Tlist_Enable_Fold_Column = 0
-"let Tlist_Show_Menu = 1
 
 " }}}2   TagBar   {{{2
 

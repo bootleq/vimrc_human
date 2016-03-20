@@ -81,10 +81,8 @@ set runtimepath-=~/.vim
 try
   call neobundle#begin(fnamemodify(s:rtp, ':p') . "bundle")
 catch /^Vim\%((\a\+)\)\=:E117/
-  echoerr "Error detected while processing: " . v:throwpoint . ":\n  " . v:exception .
-        \ "\n\nNo 'Bundle plugin' installed for this vimrc. Skipped sourcing plugins." .
-        \ "\n\nTo install one:\n  " .
-        \ "git clone http://github.com/Shougo/neobundle.vim.git " . fnamemodify(s:rtp, ":p") . "bundle/neobundle.vim\n"
+  echoerr "Please install NeoBundle first: " .
+        \ "git clone http://github.com/Shougo/neobundle.vim.git " . fnamemodify(s:rtp, ":p") . "bundle/neobundle.vim"
   finish
 endtry
 

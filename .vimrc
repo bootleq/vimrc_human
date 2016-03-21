@@ -669,7 +669,10 @@ endif
 
 if !exists('g:colors_name')
   set background=dark
-  colorscheme bootleg
+  try
+    colorscheme bootleg
+  catch /^Vim\%((\a\+)\)\=:E185/
+  endtry
 endif
 
 set title titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)

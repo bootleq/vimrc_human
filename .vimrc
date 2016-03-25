@@ -473,6 +473,40 @@ if neobundle#tap('FastFold')
   nmap <SID>(DisableFastFoldUpdate) <Plug>(FastFoldUpdate)
   call neobundle#untap()
 endif
+
+" }}}2    open-browser    {{{2
+
+call neobundle#config('open-browser.vim', {
+      \   'lazy': 1,
+      \   'autoload': {
+      \     'mappings': ['<Plug>(openbrowser-search)', '<Plug>(openbrowser-smart-search)']
+      \   }
+      \ })
+
+if neobundle#tap('open-browser.vim')
+  let g:openbrowser_search_engines = {
+        \   'morebile': 'http://www.google.com.tw/m/search?site=dictionary&gdm=1&wtr=1&q={query}',
+        \   'dictionary': 'http://www.google.com/dictionary?q={query}',
+        \   'google': 'http://google.com/search?q={query}',
+        \ }
+  let g:openbrowser_default_search = 'google'
+  let g:openbrowser_force_foreground_after_open = 1
+
+  " remove ["'"]
+  let g:openbrowser_iskeyword = join(
+        \   range(char2nr('A'), char2nr('Z'))
+        \   + range(char2nr('a'), char2nr('z'))
+        \   + range(char2nr('0'), char2nr('9'))
+        \   + ['_', ':', '/', '.', '-', '+', '%', '#', '?', '&', '=', ';', '@', '$', ',', '[', ']', '!', "(", ")", "*", "~", ],
+        \ ',')
+
+  nmap <Leader><CR> <Plug>(openbrowser-smart-search)
+  vmap <Leader><CR> <Plug>(openbrowser-smart-search)
+  nmap <Leader>s<CR> <Plug>(openbrowser-search)
+  vmap <Leader>s<CR> <Plug>(openbrowser-search)
+  call neobundle#untap()
+endif
+
 " }}}2    vimfiler    {{{2
 
 call neobundle#config('vimfiler', {
@@ -2372,39 +2406,6 @@ function! EatChar(pattern)
 endfunction
 
 " TODO unlet bundle
-
-" }}}2    open-browser    {{{2
-
-call neobundle#config('open-browser.vim', {
-      \   'lazy': 1,
-      \   'autoload': {
-      \     'mappings': ['<Plug>(openbrowser-search)', '<Plug>(openbrowser-smart-search)']
-      \   }
-      \ })
-
-if neobundle#tap('open-browser.vim')
-  let g:openbrowser_search_engines = {
-        \   'morebile': 'http://www.google.com.tw/m/search?site=dictionary&gdm=1&wtr=1&q={query}',
-        \   'dictionary': 'http://www.google.com/dictionary?q={query}',
-        \   'google': 'http://google.com/search?q={query}',
-        \ }
-  let g:openbrowser_default_search = 'google'
-  let g:openbrowser_force_foreground_after_open = 1
-
-  " remove ["'"]
-  let g:openbrowser_iskeyword = join(
-        \   range(char2nr('A'), char2nr('Z'))
-        \   + range(char2nr('a'), char2nr('z'))
-        \   + range(char2nr('0'), char2nr('9'))
-        \   + ['_', ':', '/', '.', '-', '+', '%', '#', '?', '&', '=', ';', '@', '$', ',', '[', ']', '!', "(", ")", "*", "~", ],
-        \ ',')
-
-  nmap <Leader><CR> <Plug>(openbrowser-smart-search)
-  vmap <Leader><CR> <Plug>(openbrowser-smart-search)
-  nmap <Leader>s<CR> <Plug>(openbrowser-search)
-  vmap <Leader>s<CR> <Plug>(openbrowser-search)
-  call neobundle#untap()
-endif
 
 " }}}2    LargeFile    {{{2
 

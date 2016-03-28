@@ -507,6 +507,20 @@ if neobundle#tap('open-browser.vim')
   call neobundle#untap()
 endif
 
+" }}}2   giti    {{{2
+
+if neobundle#tap('vim-unite-giti')
+  call neobundle#config({
+  \   'autoload' : {
+  \     'unite_sources' : [
+  \       'giti',
+  \       'giti/status'
+  \     ],
+  \   }
+  \ })
+  call neobundle#untap()
+endif
+
 " }}}2    vimfiler    {{{2
 
 call neobundle#config('vimfiler', {
@@ -1811,20 +1825,6 @@ endfunction "}}}
 autocmd! my_vimrc FileType fugitiveblame
       \ nnoremap <silent> <buffer> gf :call <SID>fugitiveblame_gitdiffall(0)<CR> |
       \ nnoremap <silent> <buffer> <LocalLeader>gf :call <SID>fugitiveblame_gitdiffall(1)<CR>
-
-" }}}2   giti    {{{2
-
-if neobundle#tap('vim-unite-giti')
-  call neobundle#config({
-  \   'autoload' : {
-  \     'unite_sources' : [
-  \       'giti',
-  \       'giti/status'
-  \     ],
-  \   }
-  \ })
-  call neobundle#untap()
-endif
 
 " }}}2   gitdiffall    {{{2
 

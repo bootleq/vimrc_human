@@ -1847,8 +1847,7 @@ endfunction
 nnoremap <silent><S-F6> :call <SID>gitdiff_next()<CR>
 nnoremap <silent><C-F6> :call <SID>gitdiff_next()<CR>
 
-autocmd my_vimrc FileType gitdiffallinfo nnoremap <buffer> q :silent quit<CR>
-autocmd my_vimrc FileType gitdiffallinfo nnoremap <buffer> <LocalLeader>q :silent quit<CR>
+autocmd my_vimrc FileType gitdiffallinfo nnoremap <buffer> <silent> q :silent call gitdiffall#quit_info_window()<CR>
 
 " }}}2   SimpleJavascriptIndenter    {{{2
 

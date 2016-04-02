@@ -1030,14 +1030,14 @@ omap i; <Plug>(textobj-parameter-i)
 
 let g:textobj_jabraces_no_default_key_mappings = 1
 let s:textobj_multitextobj_textobjects_group_base_paren = [
-      \   '%(',
-      \   '%[',
       \   "\<Plug>(textobj-jabraces-parens-%)",
       \   "\<Plug>(textobj-jabraces-kakko-%)",
       \   "\<Plug>(textobj-jabraces-double-kakko-%)",
       \   "\<Plug>(textobj-jabraces-yama-kakko-%)",
       \   "\<Plug>(textobj-jabraces-double-yama-kakko-%)",
       \   "\<Plug>(textobj-jabraces-sumi-kakko-%)",
+      \   '%(',
+      \   '%[',
       \ ]
 let g:textobj_multitextobj_textobjects_group_i = {
       \   "paren": map(
@@ -1051,6 +1051,7 @@ let g:textobj_multitextobj_textobjects_group_a = {
       \     'substitute(v:val, "%", "a", "")'
       \   )
       \ }
+
 omap <expr> a. textobj#multitextobj#mapexpr_a("paren")
 vmap <expr> a. textobj#multitextobj#mapexpr_a("paren")
 omap <expr> i. textobj#multitextobj#mapexpr_i("paren")

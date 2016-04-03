@@ -1811,15 +1811,20 @@ endfunction
 function! s:fugitiveblame_gitdiffall(all) "{{{
   let rev = matchstr(getline('.'), '\v^\w{7}')
   let buffer = fugitive#buffer(bufname(b:fugitive_blamed_bufnr))
+  let toplevel = buffer.repo().tree()
   if a:all
     " ⎇    
     call TmuxNewWindow({
           \   "text": "gitdiffall @" . rev,
           \   "title": '⎇',
-          \   "directory": buffer.repo().tree()
+          \   "directory": toplevel
           \ })
   else
-    execute printf("tabnew %s | silent GitDiff @%s", buffer.path(), rev)
+    execute printf(
+          \   "tabnew %s | silent GitDiff @%s",
+          \   fnamemodify(toplevel . '/' . buffer.path(), ':.'),
+          \   rev
+          \ )
   endif
 endfunction "}}}
 

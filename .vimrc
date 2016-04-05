@@ -2894,7 +2894,6 @@ endfunction "}}}
 " }}}2   LastTab    {{{2
 
 function! LastTab(act)
-
   " TODO emulate TabClose autocmd
 
   let lt = g:lasttab
@@ -2921,7 +2920,6 @@ function! LastTab(act)
   endif
 
   let lt.knownLength = tabpagenr('$')
-
 endfunction
 
 if !exists('g:lasttab')

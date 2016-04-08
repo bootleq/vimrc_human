@@ -2846,7 +2846,7 @@ function! TmuxNewWindow(...) "{{{
   endif
 
   if empty(pane) && method != 'new-window'
-    " use splitted pane if available
+    " use split pane if available
     let pane = matchstr(
           \   system('tmux list-pane -F "#{window_id}#{pane_id}:#{pane_active}" | egrep 0$'),
           \   '\zs@\d\+%\d\+\ze'

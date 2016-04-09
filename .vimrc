@@ -2310,15 +2310,6 @@ let g:cycle_default_groups_for_ruby = [
       \   [['stylesheet_link_tag ', 'javascript_include_tag ']],
       \ ]
 
-" }}}2    HardMotion    {{{2
-
-" nmap <silent> <LocalLeader><Space> <Plug>HardMotion
-
-" }}}2    ambicmd    {{{2
-
-" cnoremap <expr> <Space> ambicmd#expand("\<Space>")
-" cnoremap <expr> <CR> ambicmd#expand("\<CR>")
-
 " }}}2    delimitMate    {{{2
 
 let delimitMate_matchpairs = "(:),{:},[:],<:>,《:》,〈:〉,［:］,（:）,「:」,『:』,‘:’,“:”"

@@ -2055,64 +2055,6 @@ if neobundle#tap('vim-wordword')
   call neobundle#untap()
 endif
 
-" }}}2    airline    {{{2
-
-if neobundle#tap('vim-airline')
-  let g:airline_left_sep = ''
-  let g:airline_right_sep = ''
-  let g:airline_detect_modified = 0
-
-  let g:airline#extensions#branch#enabled = 0
-  let g:airline#extensions#syntastic#enabled = 0
-  let g:airline#extensions#bufferline#enabled = 0
-  let g:airline#extensions#whitespace#enabled = 0
-  let g:airline#extensions#csv#enabled = 0
-  let g:airline#extensions#hunks#enabled = 0
-  let g:airline#extensions#virtualenv#enabled = 0
-
-  let g:airline#extensions#tabline#enabled = 0
-  " let g:airline#extensions#tabline#show_buffers = 1
-  " let g:airline#extensions#tabline#show_tabs = 1
-  " let g:airline#extensions#tabline#tab_nr_type = 2 " splits and tab number
-  " let g:airline#extensions#tabline#show_tab_nr = 1
-  " let g:airline#extensions#tabline#show_tab_type = 0
-  " let g:airline#extensions#tabline#formatter = 'default'
-  " let g:airline#extensions#tabline#fnamemod = ':t'
-  " let g:airline#extensions#tabline#fnamecollapse = 1
-
-  " let g:airline_theme = 'molokai'
-  " let g:airline_theme = 'wombat'
-  " let g:airline_theme = 'laederon'
-  let g:airline_powerline_fonts = 1
-  let g:airline_section_a = ''  " mode
-  let g:airline_section_x = ''  " filetype
-  let g:airline_section_y = ''  " fileencoding
-  let g:airline_section_z = '%=%-6.(%l,%c%V%) %P'   " line/column number, percentage
-
-  function! neobundle#tapped.hooks.on_post_source(bundle) "{{{
-    function! AirlineGblame(...)
-      " if getwinvar(0, '&filetype') == 'fugitiveblame'
-      if &filetype == 'fugitiveblame'
-        let w:airline_section_a = ''
-        let w:airline_section_b = ''
-        let w:airline_section_c = 'Gblame'
-        " let w:airline_section_c = '%{&filetype}'
-        " let w:airline_section_c = '%!&filetype'
-        let w:airline_section_y = ''
-      endif
-    endfunction
-    let g:airline_statusline_funcrefs = []
-    call airline#add_statusline_func('AirlineGblame')
-  endfunction "}}}
-  call neobundle#untap()
-endif
-
-" let g:airline_mode_map = {}
-" let g:airline_exclude_filetypes = [
-"       \   "fugitiveblame"
-"       \ ]
-" let g:airline_powerline_fonts = 0
-
 " }}}2    EasyMotion    {{{2
 
 if neobundle#tap('vim-easymotion')

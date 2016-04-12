@@ -228,33 +228,6 @@ if has('lua') && (v:version > 703 || (v:version == 703 && has('patch885')))
 else
   let s:bundles += [['Shougo/neocomplcache']]
 endif
-" }}}3 unused {{{3
-" let s:bundles += [
-"       \   ['FuzzyFinder'],
-"       \   ['ctrlpvim/ctrlp.vim'],
-"       \   ['bootleq/vim-ruby-enccomment'],
-"       \   ['h1mesuke/vim-alignta'],
-"       \   ['gregsexton/gitv'],
-"       \   ['mrkn256.vim'],
-"       \   ['tyru/restart.vim'],
-"       \   ['tpope/vim-speeddating'],
-"       \   ['tpope/vim-dispatch'],
-"       \   ['sjl/threesome.vim'],
-"       \   ['thinca/vim-ambicmd'],
-"       \   ['kana/vim-grex'],
-"       \   ['tyru/vim-capture'],
-"       \   ['CountJump'],
-"       \   ['Shougo/neocomplcache-rsense'],
-"       \   ['taichouchou2/vim-rsense'],
-"       \   ['taichouchou2/alpaca_complete'],
-"       \   ['Shougo/vimshell'],
-"       \   ['taglist.vim'],
-"       \   ['kana/vim-smartword'],
-"       \   ['PAntoine/vimgitlog'],
-"       \   ['Shougo/context_filetype.vim'],
-"       \   ['epeli/slimux'],
-"       \   ['VisIncr'],
-"       \ ]
 " }}}3
 
 for s:i.dir in ['~/repository/', 'D:/repository/']

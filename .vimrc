@@ -208,11 +208,6 @@ let s:bundles += [
       \   ['basyura/unite-rails'],
       \   ['moznion/unite-git-conflict.vim'],
       \ ]
-" }}}3 unite unused {{{3
-" let s:bundles += [
-"       \   ['zepto/unite-tmux'],
-"       \   ['Shougo/unite-help'],
-"       \   ['kmnk/vim-unite-giti'],
 " }}}3 colorschemes {{{3
 let s:bundles += [
       \   ['itchyny/landscape.vim'],

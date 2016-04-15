@@ -2159,6 +2159,7 @@ let g:cycle_default_groups = [
       \   [['short', 'long']],
       \   [['request', 'response']],
       \   [['pop', 'shift']],
+      \   [['child', 'parent']],
       \   [['ancestor', 'descendant']],
       \   [['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
       \     'Friday', 'Saturday'], ['hard_case', {'name': 'Days'}]],

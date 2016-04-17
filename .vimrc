@@ -2255,7 +2255,7 @@ let g:splitjoin_align = 1
 
 " }}}2    PrettyPrint    {{{2
 
-" let g:prettyprint_show_expression = 1
+let g:prettyprint_show_expression = 1
 let g:prettyprint_strin = ['split']
 
 " }}}2    altercmd    {{{2

@@ -1564,22 +1564,6 @@ execute 'inoremap <expr><LocalLeader><BS>  ' . bundle.name . '#smart_close_popup
 inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
 
 
-
-" }}}2   alignta    {{{2
-
-" let g:alignta_default_arguments = '! \S\+'
-" xnoremap <silent> <LocalLeader>A :Alignta! \S\+<CR>
-" let g:unite_source_alignta_preset_arguments = [
-"       \   ["對齊 : (key: val)",            '01 :'],
-"       \   ["對齊 , (ruby array #comment)", ',\zs 0:1 #'],
-"       \   ["對齊 =",                       '='],
-"       \   ["對齊 =>",                      '=>'],
-"       \   ["對齊 |",                       '|' ],
-"       \   ["對齊 ,",                       '01 ,' ],
-"       \   ["對齊 , （一次）",              '01 ,/1' ],
-"       \   ["對齊空白",                     '\S\+'],
-"       \ ]
-
 " }}}2   Easy Align    {{{2
 
 xmap <CR> <Plug>(EasyAlign)

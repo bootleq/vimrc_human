@@ -2190,7 +2190,6 @@ let g:cycle_default_groups += [
       \   [['focus', 'blur']],
       \ ]
 " 少用項目               }}}3 {{{3
-" TODO %w(foo bar) style
 let g:cycle_default_groups += [
       \   [['日', '一', '二', '三', '四', '五', '六']],
       \   [['sell', 'buy']],

@@ -3163,6 +3163,8 @@ command! -bang -nargs=* JsCompress call JsCompress(<bang>0, <f-args>)
 "                         1: save with alternative filename, return the new name.
 " @param boolean interact 1 to prompt before starting compression.
 " @param string options   extra options for running the compiler.
+"
+" example: autocmd FileWritePost,BufWritePost *-\(debug\|src\).js :JsCompress! 1
 function! JsCompress(save, ...)
   if !g:enable_js_compress
     return
@@ -3800,7 +3802,6 @@ augroup my_vimrc
     endif
   endfunction
 
-  autocmd FileWritePost,BufWritePost *-\(debug\|src\).js :JsCompress! 1
   if has("autocmd") && exists("+omnifunc")
     autocmd Filetype *
           \ if &l:omnifunc == "" |

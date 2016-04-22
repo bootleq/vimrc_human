@@ -734,6 +734,7 @@ set previewheight=9
 set switchbuf=useopen,usetab,newtab
 set tabpagemax=400
 set diffopt+=vertical,context:4,foldcolumn:1
+set hidden
 
 " }}}2   Vim 7.3 / 7.4    {{{2
 

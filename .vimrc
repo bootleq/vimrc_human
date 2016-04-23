@@ -2139,6 +2139,7 @@ let g:cycle_default_groups = [
       \   [['host', 'guest']],
       \   [['east', 'west']],
       \   [['south', 'north']],
+      \   [['internal', 'external']],
       \   [['prefix', 'suffix']],
       \   [['decode', 'encode']],
       \   [['short', 'long']],

@@ -106,6 +106,7 @@ let s:bundles += [
       \   ['mojako/ref-sources.vim'],
       \   ['bootleq/vim-ref-bingzh'],
       \   ['tpope/vim-rails'],
+      \   ['tpope/vim-bundler'],
       \   ['tpope/vim-tbone', {":skip": 1}],
       \   ['tpope/vim-fugitive'],
       \   ['mattn/webapi-vim'],

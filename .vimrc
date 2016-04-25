@@ -2150,8 +2150,7 @@ let g:cycle_default_groups = [
       \   [['ancestor', 'descendant']],
       \   [['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
       \     'Friday', 'Saturday'], ['hard_case', {'name': 'Days'}]],
-      \   [['{:}', '[:]', '(:)'], 'sub_pairs'],
-      \   [['（:）', '「:」', '『:』'], 'sub_pairs'],
+      \   [['(:)', '（:）', '「:」', '『:』'], 'sub_pairs'],
       \ ]
 " ruby, rails       {{{3
 let g:cycle_default_groups += [

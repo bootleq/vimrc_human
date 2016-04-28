@@ -1821,8 +1821,21 @@ endif
 
 if !executable('ctags')
   let g:loaded_tagbar = 1
+else
+  let g:tagbar_ctags_bin = exepath('ctags')
+  let g:tagbar_type_ruby = {
+        \   'kinds' : [
+        \     'm:modules',
+        \     'c:classes',
+        \     'd:describes',
+        \     'C:contexts',
+        \     'f:methods',
+        \     'F:singleton methods'
+        \   ]
+        \ }
+  let g:tagbar_autofocus = 1
+  let g:tagbar_width = 50
 endif
-let g:tagbar_autofocus = 1
 
 if has("gui_running")
   noremap <silent> <M-z> :TagbarToggle<CR>

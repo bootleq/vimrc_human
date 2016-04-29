@@ -694,8 +694,6 @@ endif
 
 set title titlestring=%t%(\ %M%)%(\ (%{expand(\"%:~:.:h\")})%)%(\ %a%)
 set statusline=%<%f\ %h%m%r%w%=%-14.(%l,%c%V%)\ %P
-" set statusline=%<%f\ %h%m%r%w%=[%{&undolevels}]\ %-14.(%l,%c%V%)\ %P
-" set laststatus=2
 set showtabline=2
 
 " }}}2    尋找、搜尋    {{{2

@@ -3831,6 +3831,43 @@ augroup END
 " }}}1    Autocommands             ===========================================
 
 
+" For Pair:                  {{{1 ============================================
+
+if 0 && has('vim_starting')
+  if executable('w')
+    let result = system("w --no-header --short | wc -l")
+    if str2nr(result) > 1
+      noremap  ,, <C-\><C-N>
+      noremap! ,, <C-\><C-N>
+
+      nnoremap <silent> <Tab>   :bnext<CR>
+      nnoremap <silent> <s-Tab> :bprevious<CR>
+
+      nnoremap gr gT
+
+      nunmap <C-H>
+
+      nmap <silent> <C-P> <LocalLeader>F
+
+      autocmd User Rails call s:rails_test_helpers_for_pair()
+
+      function! s:rails_test_helpers_for_pair() "{{{
+        let type = rails#buffer().type_name()
+        let relative = rails#buffer().relative()
+        if type =~ '^test' || (type == 'javascript-coffee' && relative =~ '^test/')
+          nmap \t [rtest]
+          nnoremap <silent> [rtest]l :call <SID>rails_test_tmux('h')<CR>
+          nnoremap <silent> [rtest]w :call <SID>rails_test_tmux('new-window')<CR>
+          nnoremap <silent> [rtest]. :call <SID>rails_test_tmux('last')<CR>
+        end
+      endfunction "}}}
+    endif
+  endif
+endif
+
+" }}}1    For Pair            ================================================
+
+
 " Finish:                  {{{1 ==============================================
 
 unlet! s:i

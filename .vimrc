@@ -675,7 +675,6 @@ set display=lastline
 set listchars=tab:>-,eol:¬,trail:*,extends:»,precedes:«
 set background=dark
 set ambiwidth=single
-" set ambiwidth=double
 syntax on
 
 if v:version > 704 || (v:version == 704 && has('patch88'))

@@ -3830,6 +3830,10 @@ augroup END
 
 " For Pair:                  {{{1 ============================================
 
+if !empty($VM_HOST_OS)
+  inoremap jj <C-\><C-N>
+endif
+
 if 0 && has('vim_starting')
   if executable('w')
     let result = system("w --no-header --short | wc -l")

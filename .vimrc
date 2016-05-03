@@ -136,7 +136,6 @@ let s:bundles += [
       \   ['easymotion/vim-easymotion'],
       \   ['t9md/vim-choosewin'],
       \   ['AndrewRadev/splitjoin.vim'],
-      \   ['Valloric/YouCompleteMe', {':skip': 1}],
       \   ['netrw.vim'],
       \   ['bootleq/LargeFile', {":prefer_local": 0}],
       \   ['majutsushi/tagbar'],

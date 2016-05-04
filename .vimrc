@@ -213,9 +213,7 @@ let s:bundles += [
       \   ['itchyny/landscape.vim'],
       \   ['tomasr/molokai'],
       \   ['sk1418/last256'],
-      \   ['chriskempson/tomorrow-theme'],
       \   ['altercation/vim-colors-solarized'],
-      \   ['wombat256.vim'],
       \ ]
 " }}}3 neocomplete {{{3
 if has('lua') && (v:version > 703 || (v:version == 703 && has('patch885')))

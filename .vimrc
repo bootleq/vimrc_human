@@ -125,7 +125,7 @@ let s:bundles += [
       \   ['bootleq/vim-gitdiffall', {":prefer_local": 1}],
       \   ['chrisbra/vim-diff-enhanced'],
       \   ['bootleq/vim-hardmotion', {":skip": 1, ":prefer_local": 1}],
-      \   ['bootleq/vim-wordword', {":prefer_local": 1}],
+      \   ['bootleq/vim-wordword'],
       \   ['rking/ag.vim'],
       \   ['thinca/vim-zenspace'],
       \   ['Yggdroot/indentLine', {':skip': 0}],

@@ -129,7 +129,6 @@ let s:bundles += [
       \   ['rking/ag.vim'],
       \   ['thinca/vim-zenspace'],
       \   ['Yggdroot/indentLine', {':skip': 0}],
-      \   ['Indent-Guides', {':skip': 1}],
       \   ['bling/vim-airline', {':skip': 1}],
       \   ['osyo-manga/vim-anzu', {':skip': 0, ":prefer_local": 0}],
       \   ['justinmk/vim-sneak', {':skip': 0}],
@@ -348,21 +347,6 @@ call neobundle#config('vim-qfreplace', {
       \   'on_ft': ['qf']
       \ })
 autocmd my_vimrc FileType qf nnoremap <buffer> r :<C-U>Qfreplace tabnew<CR>
-
-" }}}2   Indent Guide    {{{2
-
-if neobundle#tap('Indent-Guides')
-  call neobundle#config('Indent-Guides', {
-        \   'lazy':   1,
-        \   'on_cmd': 'IndentGuidesToggle'
-        \ })
-  let g:indent_guides_enable_on_vim_startup = 0
-  let g:indent_guides_auto_colors = 0
-  let g:indent_guides_guide_size = 1
-  let g:indent_guides_indent_levels = 30
-  nnoremap <Leader>ig :IndentGuidesToggle<CR>
-  call neobundle#untap()
-endif
 
 " }}}2   Zenkaku Space    {{{2
 

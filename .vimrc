@@ -204,7 +204,6 @@ let s:bundles += [
       \   ['tsukkee/unite-help', {"rev": 'tags-caching'}],
       \   ['ujihisa/unite-gem'],
       \   ['basyura/unite-rails'],
-      \   ['moznion/unite-git-conflict.vim'],
       \ ]
 " }}}3 colorschemes {{{3
 let s:bundles += [

@@ -883,7 +883,6 @@ else
 endif
 
 nnoremap <F5> :call SynStackInfo()<CR>
-nnoremap <Leader><F5> :tabdo e!<CR>
 nnoremap <silent> <F6> :QuickOff<CR>
 nnoremap <LocalLeader><F6> :tabclose<CR>
 

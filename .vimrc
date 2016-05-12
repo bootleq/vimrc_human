@@ -567,7 +567,6 @@ endif
 " }}}2    Vim 記憶選項   {{{2
 
 set history=666
-" set viminfo='20,<50,s10,h
 set viewoptions=folds,cursor
 set updatetime=10000
 set noswapfile

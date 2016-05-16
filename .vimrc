@@ -440,7 +440,7 @@ if neobundle#tap('open-browser.vim')
   let g:openbrowser_default_search = 'google'
   let g:openbrowser_force_foreground_after_open = 1
 
-  " remove ["'"]
+  " ["'"] removed
   let g:openbrowser_iskeyword = join(
         \   range(char2nr('A'), char2nr('Z'))
         \   + range(char2nr('a'), char2nr('z'))

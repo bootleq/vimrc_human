@@ -3572,15 +3572,16 @@ function! s:ruby_rc()
   let g:ruby_space_errors = 1
 
   " Oh, these boolean were tested by exists()...
-  " let g:ruby_fold = 1
-  let g:ruby_no_expensive = 1
+  let g:ruby_fold = 1
+  " let g:ruby_no_expensive = 1
   let g:ruby_no_comment_fold = 1
 
   let g:ruby_minlines = 70
 
   let ruby_spellcheck_strings = 1
 
-  let g:ruby_foldable_groups = 'NONE'
+  " let g:ruby_foldable_groups = 'NONE'
+  let g:ruby_foldable_groups = 'def % / {'
   let g:ruby_minitest_fold = 1
 
   if !exists('b:rails_root')

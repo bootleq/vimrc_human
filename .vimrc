@@ -2056,13 +2056,6 @@ if neobundle#tap('vim-sneak')
   call neobundle#untap()
 endif
 
-" }}}2    histwin    {{{2
-
-let g:undo_tree_help = 0
-let g:undo_tree_dtl = 0
-let g:undo_tree_width = 40
-" let g:undo_tree_nomod = 0
-
 " }}}2    ChooseWin    {{{2
 
 " nmap - <Plug>(choosewin)

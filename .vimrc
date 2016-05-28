@@ -1973,7 +1973,6 @@ endif
 let g:tcommentMaps = 0
 let g:tcomment#blank_lines = 0
 let g:tcommentGuessFileType_haml = 1
-" let g:tcommentOptions = {'col': 1}
 let g:tcomment_types = {
       \   'c': {"commentstring": '// %s'},
       \   'c_inline': {"commentstring": '// %s'}

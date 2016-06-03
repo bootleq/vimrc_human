@@ -3575,6 +3575,8 @@ function! s:ruby_rc()
   " let g:ruby_no_expensive = 1
   let g:ruby_no_comment_fold = 1
 
+  let g:ruby_indent_block_style = 'do'
+
   let g:ruby_minlines = 70
 
   let ruby_spellcheck_strings = 1

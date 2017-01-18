@@ -2103,6 +2103,7 @@ let g:cycle_default_groups = [
       \   [['asc', 'desc']],
       \   [['open', 'close']],
       \   [['start', 'end']],
+      \   [['new', 'old']],
       \   [['是', '否']],
       \   [['有', '無']],
       \   [['上', '下']],

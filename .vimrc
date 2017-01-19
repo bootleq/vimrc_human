@@ -2749,7 +2749,7 @@ function! TmuxNewWindow(...) "{{{
 
   if !empty(text)
     let cmd = printf(
-          \   'tmux set-buffer %s \; paste-buffer -t %s -d \; send-keys -t %s Enter',
+          \   'tmux set-buffer %s \; paste-buffer -p -t %s -d \; send-keys -t %s Enter',
           \   shellescape(text),
           \   pane_id,
           \   pane_id

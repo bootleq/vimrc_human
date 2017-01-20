@@ -602,6 +602,7 @@ set cinoptions+=(0
 set textwidth=78
 try
   set breakindent
+  set showbreak=\\ 
 catch /^Vim\%((\a\+)\)\=:E518/
 endtry
 

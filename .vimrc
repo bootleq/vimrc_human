@@ -1764,6 +1764,7 @@ autocmd! my_vimrc FileType fugitiveblame
 " }}}2   gitdiffall    {{{2
 
 let g:gitdiffall_log_format = "medium"
+let g:gitdiffall_min_hash_abbr = 7
 
 function! s:gitdiff_next()
   if exists('t:gitdiffall_info')

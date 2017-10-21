@@ -1344,10 +1344,12 @@ if neobundle#tap('unite.vim') "{{{
   nnoremap <silent> [unite]/ :<C-U>Unite -buffer-name=search line<CR>
   nnoremap <silent> [unite]p :<C-U>Unite -buffer-name=registers -unique register<CR>
   xnoremap <silent> [unite]p "_d:<C-U>Unite -buffer-name=register -unique register<CR>
+  nnoremap <silent> [unite]B :<C-U>Unite buffer<CR>
   nnoremap <silent> [unite]b :<C-U>Unite -no-start-insert bookmark<CR>
   nnoremap <silent> [unite]m :<C-U>Unite mark<CR>
   nnoremap <silent> [unite]h :<C-U>Unite -update-time=600 help<CR>
   nnoremap <silent> [unite]o :<C-U>Unite -no-start-insert outline<CR>
+  nnoremap <silent> [unite]t :<C-U>Unite tab:no-current<CR>
   nnoremap <silent> [unite]g :<C-U>Unite tab:no-current<CR>
   nnoremap <silent> [unite]j :<C-U>Unite jump<CR>
   nnoremap <silent> [unite]c :<C-U>Unite change<CR>
@@ -1434,6 +1436,7 @@ if neobundle#tap('unite.vim') "{{{
   " Sources customization {{{
   call unite#custom#default_action('file, source/bookmark/jump_list', 'tabswitch')
   call unite#custom#default_action('source/help/common', 'tabopen')
+  call unite#custom#default_action('buffer', 'tabopen')
 
   " File related
   call unite#custom#source(

@@ -1996,6 +1996,7 @@ let g:camelcasemotion_leader = 'g'
 
 if neobundle#tap('vim-wordword')
   let g:wordword_break_on_punctuation = 1
+  let g:wordword_no_break_on_decimal_point = 1
   map gs <Plug>(operator-wordword)
   call neobundle#untap()
 endif

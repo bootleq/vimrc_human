@@ -2665,27 +2665,35 @@ endif
 
 " }}}2   Tmux   {{{2
 
-" Bracketed Paste Mode
-" Ref http://slashdot.jp/journal/506765/Bracketed-Paste-Mode
+" Bracketed Paste Mode {{{
+"
+" - http://slashdot.jp/journal/506765/Bracketed-Paste-Mode
+" - https://cirw.in/blog/bracketed-paste
+"
 " - Use tmux 1.7 `paste-buffer -p` to paste
 " - Use <F11> and tmux `send-keys "\e[201~"` for pastetoggle
-if &term =~ "xterm" && exists('$TMUX')
-  let &t_ti = &t_ti . "\e[?2004h"
-  let &t_te = "\e[?2004l" . &t_te
-  let &pastetoggle = "\e[201~"
-  map <F11> <Esc>[201~
-  imap <F11> <Esc>[201~
+"
+" only required if lack of patch 8.0.0210
+if !exists('&t_BE')
+  if &term =~ "xterm" && exists('$TMUX')
+    let &t_ti = &t_ti . "\e[?2004h"
+    let &t_te = "\e[?2004l" . &t_te
+    let &pastetoggle = "\e[201~"
+    map <F11> <Esc>[201~
+    imap <F11> <Esc>[201~
 
-  function! XTermPasteBegin(ret)
-    set paste
-    return a:ret
-  endfunction
+    function! XTermPasteBegin(ret)
+      set paste
+      return a:ret
+    endfunction
 
-  map <special> <expr> <Esc>[200~ XTermPasteBegin("i")
-  imap <special> <expr> <Esc>[200~ XTermPasteBegin("")
-  cmap <special> <Esc>[200~ <nop>
-  cmap <special> <Esc>[201~ <nop>
+    map <special> <expr> <Esc>[200~ XTermPasteBegin("i")
+    imap <special> <expr> <Esc>[200~ XTermPasteBegin("")
+    cmap <special> <Esc>[200~ <nop>
+    cmap <special> <Esc>[201~ <nop>
+  endif
 endif
+" }}}
 
 function! TmuxNewWindow(...) "{{{
   let options = a:0 ? a:1 : {}

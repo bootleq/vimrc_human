@@ -3475,7 +3475,7 @@ endfunction
 " }}}2   CSS   {{{2
 
 function! s:css_rc()
-  set foldmethod=marker
+  setlocal foldmethod=marker
   setlocal iskeyword-=58
 endfunction
 

@@ -2145,7 +2145,6 @@ let g:cycle_default_groups += [
       \   [["if", "unless"]],
       \   [["blank?", "present?"]],
       \   [["any?", "empty?"]],
-      \   [["select", "reject"]],
       \   [["while", "until"]],
       \   [["begin", "end"]],
       \   [['assert', 'refute']],
@@ -2178,6 +2177,7 @@ let g:cycle_default_groups += [
 " JS               }}}3 {{{3
 let g:cycle_default_groups += [
       \   [['focus', 'blur']],
+      \   [['resolve', 'reject']],
       \ ]
 " 少用項目               }}}3 {{{3
 let g:cycle_default_groups += [

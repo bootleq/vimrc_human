@@ -3272,6 +3272,8 @@ function! SQLFormatter()
 
     call append(v:lnum - 1, result)
     return 0
+  else
+    echoerr "No anbt-sql-formatter found. Try `gem install anbt-sql-formatter`."
   endif
 
   return 1

@@ -2278,6 +2278,7 @@ function! bundle.hooks.on_post_source(bundle)
   AlterCommand bu NeoBundleUpdate
   AlterCommand bi NeoBundleInstall
   AlterCommand bl ViewNeoBundleUpdatesLog
+  AlterCommand cle CleanMakeGSession
 endfunction
 
 " Ref helpgrep Eatchar

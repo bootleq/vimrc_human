@@ -148,6 +148,7 @@ let s:bundles += [
       \   ['othree/vim-javascript-syntax', {':filetypes': ['javascript'], ":skip": 1}],
       \   ['jiangmiao/simple-javascript-indenter', {':filetypes': ['javascript']}],
       \   ['kchmck/vim-coffee-script', {':filetypes': ['coffee']}],
+      \   ['posva/vim-vue', {':filetypes': ['vue'], ":skip": 1}],
       \   ['groenewege/vim-less', {':filetypes': ['less']}],
       \   ['hail2u/vim-css3-syntax', {':filetypes': ['css']}],
       \   ['httplog', {':filetypes': ['httplog']}],
@@ -1793,6 +1794,13 @@ autocmd my_vimrc FileType gitdiffallinfo nnoremap <buffer> <silent> q :silent ca
 if neobundle#tap('simple-javascript-indenter')
   let g:SimpleJsIndenter_BriefMode = 1
   let g:SimpleJsIndenter_CaseIndentLevel = -1
+  call neobundle#untap()
+endif
+
+" }}}2   Vue    {{{2
+
+if neobundle#tap('vim-vue')
+  let g:vue_disable_pre_processors = 1
   call neobundle#untap()
 endif
 

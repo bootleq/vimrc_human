@@ -3291,7 +3291,7 @@ endfunction
 " }}}2   bookmarklet 壓縮    {{{2
 
 command! -nargs=* Bookmarklet call Bookmarklet(<f-args>)
-function! Bookmarklet(...)
+function! Bookmarklet(...) abort
   let result = JsCompress(0, 0, '--compilation_level=WHITESPACE_ONLY')
   if len(getqflist()) == 0 && strlen(result) > 0
     let reuse_win = 0

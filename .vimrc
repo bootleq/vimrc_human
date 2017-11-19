@@ -2220,6 +2220,8 @@ nmap g<CR> :SplitjoinSplit<CR>
 nmap gJ :SplitjoinJoin<CR>
 let g:splitjoin_normalize_whitespace = 1
 let g:splitjoin_align = 1
+let g:splitjoin_ruby_curly_braces = 0
+let g:splitjoin_ruby_hanging_args = 0
 
 " }}}2    smartword.vim    {{{2
 

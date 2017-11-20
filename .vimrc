@@ -2193,6 +2193,7 @@ let g:cycle_default_groups += [
       \   [['sell', 'buy']],
       \   [['portrait', 'landscape']],
       \   [['bright', 'intelligence']],
+      \   [['regular', 'lumpsum']],
       \ ]
 
 " }}}3

@@ -2644,6 +2644,7 @@ function! Putclip(type, ...) range
 endfunction
 
 function! Getclip()
+  " FIXME: has escape problem, e.g., $1 `foobar`
   let save_reg = @@
   if executable('getclip')
     let @@ = system('getclip')

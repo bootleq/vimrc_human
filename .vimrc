@@ -108,6 +108,7 @@ let s:bundles += [
       \   ['tpope/vim-rails'],
       \   ['tpope/vim-bundler'],
       \   ['tpope/vim-tbone', {":skip": 1}],
+      \   ['liquidz/vim-iced', {":skip": 0, 'rev': '1.3.2'}],
       \   ['tpope/vim-fugitive'],
       \   ['mattn/webapi-vim'],
       \   ['mattn/wwwrenderer-vim'],
@@ -147,6 +148,9 @@ let s:bundles += [
       \   ['jelera/vim-javascript-syntax', {':filetypes': ['javascript'], ":skip": 1}],
       \   ['othree/vim-javascript-syntax', {':filetypes': ['javascript'], ":skip": 1}],
       \   ['jiangmiao/simple-javascript-indenter', {':filetypes': ['javascript']}],
+      \   ['guns/vim-sexp'],
+      \   ['eraserhd/parinfer-rust', {"build": {'others': 'cargo build --release'}}],
+      \   ['junegunn/rainbow_parentheses.vim', {':filetypes': ['clojure'], ":skip": 1}],
       \   ['kchmck/vim-coffee-script', {':filetypes': ['coffee']}],
       \   ['posva/vim-vue', {':filetypes': ['vue'], ":skip": 1}],
       \   ['groenewege/vim-less', {':filetypes': ['less']}],
@@ -1560,6 +1564,137 @@ if neobundle#tap('indentLine')
   " let g:indentLine_char = '┊'
   let g:indentLine_enabled = 0
   nnoremap <Leader>ig :IndentLinesToggle<CR>
+  call neobundle#untap()
+endif
+
+" }}}2   parinfer, sexp    {{{2
+
+" if neobundle#tap('parinfer-rust')
+"   call neobundle#untap()
+" endif
+
+if neobundle#tap('vim-sexp')
+  let g:sexp_enable_insert_mode_mappings = 0
+  let g:sexp_insert_after_wrap = 0
+
+  let g:sexp_filetypes = ''
+  function! s:vim_sexp_mappings() "{{{
+    xmap <silent><buffer> af      <Plug>(sexp_outer_list)
+    omap <silent><buffer> af      <Plug>(sexp_outer_list)
+    xmap <silent><buffer> if      <Plug>(sexp_inner_list)
+    omap <silent><buffer> if      <Plug>(sexp_inner_list)
+    xmap <silent><buffer> aF      <Plug>(sexp_outer_top_list)
+    omap <silent><buffer> aF      <Plug>(sexp_outer_top_list)
+    xmap <silent><buffer> iF      <Plug>(sexp_inner_top_list)
+    omap <silent><buffer> iF      <Plug>(sexp_inner_top_list)
+    xmap <silent><buffer> as      <Plug>(sexp_outer_string)
+    omap <silent><buffer> as      <Plug>(sexp_outer_string)
+    xmap <silent><buffer> is      <Plug>(sexp_inner_string)
+    omap <silent><buffer> is      <Plug>(sexp_inner_string)
+    xmap <silent><buffer> ae      <Plug>(sexp_outer_element)
+    omap <silent><buffer> ae      <Plug>(sexp_outer_element)
+    xmap <silent><buffer> ie      <Plug>(sexp_inner_element)
+    omap <silent><buffer> ie      <Plug>(sexp_inner_element)
+    nmap <silent><buffer> (       <Plug>(sexp_move_to_prev_bracket)
+    xmap <silent><buffer> (       <Plug>(sexp_move_to_prev_bracket)
+    omap <silent><buffer> (       <Plug>(sexp_move_to_prev_bracket)
+    nmap <silent><buffer> )       <Plug>(sexp_move_to_next_bracket)
+    xmap <silent><buffer> )       <Plug>(sexp_move_to_next_bracket)
+    omap <silent><buffer> )       <Plug>(sexp_move_to_next_bracket)
+    nmap <silent><buffer> [[      <Plug>(sexp_move_to_prev_top_element)
+    xmap <silent><buffer> [[      <Plug>(sexp_move_to_prev_top_element)
+    omap <silent><buffer> [[      <Plug>(sexp_move_to_prev_top_element)
+    nmap <silent><buffer> ]]      <Plug>(sexp_move_to_next_top_element)
+    xmap <silent><buffer> ]]      <Plug>(sexp_move_to_next_top_element)
+    omap <silent><buffer> ]]      <Plug>(sexp_move_to_next_top_element)
+  endfunction "}}}
+
+  augroup VIM_SEXP_MAPPING
+    autocmd!
+    autocmd FileType clojure,scheme,lisp,timl call s:vim_sexp_mappings()
+  augroup END
+endif
+
+" }}}2    Iced    {{{2
+
+if neobundle#tap('vim-iced')
+  let g:iced_enable_default_key_mappings = 0
+  let s:iced_stdout_buffer_height = 6
+
+  function! s:iced_first_connect() abort
+    if iced#repl#is_connected()
+      echohl WarningMsg | echoerr 'Already connected' | echohl None
+      return
+    endif
+
+    echomsg 'Connecting REPL...'
+    IcedConnect
+
+    if iced#repl#is_connected()
+      call s:iced_after_connect()
+    endif
+  endfunction
+
+  function! s:iced_after_connect()
+    if get(maparg('<Leader>e', 'n', 0, 1), 'rhs', '') =~ 'iced_first_connect()'
+      nunmap <buffer> <Leader>e
+    endif
+
+    " REPL
+    nmap <buffer> <Leader>e  [iced_repl]
+    vmap <buffer> <Leader>e  [iced_repl]
+    nmap <buffer> [iced_repl]   <Plug>(iced_eval)
+    vmap <buffer> [iced_repl]   <Plug>(iced_eval_visual)
+    nmap <buffer> [iced_repl]n  <Plug>(iced_eval_ns)
+    nmap <buffer> [iced_repl]q  <Plug>(iced_interrupt)
+    nmap <buffer> [iced_repl]Q  <Plug>(iced_interrupt_all)
+    nmap <buffer> <silent> [iced_repl]j  :call <SID>iced_stdout_open_with_height()<CR>
+    nmap <buffer> [iced_repl]l  <Plug>(iced_stdout_buffer_clear)
+
+    " Doc and Help
+    nmap <buffer> <Leader>k [iced_doc]
+    nmap <buffer> [iced_doc]k <Plug>(iced_clojuredocs_popup_open)
+    nmap <buffer> [iced_doc]K <Plug>(iced_clojuredocs_open)
+    nmap <buffer> [iced_doc]s <Plug>(iced_source_popup_show)
+    nmap <buffer> [iced_doc]S <Plug>(iced_source_show)
+    nmap <buffer> [iced_doc]u <Plug>(iced_use_case_open)
+
+    " Others
+    nmap <buffer> <C-]> <Plug>(iced_def_jump)
+    " tab jump 還是要 upstream 支援 tabedit 比較好，例如：找不到目標時的處理
+    nnoremap <buffer> <LocalLeader><C-]> :tabnew <Bar> IcedDefJump <C-R>=iced#nrepl#var#cword()<CR><CR>
+    nmap <buffer> g<  <Plug>(iced_thread_first)
+    nmap <buffer> g>  <Plug>(iced_thread_last)
+
+    " nmap <buffer> [iced_repl]b   <Plug>(iced_require)
+    " nmap <buffer> [iced_repl]u   <Plug>(iced_undef)
+    " nmap <buffer> [iced_repl]M   <Plug>(iced_macroexpand_outer_list)
+  endfunction
+
+  " Poor workaround <Plug>(iced_stdout_buffer_open) doesn't support custom height
+  function! s:iced_stdout_open_with_height() "{{{
+    call iced#buffer#open(
+          \ 'iced_stdout',
+          \ {'mods': g:iced#buffer#stdout#mods,
+          \  'scroll_to_bottom': v:true,
+          \  'height': s:iced_stdout_buffer_height})
+  endfunction "}}}
+
+  function! s:iced_ft_setup()
+    nmap <buffer> <Leader>e :call <SID>iced_first_connect()<CR>
+  endfunction
+
+  autocmd! my_vimrc FileType clojure call s:iced_ft_setup()
+endif
+
+" }}}2   rainbow parentheses    {{{2
+
+if neobundle#tap('rainbow_parentheses.vim')
+  augroup rainbow_lisp
+    autocmd!
+    autocmd FileType lisp,clojure,scheme RainbowParentheses
+  augroup END
+  let g:rainbow#blacklist = [234, '#191919']
   call neobundle#untap()
 endif
 

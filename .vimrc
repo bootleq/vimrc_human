@@ -158,6 +158,7 @@ let s:bundles += [
       \   ['httplog', {':filetypes': ['httplog']}],
       \   ['nginx.vim', {':filetypes': ['nginx']}],
       \   ['othree/html5.vim', {':filetypes': ['html']}],
+      \   ['pearofducks/ansible-vim'],
       \   ['plasticboy/vim-markdown', {':filetypes': ['mkd', 'markdown'], ':skip': 1}],
       \   ['jtratner/vim-flavored-markdown', {':filetypes': ['ghmarkdown']}],
       \   ['nelstrom/vim-markdown-folding', {':filetypes': ['mkd', 'markdown'], ':skip': 1}],
@@ -168,6 +169,7 @@ let s:bundles += [
       \   ['sunaku/vim-ruby-minitest', {':filetypes': ['ruby'], ':prefer_local': 1, ':skip': 0}],
       \   ['bruno-/vim-ruby-fold', {':filetypes': ['ruby'], ':prefer_local': 0, ':skip': 1}],
       \   ['cespare/vim-toml', {':filetypes': ['toml']}],
+      \   ['Glench/Vim-Jinja2-Syntax', {':filetypes': ['jinja', 'jinja2']}],
       \   ['tpope/vim-git', {'on_ft': ['gitcommit', 'gitconfig', 'gitrebase', 'gitsendemail', 'git']}],
       \ ]
 " }}}3 text-objs {{{3
@@ -3837,6 +3839,35 @@ endfunction
 " }}}2   yaml config   {{{2
 
 function! s:yaml_rc()
+  setlocal nowrap
+
+  if line('$') > 200
+    setlocal foldlevel=0
+  endif
+endfunction
+
+function! s:yaml_ansible_rc()
+  setlocal foldlevel=8
+endfunction
+
+" }}}2   jinja config   {{{2
+
+function! s:jinja_rc()
+  " Workaround for pearofducks/ansible-vim, its ftdetect will then overwritten
+  " by neobundle ftdetect
+  let ext = expand("%:t")
+  let types = #{
+        \   yaml: '\.ya?ml',
+        \   sshconfig: 'ssh_config',
+        \   nginx: '\.nginx',
+        \   systemd: '\.systemd',
+        \ }
+  for [ft, ft_pattern] in items(types)
+    let pattern = printf('\v%s\.j2', ft_pattern)
+    if match(ext, pattern) > -1
+      execute 'set filetype=' . ft . '.jinja2'
+    endif
+  endfor
 endfunction
 
 " }}}2   logs   {{{2
@@ -3877,6 +3908,8 @@ augroup my_vimrc
   autocmd FileType gitconfig call s:gitconfig_rc()
   autocmd FileType nginx call s:nginx_rc()
   autocmd FileType yaml call s:yaml_rc()
+  autocmd FileType yaml.ansible call s:yaml_ansible_rc()
+  autocmd FileType jinja call s:jinja_rc()
 
   autocmd FileType sh let g:is_bash=1
 
